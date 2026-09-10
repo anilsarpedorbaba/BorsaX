@@ -2365,7 +2365,6 @@ async function loadRealMarketData(){
 
 /* Every ~2.2s: price wiggles back and forth within a small spread band around the anchor — no drift, just bid/ask-style jitter. */
 function tickMarket(){
-  if (typeof isMarketOpen === 'function' && !isMarketOpen()) return;
   Object.keys(marketData).forEach(cat=>{
     const spread = SPREAD_PCT[cat] || 0.08;
     marketData[cat].forEach(item=>{
