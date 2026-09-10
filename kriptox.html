@@ -593,6 +593,24 @@ svg{display:block;}
   border:1px solid var(--border); color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer;
 }
 .lightbox-close:hover{border-color:var(--accent); color:var(--accent);}
+
+/* Success modal */
+#success-modal{
+  display:none; position:fixed; inset:0; background:rgba(4,5,9,0.85); backdrop-filter:blur(6px);
+  z-index:210; align-items:center; justify-content:center; padding:24px;
+}
+#success-modal.open{display:flex;}
+.success-modal-card{
+  width:100%; max-width:340px; background:var(--card); border:1px solid var(--border); border-radius:20px;
+  padding:32px 28px 26px; text-align:center; box-shadow:var(--shadow-pop); animation:fadeIn .2s ease;
+}
+.success-icon{
+  width:58px; height:58px; border-radius:50%; margin:0 auto 18px; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg,#2fe0a2,var(--green)); box-shadow:0 10px 24px -8px rgba(34,207,148,0.5);
+}
+.success-title{font-size:16.5px; font-weight:800; margin-bottom:8px;}
+.success-desc{font-size:12.5px; color:var(--text-dim); line-height:1.6; margin-bottom:22px;}
+
 .kyc-grid{display:grid; grid-template-columns:1fr 1fr; gap:22px;}
 .kyc-doc-row{display:flex; align-items:center; gap:10px; background:var(--bg); border:1px solid var(--border-soft); border-radius:10px; padding:10px 12px; margin-bottom:8px;}
 .kyc-doc-row img{width:36px; height:36px; border-radius:7px; object-fit:cover; flex-shrink:0; cursor:pointer; transition:transform .15s;}
@@ -714,6 +732,15 @@ tbody tr:hover{background:rgba(255,255,255,0.02);}
 .trade-price-block{text-align:right;}
 .trade-price{font-size:22px; font-weight:800;}
 .trade-change{font-size:13px; font-weight:700; margin-top:3px;}
+.market-status-badge{
+  display:inline-block; margin-top:6px; padding:3px 10px; border-radius:20px; font-size:10.5px; font-weight:700;
+  background:rgba(34,207,148,0.13); color:var(--green);
+}
+.market-status-badge.closed{background:rgba(246,70,93,0.14); color:var(--red);}
+.market-closed-tag{
+  display:inline-block; margin-left:6px; padding:2px 7px; border-radius:12px; font-size:9.5px; font-weight:700;
+  background:rgba(246,70,93,0.14); color:var(--red); vertical-align:middle;
+}
 .trade-change.up{color:var(--green);}
 .trade-change.down{color:var(--red);}
 .trade-layout{display:grid; grid-template-columns:1fr 320px; gap:18px;}
@@ -824,7 +851,8 @@ tbody tr:hover{background:rgba(255,255,255,0.02);}
 
 .amount-input{
   width:100%; background:var(--bg); border:1px solid var(--border-soft); border-radius:var(--radius-sm);
-  padding:16px; font-size:23px; font-weight:700; color:var(--text); outline:none; margin-bottom:6px; transition:border-color .15s;
+  padding:15px 16px; font-family:'JetBrains Mono',monospace; font-size:19px; font-weight:600; letter-spacing:-0.01em;
+  color:var(--text); outline:none; margin-bottom:6px; transition:border-color .15s;
 }
 .amount-input:focus{border-color:var(--accent);}
 .amount-currency{font-size:12px;color:var(--text-dim);margin:0 0 16px;}
@@ -1451,6 +1479,7 @@ tbody tr:hover{background:rgba(255,255,255,0.02);}
           <div class="trade-price-block">
             <div class="trade-price mono" id="trade-price">0,00</div>
             <div class="trade-change mono" id="trade-change">+0,00%</div>
+            <span class="market-status-badge" id="trade-market-status">Açık</span>
           </div>
         </div>
 
@@ -1524,7 +1553,7 @@ tbody tr:hover{background:rgba(255,255,255,0.02);}
               </div>
 
               <div class="card-title" style="margin:20px 0 12px;">Tutar</div>
-              <input type="text" class="amount-input mono" id="deposit-amount-bank" value="10.000">
+              <input type="text" class="amount-input mono js-amount-target" id="deposit-amount-bank" value="10.000">
               <div class="amount-currency">TRY</div>
               <div class="amount-quick">
                 <button data-amt="1.000">1.000</button>
@@ -1551,8 +1580,6 @@ tbody tr:hover{background:rgba(255,255,255,0.02);}
               <div class="card-title" style="margin:22px 0 12px;">Kripto Yatırım Adresleri</div>
               <div class="info-box">
                 <div class="info-row"><span>BTC Adresi</span><b class="mono">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</b><button class="copy-btn" data-copy="bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh">Kopyala</button></div>
-                <div class="info-row"><span>BTC Network</span><b>Bitcoin (BTC)</b></div>
-                <div class="info-row"><span>ETH Adresi</span><b class="mono">0x71C7656EC7ab88b098defB751B7401B5f6d8976</b><button class="copy-btn" data-copy="0x71C7656EC7ab88b098defB751B7401B5f6d8976">Kopyala</button></div>
                 <div class="info-row"><span>ERC20 USDT Adresi</span><b class="mono">0x71C7656EC7ab88b098defB751B7401B5f6d8976</b><button class="copy-btn" data-copy="0x71C7656EC7ab88b098defB751B7401B5f6d8976">Kopyala</button></div>
                 <div class="info-row"><span>TRC20 USDT Adresi</span><b class="mono">TXn9Gk3Fq2sVJyN4pM8dW7hLz1cB6eR5tY</b><button class="copy-btn" data-copy="TXn9Gk3Fq2sVJyN4pM8dW7hLz1cB6eR5tY">Kopyala</button></div>
               </div>
@@ -1584,7 +1611,7 @@ tbody tr:hover{background:rgba(255,255,255,0.02);}
             <!-- CARD PANEL -->
             <div class="deposit-panel" id="panel-card" hidden>
               <div class="card-title" style="margin:22px 0 12px;">Tutar</div>
-              <input type="text" class="amount-input mono" id="deposit-amount-card" value="10.000">
+              <input type="text" class="amount-input mono js-amount-target" id="deposit-amount-card" value="10.000">
               <div class="amount-currency">TRY</div>
               <div class="amount-quick">
                 <button data-amt="1.000">1.000</button>
@@ -1613,21 +1640,59 @@ tbody tr:hover{background:rgba(255,255,255,0.02);}
         <div class="deposit-wrap">
           <div class="card">
             <div class="card-title" style="margin-bottom:14px;">Çekim Yöntemi</div>
-            <div class="method-item active" data-method="0"><div class="quick-ic"><svg class="icon" viewBox="0 0 24 24"><line x1="3" y1="21" x2="21" y2="21"/><line x1="5" y1="21" x2="5" y2="10"/><line x1="19" y1="21" x2="19" y2="10"/><polygon points="12 3 3 8 21 8"/><line x1="9" y1="21" x2="9" y2="10"/><line x1="15" y1="21" x2="15" y2="10"/></svg></div><b>Banka Hesabına</b><div class="method-check"></div></div>
-            <div class="method-item" data-method="1"><div class="quick-ic blue"><svg class="icon" viewBox="0 0 24 24"><circle cx="9" cy="9" r="6"/><circle cx="15" cy="15" r="6"/></svg></div><b>Kripto Cüzdana</b><div class="method-check"></div></div>
+            <div class="method-item active" data-method="0" data-panel="panel-wd-eft"><div class="quick-ic"><svg class="icon" viewBox="0 0 24 24"><line x1="3" y1="21" x2="21" y2="21"/><line x1="5" y1="21" x2="5" y2="10"/><line x1="19" y1="21" x2="19" y2="10"/><polygon points="12 3 3 8 21 8"/><line x1="9" y1="21" x2="9" y2="10"/><line x1="15" y1="21" x2="15" y2="10"/></svg></div><b>Havale / EFT</b><div class="method-check"></div></div>
+            <div class="method-item" data-method="1" data-panel="panel-wd-crypto"><div class="quick-ic blue"><svg class="icon" viewBox="0 0 24 24"><circle cx="9" cy="9" r="6"/><circle cx="15" cy="15" r="6"/></svg></div><b>Kripto Çekim</b><div class="method-check"></div></div>
 
-            <div class="card-title" style="margin:22px 0 12px;">Tutar</div>
-            <input type="text" class="amount-input mono" id="withdraw-amount" value="5.000">
-            <div class="amount-currency" id="withdraw-available-hint">Kullanılabilir Bakiye: 0,00 TRY</div>
-            <div class="amount-quick" style="margin-top:14px;">
-              <button data-amt="1.000">1.000</button>
-              <button data-amt="5.000" class="sel">5.000</button>
-              <button data-amt="10.000">10.000</button>
-              <button data-amt="50.000">50.000</button>
+            <!-- HAVALE / EFT PANEL -->
+            <div class="deposit-panel" id="panel-wd-eft">
+              <div class="card-title" style="margin:22px 0 12px;">Alıcı Bilgileri</div>
+              <div class="pp-field" style="margin-bottom:12px;">
+                <label>Ad Soyad</label>
+                <input type="text" id="wd-eft-name" class="amount-input" style="padding:11px 14px; font-size:13px; margin-bottom:0;">
+              </div>
+              <div class="pp-field" style="margin-bottom:12px;">
+                <label>IBAN</label>
+                <input type="text" id="wd-eft-iban" placeholder="TR__ ____ ____ ____ ____ ____ __" class="amount-input mono" style="padding:11px 14px; font-size:13px; margin-bottom:0;">
+              </div>
+              <div class="pp-field" style="margin-bottom:12px;">
+                <label>TC Kimlik No</label>
+                <input type="text" id="wd-eft-tc" class="amount-input mono" style="padding:11px 14px; font-size:13px; margin-bottom:0;" maxlength="11">
+              </div>
+
+              <div class="card-title" style="margin:20px 0 12px;">Çekim Miktarı</div>
+              <input type="text" class="amount-input mono js-amount-target" id="wd-eft-amount" value="5.000">
+              <div class="amount-currency" id="withdraw-available-hint">Kullanılabilir Bakiye: 0,00 TRY</div>
+              <div class="amount-quick" style="margin-top:14px;">
+                <button data-amt="1.000">1.000</button>
+                <button data-amt="5.000" class="sel">5.000</button>
+                <button data-amt="10.000">10.000</button>
+                <button data-amt="50.000">50.000</button>
+              </div>
+              <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:16px;" id="wd-eft-submit">Çekim Talebi Oluştur
+                <svg class="icon" viewBox="0 0 24 24" style="stroke:#1c1408;"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </button>
             </div>
-            <button class="btn btn-primary" style="width:100%; justify-content:center;" id="withdraw-submit">Çekim Talebi Oluştur
-              <svg class="icon" viewBox="0 0 24 24" style="stroke:#1c1408;"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </button>
+
+            <!-- KRIPTO CEKIM PANEL -->
+            <div class="deposit-panel" id="panel-wd-crypto" hidden>
+              <div class="card-title" style="margin:22px 0 12px;">Ağ Seçimi</div>
+              <div class="network-chips" id="wd-network-chips">
+                <button data-net="BTC" class="sel">Bitcoin (BTC)</button>
+                <button data-net="ERC20">Ethereum (ERC20)</button>
+                <button data-net="TRC20">Tron (TRC20 · USDT)</button>
+              </div>
+
+              <div class="card-title" style="margin:20px 0 12px;">Kripto Adresi</div>
+              <input type="text" id="wd-crypto-address" placeholder="Alıcı cüzdan adresi" class="amount-input mono" style="padding:11px 14px; font-size:13px;">
+
+              <div class="card-title" style="margin:20px 0 12px;">Çekim Miktarı</div>
+              <input type="text" class="amount-input mono" id="wd-crypto-amount" value="0.05">
+              <div class="amount-currency" id="wd-crypto-currency">BTC</div>
+
+              <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:16px;" id="wd-crypto-submit">Çekim Talebi Oluştur
+                <svg class="icon" viewBox="0 0 24 24" style="stroke:#1c1408;"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </button>
+            </div>
           </div>
           <div class="card">
             <div class="card-title" style="margin-bottom:10px;">Son Çekim İşlemleri</div>
@@ -1653,7 +1718,7 @@ tbody tr:hover{background:rgba(255,255,255,0.02);}
             <div class="method-item" data-method="1"><div class="quick-ic blue"><svg class="icon" viewBox="0 0 24 24"><circle cx="9" cy="9" r="6"/><circle cx="15" cy="15" r="6"/></svg></div><b>Vadeli İşlemler → Spot</b><div class="method-check"></div></div>
 
             <div class="card-title" style="margin:22px 0 12px;">Tutar</div>
-            <input type="text" class="amount-input mono" id="transfer-amount" value="1.000">
+            <input type="text" class="amount-input mono js-amount-target" id="transfer-amount" value="1.000">
             <div class="amount-currency" id="transfer-error-hint">TRY</div>
             <div class="amount-quick">
               <button data-amt="500">500</button>
@@ -1936,6 +2001,16 @@ tbody tr:hover{background:rgba(255,255,255,0.02);}
   <img id="lightbox-img" src="" alt="Belge">
 </div>
 
+<!-- ================= SUCCESS MODAL ================= -->
+<div id="success-modal">
+  <div class="success-modal-card">
+    <div class="success-icon"><svg class="icon" viewBox="0 0 24 24" style="width:26px;height:26px;stroke:#0d3324;"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <div class="success-title" id="success-modal-title">Başarılı</div>
+    <div class="success-desc" id="success-modal-desc">İşleminiz alındı.</div>
+    <button class="btn btn-primary" id="success-modal-ok" style="width:100%; justify-content:center;">Tamam</button>
+  </div>
+</div>
+
 <script>
 /* ================= AUTH ================= */
 function maskTC(tc){
@@ -2205,6 +2280,7 @@ document.getElementById('pp-save-info').addEventListener('click', ()=>{
   fillProfile();
   document.getElementById('pp-info-msg').textContent = 'Bilgiler güncellendi.';
   document.getElementById('pp-info-msg').className = 'pp-msg ok';
+  persistState();
 });
 document.getElementById('pp-save-pass').addEventListener('click', ()=>{
   const u = cu();
@@ -2220,6 +2296,7 @@ document.getElementById('pp-save-pass').addEventListener('click', ()=>{
   document.getElementById('pp-pass-new').value='';
   document.getElementById('pp-pass-confirm').value='';
   msg.textContent='Şifre güncellendi.'; msg.className='pp-msg ok';
+  persistState();
 });
 
 /* ================= NAVIGATION ================= */
@@ -2283,6 +2360,66 @@ const indexList = [["XU100","BIST 100",9482],["XU030","BIST 30",10521],["SPX","S
 const cryptoList = [["BTC","Bitcoin",65134.38],["ETH","Ethereum",2845.60],["USDT","Tether",1.00],["SOL","Solana",149.35],["BNB","BNB",584.2],["XRP","XRP",0.612],["ADA","Cardano",0.452],["DOGE","Dogecoin",0.138],["AVAX","Avalanche",31.8],["DOT","Polkadot",6.42]];
 
 function rand(min,max){return Math.random()*(max-min)+min;}
+
+/* ================= MARKET (TRADING) HOURS ================= */
+// Gerçek borsa açılış/kapanış saatleri — her borsanın kendi saat diliminde,
+// yaz/kış saati (DST) dahil doğru hesaplanır (Intl.DateTimeFormat sayesinde).
+const MARKET_SCHEDULES = {
+  bist:     {tz:'Europe/Istanbul',  open:'10:00', close:'18:00'},
+  us:       {tz:'America/New_York', open:'09:30', close:'16:00'},
+  europe:   {tz:'Europe/Berlin',    open:'09:00', close:'17:30'},
+  japan:    {tz:'Asia/Tokyo',       open:'09:00', close:'15:00', lunch:['11:30','12:30']},
+  hongkong: {tz:'Asia/Hong_Kong',   open:'09:30', close:'16:00', lunch:['12:00','13:00']},
+  china:    {tz:'Asia/Shanghai',    open:'09:30', close:'15:00', lunch:['11:30','13:00']},
+};
+// Her endeksin ait olduğu borsa (BIST100 → BIST saatleri, S&P500 → ABD saatleri vb.)
+const INDEX_MARKET_MAP = {
+  XU100:'bist', XU030:'bist',
+  SPX:'us', DJI:'us', NDX:'us', RUT:'us', VIX:'us', MXEF:'us',
+  DAX:'europe', FTSE:'europe', CAC:'europe', SX5E:'europe',
+  N225:'japan', HSI:'hongkong', SHCOMP:'china'
+};
+
+function getZonedParts(tz){
+  const fmt = new Intl.DateTimeFormat('en-US', {timeZone:tz, weekday:'short', hour:'2-digit', minute:'2-digit', hour12:false});
+  const map = {};
+  fmt.formatToParts(new Date()).forEach(p=>{ map[p.type]=p.value; });
+  return {weekday:map.weekday, hour:parseInt(map.hour,10)%24, minute:parseInt(map.minute,10)};
+}
+function timeToMinutes(hhmm){ const [h,m]=hhmm.split(':').map(Number); return h*60+m; }
+
+function isScheduleOpen(key){
+  const sched = MARKET_SCHEDULES[key];
+  if(!sched) return true;
+  const {weekday, hour, minute} = getZonedParts(sched.tz);
+  if(weekday==='Sat' || weekday==='Sun') return false;
+  const nowMin = hour*60+minute;
+  if(nowMin < timeToMinutes(sched.open) || nowMin >= timeToMinutes(sched.close)) return false;
+  if(sched.lunch){
+    const [lStart,lEnd] = sched.lunch;
+    if(nowMin >= timeToMinutes(lStart) && nowMin < timeToMinutes(lEnd)) return false;
+  }
+  return true;
+}
+function isCommodityMarketOpen(){
+  // CME Globex mantığı: Cuma 17:00 ET'den Pazar 18:00 ET'ye kadar kapalı, gerisi açık.
+  const {weekday, hour} = getZonedParts('America/New_York');
+  if(weekday==='Sat') return false;
+  if(weekday==='Fri' && hour>=17) return false;
+  if(weekday==='Sun' && hour<18) return false;
+  return true;
+}
+function isMarketOpenFor(cat, sym){
+  if(cat==='crypto') return true; // kripto 7/24 açık
+  if(cat==='commodity') return isCommodityMarketOpen();
+  if(cat==='bist') return isScheduleOpen('bist');
+  if(cat==='us') return isScheduleOpen('us');
+  if(cat==='index') return isScheduleOpen(INDEX_MARKET_MAP[sym] || 'us');
+  return true;
+}
+function marketStatusLabel(cat, sym){
+  return isMarketOpenFor(cat, sym) ? 'Açık' : 'Kapalı';
+}
 function fmtPrice(v){
   if(v>=1) return v.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2});
   return v.toLocaleString('tr-TR',{minimumFractionDigits:4,maximumFractionDigits:4});
@@ -2315,7 +2452,7 @@ const SPREAD_PCT = {bist:0.09, us:0.08, commodity:0.05, index:0.04, crypto:0.15}
 /* Gerçek veri kaynağı: kendi barındırdığınız market_api.py (FastAPI) — borsahub'daki
    kanıtlanmış Yahoo Finance + CoinGecko mantığının aynısı, sunucu tarafında (CORS'suz)
    çalışıyor. Kendi API adresinizi buraya yazın: */
-const MARKET_API_BASE = 'https://borsax.onrender.com';
+const MARKET_API_BASE = 'http://localhost:8000';
 
 function initMarketData(){
   if(marketData.bist.length) return;
@@ -2443,8 +2580,9 @@ function renderMarket(){
   body.innerHTML = rows || '<tr><td colspan="3" style="text-align:center;color:var(--text-dim);padding:24px;">Sonuç bulunamadı</td></tr>';
 }
 function marketRow(it){
+  const closedTag = isMarketOpenFor(activeCat, it.sym) ? '' : '<span class="market-closed-tag">Kapalı</span>';
   return `<tr data-cat="${activeCat}" data-sym="${it.sym}" style="cursor:pointer;">
-    <td><div class="badge-sym">${symBadge(it.sym, activeCat)}<div><div style="font-weight:700;">${it.sym}</div><div style="font-size:11.5px;color:var(--text-dim);">${it.name}</div></div></div></td>
+    <td><div class="badge-sym">${symBadge(it.sym, activeCat)}<div><div style="font-weight:700;">${it.sym}${closedTag}</div><div style="font-size:11.5px;color:var(--text-dim);">${it.name}</div></div></div></td>
     <td class="mono num">${fmtPrice(it.price)}</td>
     <td class="num">${changePill(it.change)}</td>
   </tr>`;
@@ -2462,7 +2600,7 @@ document.getElementById('market-body').addEventListener('click', (e)=>{
 const DEMO_ID_IMG = 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="400" height="252"><rect width="400" height="252" rx="14" fill="#1c2333"/><rect x="16" y="16" width="90" height="112" rx="8" fill="#3a4258"/><circle cx="61" cy="55" r="22" fill="#5b6478"/><rect x="35" y="85" width="52" height="30" rx="6" fill="#5b6478"/><rect x="120" y="24" width="180" height="14" rx="4" fill="#f0a83c"/><rect x="120" y="52" width="220" height="10" rx="3" fill="#8b90a6"/><rect x="120" y="70" width="200" height="10" rx="3" fill="#8b90a6"/><rect x="120" y="88" width="160" height="10" rx="3" fill="#8b90a6"/><rect x="16" y="150" width="368" height="1" fill="#2a2f42"/><text x="16" y="185" font-family="monospace" font-size="15" fill="#8b90a6">T.C. KIMLIK KARTI</text><rect x="16" y="200" width="368" height="26" rx="6" fill="#141724"/><text x="26" y="218" font-family="monospace" font-size="12" fill="#5b6478">**** **** **** DEMO ORNEK BELGE</text></svg>`);
 const DEMO_RECEIPT_IMG = 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="300" height="360"><rect width="300" height="360" fill="#f2f2f2"/><rect x="0" y="0" width="300" height="56" fill="#1c2333"/><text x="18" y="35" font-family="monospace" font-size="16" fill="#f0a83c">HAVALE DEKONTU</text><text x="18" y="86" font-family="monospace" font-size="12" fill="#333">Gonderen: Ayse Nur Kaya</text><text x="18" y="108" font-family="monospace" font-size="12" fill="#333">Alici: BorsaX Teknoloji A.S.</text><text x="18" y="130" font-family="monospace" font-size="11" fill="#333">IBAN: TR33 0006 1005 1978 6457 8413 26</text><text x="18" y="152" font-family="monospace" font-size="12" fill="#333">Tarih: 09.08.2026 10:05</text><rect x="18" y="172" width="264" height="1" fill="#ccc"/><text x="18" y="210" font-family="monospace" font-size="20" fill="#1c9d63">Tutar: 15.000,00 TRY</text><text x="18" y="236" font-family="monospace" font-size="11" fill="#999">Aciklama: Hesap Yatirimi</text><rect x="18" y="270" width="264" height="60" fill="none" stroke="#ccc" stroke-dasharray="4"/><text x="55" y="304" font-family="monospace" font-size="11" fill="#aaa">DEMO BELGE - ORNEK</text></svg>`);
 
-const users = {
+let users = {
   demo: {
     password:'demo123', fullName:'Demo Kullanıcı', phone:'+90 555 010 20 30', email:'demo@example.com',
     tc:'12345678901', registeredAt:'01.03.2026 09:00', balance:2100890.00, futuresBalance:467000.00,
@@ -2538,6 +2676,33 @@ const users = {
 let currentUsername = null;
 function cu(){ return users[currentUsername]; }
 
+/* ================= KALICI DEPOLAMA (localStorage) =================
+   Kayıt olan kullanıcılar ve yöneticiler tarayıcıda saklanır; sayfa
+   yenilense veya site kapatılıp tekrar açılsa bile kaybolmaz. */
+const STORAGE_KEY_USERS = 'borsax_users_v1';
+const STORAGE_KEY_ADMINS = 'borsax_admins_v1';
+function persistState(){
+  try{
+    localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(users));
+    localStorage.setItem(STORAGE_KEY_ADMINS, JSON.stringify(admins));
+  }catch(e){ console.warn('Kullanıcı verisi tarayıcıya kaydedilemedi:', e); }
+}
+function loadPersistedState(){
+  try{
+    const savedUsers = localStorage.getItem(STORAGE_KEY_USERS);
+    const savedAdmins = localStorage.getItem(STORAGE_KEY_ADMINS);
+    if(savedUsers){
+      const parsed = JSON.parse(savedUsers);
+      if(parsed && typeof parsed==='object') users = Object.assign(users, parsed);
+    }
+    if(savedAdmins){
+      const parsed = JSON.parse(savedAdmins);
+      if(parsed && typeof parsed==='object') admins = Object.assign(admins, parsed);
+    }
+  }catch(e){ console.warn('Kayıtlı kullanıcı verisi okunamadı, varsayılan verilerle devam ediliyor:', e); }
+}
+loadPersistedState();
+
 function getLivePrice(p){
   const list = marketData[p.cat];
   const found = list && list.find(x=>x.sym===p.tickerSym);
@@ -2556,6 +2721,10 @@ function closePosition(id){
   const idx = u.positions.findIndex(p=>p.id===id);
   if(idx===-1) return;
   const p = u.positions[idx];
+  if(!isMarketOpenFor(p.cat, p.tickerSym)){
+    showErrorModal('Piyasa Kapalı', p.symDisplay+' şu anda işlem saatleri dışında olduğu için pozisyon kapatılamıyor.');
+    return;
+  }
   const cur = getLivePrice(p);
   const pl = pnl(p, cur);
   u.closedPositions.unshift({...p, exit:cur, pl, closedDate:new Date().toLocaleString('tr-TR')});
@@ -2708,6 +2877,7 @@ function renderAccountWidgets(){
   if(th_) th_.innerHTML = u.transferHistory.map(t=>`<div class="tx-row"><div>${t.label}<div class="tx-date">${t.date}</div></div><div class="mono">${t.amount}</div></div>`).join('');
 
   renderKycSection();
+  persistState();
 }
 
 function kycPillClass(status){
@@ -2757,6 +2927,7 @@ document.getElementById('kyc-submit').addEventListener('click', ()=>{
   document.getElementById('upload-kyc-preview').innerHTML = '';
   delete uploadedReceipts['upload-kyc-input'];
   renderKycSection();
+  persistState();
 });
 
 /* ================= DEPOSIT / WITHDRAW UI ================= */
@@ -2776,7 +2947,7 @@ document.querySelectorAll('.amount-quick button').forEach(btn=>{
     btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('sel'));
     btn.classList.add('sel');
     const scope = btn.closest('.deposit-panel') || btn.closest('.card');
-    const input = scope.querySelector('.amount-input');
+    const input = scope.querySelector('.js-amount-target') || scope.querySelector('.amount-input');
     if(input) input.value = btn.dataset.amt;
   });
 });
@@ -2861,7 +3032,7 @@ document.getElementById('deposit-submit-bank').addEventListener('click', ()=>{
     receiptName: receipt ? receipt.name : null, receiptData: receipt ? receipt.dataUrl : null
   });
   renderAccountWidgets();
-  goPage('hesabim');
+  showSuccessModal('Bildirim Başarıyla Gönderildi', 'Dekontunuz alındı, yatırma talebiniz inceleniyor.');
 });
 document.getElementById('deposit-submit-crypto').addEventListener('click', ()=>{
   const amt = document.getElementById('deposit-amount-crypto').value;
@@ -2875,19 +3046,77 @@ document.getElementById('deposit-submit-crypto').addEventListener('click', ()=>{
     receiptName: receipt ? receipt.name : null, receiptData: receipt ? receipt.dataUrl : null
   });
   renderAccountWidgets();
-  goPage('hesabim');
+  showSuccessModal('Bildirim Başarıyla Gönderildi', 'Kripto yatırma bildiriminiz alındı, talebiniz inceleniyor.');
 });
+let successModalNavigate = true;
+function showResultModal(type, title, desc, navigateOnClose){
+  successModalNavigate = navigateOnClose!==false;
+  const icon = document.querySelector('#success-modal .success-icon');
+  if(type==='error'){
+    icon.style.background = 'linear-gradient(135deg,#ff5f76,var(--red))';
+    icon.innerHTML = '<svg class="icon" viewBox="0 0 24 24" style="width:26px;height:26px;stroke:#3a0f16;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+  } else {
+    icon.style.background = 'linear-gradient(135deg,#2fe0a2,var(--green))';
+    icon.innerHTML = '<svg class="icon" viewBox="0 0 24 24" style="width:26px;height:26px;stroke:#0d3324;"><polyline points="20 6 9 17 4 12"/></svg>';
+  }
+  document.getElementById('success-modal-title').textContent = title;
+  document.getElementById('success-modal-desc').textContent = desc;
+  document.getElementById('success-modal').classList.add('open');
+}
+function showSuccessModal(title, desc){ showResultModal('success', title, desc, true); }
+function showErrorModal(title, desc){ showResultModal('error', title, desc, false); }
+document.getElementById('success-modal-ok').addEventListener('click', ()=>{
+  document.getElementById('success-modal').classList.remove('open');
+  if(successModalNavigate) goPage('hesabim');
+});
+
 document.getElementById('deposit-submit-card').addEventListener('click', ()=>{
   const amt = document.getElementById('deposit-amount-card').value;
   cu().depositHistory.unshift({label:'Kredi/Banka Kartı', method:'Kredi/Banka Kartı', amount:'+'+amt+',00 TRY', date:new Date().toLocaleString('tr-TR'), status:'Onaylandı'});
   renderAccountWidgets();
-  goPage('hesabim');
+  showSuccessModal('Yatırma Bildirimi Gönderildi', 'Bildiriminiz başarıyla iletildi. '+amt+',00 TRY hesabınıza tanımlandı.');
 });
-document.getElementById('withdraw-submit').addEventListener('click', ()=>{
-  const amt = document.getElementById('withdraw-amount').value;
-  cu().withdrawHistory.unshift({label:'Banka Hesabına', method:'Banka Hesabına', amount:'-'+amt+',00 TRY', date:new Date().toLocaleString('tr-TR'), status:'Beklemede'});
+
+document.getElementById('wd-eft-submit').addEventListener('click', ()=>{
+  const u = cu();
+  const name = document.getElementById('wd-eft-name').value.trim();
+  const iban = document.getElementById('wd-eft-iban').value.trim();
+  const tc = document.getElementById('wd-eft-tc').value.trim();
+  const amt = document.getElementById('wd-eft-amount').value;
+  if(!name || !iban || !tc){ return; }
+  u.withdrawHistory.unshift({
+    label:'Havale / EFT', method:'Havale / EFT', amount:'-'+amt+',00 TRY',
+    date:new Date().toLocaleString('tr-TR'), status:'Beklemede',
+    recipientName:name, iban:iban, tc:tc
+  });
   renderAccountWidgets();
-  goPage('hesabim');
+  showSuccessModal('Çekim Talebiniz Gönderildi', 'Havale/EFT çekim talebiniz başarıyla oluşturuldu ve incelemeye alındı.');
+});
+
+document.getElementById('wd-crypto-submit').addEventListener('click', ()=>{
+  const u = cu();
+  const address = document.getElementById('wd-crypto-address').value.trim();
+  const amt = document.getElementById('wd-crypto-amount').value;
+  const cur = document.getElementById('wd-crypto-currency').textContent;
+  const activeNet = document.querySelector('#wd-network-chips button.sel');
+  const netLabel = activeNet ? activeNet.textContent : '';
+  if(!address){ return; }
+  u.withdrawHistory.unshift({
+    label:'Kripto Çekim ('+netLabel+')', method:'Kripto Çekim', amount:'-'+amt+' '+cur,
+    date:new Date().toLocaleString('tr-TR'), status:'Beklemede',
+    address:address, network:netLabel
+  });
+  renderAccountWidgets();
+  showSuccessModal('Çekim Talebiniz Gönderildi', 'Kripto çekim talebiniz başarıyla oluşturuldu ve incelemeye alındı.');
+});
+document.querySelectorAll('#wd-network-chips button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#wd-network-chips button').forEach(b=>b.classList.remove('sel'));
+    btn.classList.add('sel');
+    const cur = NETWORK_CURRENCY[btn.dataset.net] || 'USDT';
+    const curEl = document.getElementById('wd-crypto-currency');
+    if(curEl) curEl.textContent = cur;
+  });
 });
 document.getElementById('transfer-submit').addEventListener('click', ()=>{
   const u = cu();
@@ -3071,6 +3300,10 @@ function renderTradeHeader(){
   const chEl = document.getElementById('trade-change');
   chEl.className = 'trade-change mono '+(up?'up':'down');
   chEl.textContent = (up?'+':'')+item.change.toFixed(2)+'%';
+  const statusBadge = document.getElementById('trade-market-status');
+  const open = isMarketOpenFor(currentTrade.cat, currentTrade.tickerSym);
+  statusBadge.textContent = open ? 'Piyasa Açık' : 'Piyasa Kapalı';
+  statusBadge.className = 'market-status-badge' + (open ? '' : ' closed');
 }
 
 function updateOrderSummary(){
@@ -3111,6 +3344,10 @@ function executeTrade(side){
   if(!currentTrade) return;
   const item = marketData[currentTrade.cat].find(x=>x.sym===currentTrade.tickerSym);
   if(!item) return;
+  if(!isMarketOpenFor(currentTrade.cat, currentTrade.tickerSym)){
+    showErrorModal('Piyasa Kapalı', currentTrade.symDisplay+' şu anda işlem saatleri dışında. Lütfen piyasa açıkken tekrar deneyin.');
+    return;
+  }
   const lot = parseFloat(document.getElementById('lot-input').value) || 1;
   const unitLabel = currentTrade.cat==='crypto' ? currentTrade.tickerSym : 'Lot';
   const newPos = {
@@ -3241,6 +3478,7 @@ function renderCrmAdminsList(){
     </tr>`;
   }).join('');
   body.innerHTML = rows || `<tr><td colspan="3" class="crm-empty">Yönetici bulunamadı.</td></tr>`;
+  persistState();
 }
 document.getElementById('crm-admins-list').addEventListener('click', (e)=>{
   const btn = e.target.closest('[data-del-admin]');
@@ -3404,6 +3642,7 @@ function renderCrmDetail(){
       </div>`;
     }).join('');
   }
+  persistState();
 }
 
 function crmRequestCard(item, idx, kind, canAct){
