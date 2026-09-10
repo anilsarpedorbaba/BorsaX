@@ -212,20 +212,30 @@ async def get_crypto():
     set_cache("crypto", data)
     return {"data": data, "cached": False}
 
+import requests
+
 @app.get("/api/kriptox/all")
-async def get_all():
-    """Frontend'in kullandığı tek çağrılık uç nokta — 5 kategoriyi paralel toplar."""
-    bist, us, indices, commodities, crypto = await asyncio.gather(
-        get_bist(), get_us(), get_indices(), get_commodities(), get_crypto()
-    )
-    return {
-        "bist": bist["data"],
-        "us": us["data"],
-        "indices": indices["data"],
-        "commodities": commodities["data"],
-        "crypto": crypto["data"],
-        "cache_ttl_seconds": CACHE_TTL,
+def get_all_market_data():
+    # Dış servisler yanıt vermezse sunucu çökmesin diye varsayılan şablon
+    data = {
+        "bist": [],
+        "us": [],
+        "indices": [],
+        "commodities": [],
+        "crypto": []
     }
+    
+    try:
+        # İSTEKLERE MUTLAKA timeout=3 veya 5 EKLE
+        # Örnek: response = requests.get("API_URL", timeout=3)
+        
+        # ... Veri çekme kodların ...
+        
+        return data
+    except Exception as e:
+        # Hata olursa kilitlenmek yerine boş/yedek veriyi anında dön
+        print(f"Veri çekme hatası: {e}")
+        return data
 
 @app.get("/api/kriptox/bist/refresh")
 async def refresh_bist():
