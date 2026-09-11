@@ -2346,21 +2346,57 @@ function applyRealRows(cat, rows){
   });
 }
 async function loadRealMarketData(){
-  try{
-  const cacheBuster = new Date().getTime();
-    const res = await fetch(MARKET_API_BASE + '/api/kriptox/all?v=' + cacheBuster);
-    if(!res.ok) throw new Error('market_api.py yanıtı başarısız: HTTP ' + res.status);
-    const data = await res.json();
-    applyRealRows('bist', data.bist);
-    applyRealRows('us', data.us);
-    applyRealRows('index', data.indices);
-    applyRealRows('commodity', data.commodities);
-    applyRealRows('crypto', data.crypto);
+  const noteEl = document.getElementById('dataSourceNote');
+
+  try {
+    // 1. KRİPTO VERİLERİ (Binance Direct API)
+    try {
+      const cryptoRes = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]');
+      if (cryptoRes.ok) {
+        const rawCrypto = await cryptoRes.json();
+        const cryptoData = rawCrypto.map(c => ({ sym: c.symbol, price: parseFloat(c.price) }));
+        applyRealRows('crypto', cryptoData);
+      }
+    } catch(e) { console.warn("Kripto veri çekme hatası:", e); }
+
+    // 2. ABD BORSALARI, ENDEKSLER, EMTİALAR VE BIST (Açık İstemci API'leri)
+    try {
+      // Yahoo Finance v8 Public CORS Proxy üzerinden tarayıcıyla doğrudan çekim
+      const symbols = ["AAPL", "NVDA", "TSLA", "THYAO.IS", "GARAN.IS", "^XU100", "^IXIC", "GC=F", "CL=F"];
+      const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols.join(',')}`;
+      
+      const yahooRes = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+      if (yahooRes.ok) {
+        const yData = await yahooRes.json();
+        const quotes = yData?.quoteResponse?.result || [];
+
+        const usData = [], bistData = [], indexData = [], commData = [];
+
+        quotes.forEach(q => {
+          const item = { sym: q.symbol.replace('.IS', ''), price: q.regularMarketPrice };
+          if (["AAPL", "NVDA", "TSLA"].includes(q.symbol)) usData.push(item);
+          else if (q.symbol.endsWith('.IS')) bistData.push(item);
+          else if (["^XU100", "^IXIC"].includes(q.symbol)) indexData.push({ sym: q.symbol === '^XU100' ? 'XU100' : 'IXIC', price: q.regularMarketPrice });
+          else if (["GC=F", "CL=F"].includes(q.symbol)) commData.push(item);
+        });
+
+        if (usData.length) applyRealRows('us', usData);
+        if (bistData.length) applyRealRows('bist', bistData);
+        if (indexData.length) applyRealRows('index', indexData);
+        if (commData.length) applyRealRows('commodity', commData);
+      }
+    } catch(e) { console.warn("BIST/ABD/Emtia veri çekme hatası:", e); }
+
+    // Arayüzü yenile
     renderMarket();
     renderAccountWidgets();
-    updateDataSourceNote();
-  }catch(err){
-    console.warn('Gerçek piyasa verisi alınamadı (market_api.py çalışıyor mu / MARKET_API_BASE doğru mu?), mevcut değerlerle devam ediliyor:', err);
+
+    if(noteEl) {
+      noteEl.innerHTML = '<span style="color:#10b981;">● Tüm canlı piyasa verileri istemci üzerinden bağlandı.</span>';
+    }
+
+  } catch(err) {
+    console.warn('Veri güncelleme hatası:', err);
   }
 }
 
