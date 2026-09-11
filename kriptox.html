@@ -2315,7 +2315,7 @@ const SPREAD_PCT = {bist:0.09, us:0.08, commodity:0.05, index:0.04, crypto:0.15}
 /* Gerçek veri kaynağı: kendi barındırdığınız market_api.py (FastAPI) — borsahub'daki
    kanıtlanmış Yahoo Finance + CoinGecko mantığının aynısı, sunucu tarafında (CORS'suz)
    çalışıyor. Kendi API adresinizi buraya yazın: */
-const MARKET_API_BASE = 'https://borsax.onrender.com';
+const MARKET_API_BASE = 'http://localhost:8000';
 
 function initMarketData(){
   if(marketData.bist.length) return;
@@ -2347,7 +2347,8 @@ function applyRealRows(cat, rows){
 }
 async function loadRealMarketData(){
   try{
-    const res = await fetch(MARKET_API_BASE + '/api/kriptox/all');
+  const cacheBuster = new Date().getTime();
+    const res = await fetch(MARKET_API_BASE + '/api/kriptox/all?v=' + cacheBuster);
     if(!res.ok) throw new Error('market_api.py yanıtı başarısız: HTTP ' + res.status);
     const data = await res.json();
     applyRealRows('bist', data.bist);
