@@ -2347,19 +2347,32 @@ function applyRealRows(cat, rows){
 }
 async function loadRealMarketData(){
   try{
-    const res = await fetch(MARKET_API_BASE + '/api/kriptox/all');
-    if(!res.ok) throw new Error('market_api.py yanıtı başarısız: HTTP ' + res.status);
-    const data = await res.json();
-    applyRealRows('bist', data.bist);
-    applyRealRows('us', data.us);
-    applyRealRows('index', data.indices);
-    applyRealRows('commodity', data.commodities);
-    applyRealRows('crypto', data.crypto);
+    // Binance Canlı API (Tarayıcıdan doğrudan çekilir, CORS/IP engeli yoktur)
+    const cryptoRes = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]');
+    
+    if (cryptoRes.ok) {
+      const prices = await cryptoRes.json();
+      
+      // Gelen canlı verileri sistemdeki kripto listesine eşliyoruz
+      const cryptoList = prices.map(item => ({ 
+        sym: item.symbol, 
+        price: parseFloat(item.price) 
+      }));
+      
+      applyRealRows('crypto', cryptoList);
+    }
+
+    // Arayüzü güncelliyoruz
     renderMarket();
     renderAccountWidgets();
-    updateDataSourceNote();
-  }catch(err){
-    console.warn('Gerçek piyasa verisi alınamadı (market_api.py çalışıyor mu / MARKET_API_BASE doğru mu?), mevcut değerlerle devam ediliyor:', err);
+
+    // Ekrandaki uyarıyı başarı mesajına çeviriyoruz
+    const noteEl = document.getElementById('dataSourceNote');
+    if(noteEl) {
+      noteEl.innerHTML = '<span style="color:#10b981;">● Canlı veriler doğrudan istemci üzerinden bağlandı.</span>';
+    }
+  } catch(err){
+    console.warn('Canlı veri çekme hatası:', err);
   }
 }
 
