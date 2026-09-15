@@ -1937,13 +1937,24 @@ tbody tr:hover{background:rgba(255,255,255,0.02);}
 </div>
 
 <script>
+/* ================= API AYARLARI ================= */
+const API_BASE = 'https://borsax.onrender.com';  // ← KENDİ RENDER ADRESİNİ YAZ
+let currentToken = localStorage.getItem('bx_token') || null;
+let currentUsername = null;
+let currentAdmin = null;
+let users = {};
+let admins = {};
+
+function cu(){ return users[currentUsername]; }
+function ca(){ return admins[currentAdmin]; }
+function canDo(perm){ return !!(currentAdmin && ca() && ca().permissions[perm]); }
+
 /* ================= AUTH ================= */
 function maskTC(tc){
   if(!tc || tc.length<5) return tc || '—';
   return tc.slice(0,3)+' •••• '+tc.slice(-2);
 }
 
-/* Image lightbox (full-screen document/receipt preview) */
 document.addEventListener('click', (e)=>{
   const img = e.target.closest('.crm-request-thumb, .kyc-doc-row img');
   if(img && img.tagName==='IMG' && img.src){
@@ -1960,9 +1971,11 @@ document.getElementById('img-lightbox').addEventListener('click', (e)=>{
 document.addEventListener('keydown', (e)=>{
   if(e.key==='Escape') document.getElementById('img-lightbox').classList.remove('open');
 });
+
 function fillProfile(){
   const u = cu();
-  const initial = u.fullName.charAt(0).toUpperCase();
+  if(!u) return;
+  const initial = (u.fullName || 'U').charAt(0).toUpperCase();
   document.getElementById('user-avatar').textContent = initial;
   document.getElementById('profile-avatar-lg').textContent = initial;
   document.getElementById('profile-name').textContent = u.fullName;
@@ -1994,11 +2007,12 @@ function pushNotification(username, type, title, desc){
 function renderNotifications(){
   if(!currentUsername) return;
   const u = cu();
+  if(!u) return;
   const list = document.getElementById('notif-list');
   const dot = document.getElementById('notif-dot');
-  const unread = u.notifications.filter(n=>!n.read).length;
+  const unread = (u.notifications||[]).filter(n=>!n.read).length;
   dot.hidden = unread===0;
-  if(!u.notifications.length){
+  if(!u.notifications || !u.notifications.length){
     list.innerHTML = `<div class="notif-empty">Henüz bildiriminiz yok.</div>`;
     return;
   }
@@ -2016,12 +2030,13 @@ document.getElementById('notif-list').addEventListener('click', (e)=>{
   const item = e.target.closest('[data-notif-id]');
   if(!item || !currentUsername) return;
   const n = cu().notifications.find(x=>x.id===item.dataset.notifId);
-  if(n){ n.read = true; renderNotifications(); }
+  if(n){ n.read = true; renderNotifications(); saveUser(); }
 });
 document.getElementById('notif-mark-all').addEventListener('click', ()=>{
   if(!currentUsername) return;
   cu().notifications.forEach(n=>n.read=true);
   renderNotifications();
+  saveUser();
 });
 document.addEventListener('click', (e)=>{
   const panel = document.getElementById('notif-panel');
@@ -2036,7 +2051,6 @@ function showScreen(name){
   document.getElementById('app').style.display = name==='app' ? 'block' : 'none';
   document.getElementById('crm-app').style.display = name==='crm' ? 'block' : 'none';
 }
-
 function setAuthTab(tab){
   document.querySelectorAll('.auth-tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===tab));
   document.getElementById('login-form').classList.toggle('active', tab==='login');
@@ -2046,7 +2060,6 @@ function setAuthTab(tab){
 }
 document.querySelectorAll('.auth-tab').forEach(t=>t.addEventListener('click', ()=>setAuthTab(t.dataset.tab)));
 document.getElementById('auth-back').addEventListener('click', ()=>showScreen('landing'));
-
 document.getElementById('lp-login-btn').addEventListener('click', ()=>{ showScreen('auth'); setAuthTab('login'); });
 document.getElementById('lp-hero-login').addEventListener('click', ()=>{ showScreen('auth'); setAuthTab('login'); });
 document.getElementById('lp-register-btn').addEventListener('click', ()=>{ showScreen('auth'); setAuthTab('register'); });
@@ -2055,7 +2068,6 @@ document.getElementById('lp-cta-register').addEventListener('click', ()=>{ showS
 document.getElementById('lp-footer-login').addEventListener('click', ()=>{ showScreen('auth'); setAuthTab('login'); });
 document.getElementById('lp-footer-register').addEventListener('click', ()=>{ showScreen('auth'); setAuthTab('register'); });
 
-/* Landing: ticker marquee */
 const LP_TICKER_ITEMS = [
   {sym:'THYAO', price:'262,40', up:true, chg:'+1,20%'},
   {sym:'BTC/USDT', price:'65.134,38', up:true, chg:'+1,38%'},
@@ -2076,15 +2088,9 @@ const LP_TICKER_ITEMS = [
   const rowHtml = LP_TICKER_ITEMS.map(t=>`<div class="lp-ticker-item"><b>${t.sym}</b><span class="mono">${t.price}</span><span class="${t.up?'up':'down'} mono">${t.chg}</span></div>`).join('');
   el.innerHTML = rowHtml + rowHtml;
 })();
-
-/* Landing: FAQ accordion */
 document.querySelectorAll('.lp-faq-q').forEach(q=>{
-  q.addEventListener('click', ()=>{
-    q.parentElement.classList.toggle('open');
-  });
+  q.addEventListener('click', ()=>{ q.parentElement.classList.toggle('open'); });
 });
-
-/* Landing: nav anchor links close on click (smooth scroll handled by CSS) */
 document.querySelectorAll('.lp-nav-links a').forEach(a=>{
   a.addEventListener('click', (e)=>{
     e.preventDefault();
@@ -2101,48 +2107,77 @@ const ALL_PERMISSIONS = [
   {key:'kyc', label:'KYC Onayları'},
   {key:'manageAdmins', label:'Yönetici Tanımlama'}
 ];
-let admins = {
-  admin: {
-    password:'admin123', displayName:'Baş Yönetici', isSuper:true,
-    permissions:{balance:true, positions:true, deposits:true, withdrawals:true, kyc:true, manageAdmins:true}
-  }
-};
-let currentAdmin = null;
-function ca(){ return admins[currentAdmin]; }
-function canDo(perm){ return !!(currentAdmin && ca() && ca().permissions[perm]); }
 
-document.getElementById('login-form').addEventListener('submit', function(e){
+/* ================= SUNUCU KAYIT ================= */
+async function saveUser(){
+  if(!currentUsername || !currentToken || !users[currentUsername]) return;
+  try {
+    await fetch(API_BASE + '/api/me/data', {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json', 'Authorization':'Bearer '+currentToken},
+      body: JSON.stringify(users[currentUsername])
+    });
+  } catch(e){ console.warn('saveUser hata:', e); }
+}
+async function saveAdminUserChange(key){
+  if(!currentToken || !users[key]) return;
+  try {
+    await fetch(API_BASE + '/api/admin/users/' + key + '/data', {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json', 'Authorization':'Bearer '+currentToken},
+      body: JSON.stringify(users[key])
+    });
+  } catch(e){ console.warn('saveAdminUserChange hata:', e); }
+}
+async function loadAllUsers(){
+  const r = await fetch(API_BASE + '/api/admin/users', {
+    headers: {'Authorization': 'Bearer ' + currentToken}
+  });
+  if(!r.ok) return;
+  const d = await r.json();
+  Object.assign(users, d.users);
+}
+
+/* ================= LOGIN / REGISTER ================= */
+document.getElementById('login-form').addEventListener('submit', async function(e){
   e.preventDefault();
   const uName = document.getElementById('login-user').value.trim();
   const pass = document.getElementById('login-pass').value.trim();
   const err = document.getElementById('login-error');
   if(!uName || !pass){ err.textContent='Kullanıcı adı ve şifre gereklidir.'; err.style.display='block'; return; }
-
-  const adminKey = uName.toLowerCase();
-  if(admins[adminKey]){
-    if(admins[adminKey].password!==pass){ err.textContent='Şifre hatalı.'; err.style.display='block'; return; }
+  try {
+    const res = await fetch(API_BASE + '/api/auth/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({username: uName, password: pass})
+    });
+    const data = await res.json();
+    if(!res.ok){ err.textContent = data.detail || 'Giriş başarısız.'; err.style.display='block'; return; }
     err.style.display='none';
-    currentAdmin = adminKey;
+    currentToken = data.token;
+    localStorage.setItem('bx_token', data.token);
+    if(data.role === 'admin'){
+      currentAdmin = data.username;
+      admins[currentAdmin] = data.admin;
+      const ar = await fetch(API_BASE + '/api/admin/admins', {headers:{'Authorization':'Bearer '+currentToken}});
+      if(ar.ok){ const ad = await ar.json(); Object.assign(admins, ad.admins); }
+      await loadAllUsers();
+      showScreen('crm');
+      applyCrmPermissions();
+      return;
+    }
+    currentUsername = data.username;
+    users[currentUsername] = data.data;
+    showScreen('app');
+    fillProfile();
     initMarketData();
-    showScreen('crm');
-    applyCrmPermissions();
-    return;
+    renderAccountWidgets();
+    goPage('hesabim');
+  } catch(ex){
+    err.textContent = 'Sunucuya bağlanılamadı.'; err.style.display='block';
   }
-
-  const key = uName.toLowerCase();
-  const account = users[key];
-  if(!account){ err.textContent='Kullanıcı bulunamadı. Kayıt olmayı deneyin.'; err.style.display='block'; return; }
-  if(account.password!==pass){ err.textContent='Şifre hatalı.'; err.style.display='block'; return; }
-  err.style.display='none';
-  currentUsername = key;
-  showScreen('app');
-  fillProfile();
-  initMarketData();
-  renderAccountWidgets();
-  goPage('hesabim');
 });
 
-document.getElementById('register-form').addEventListener('submit', function(e){
+document.getElementById('register-form').addEventListener('submit', async function(e){
   e.preventDefault();
   const fullName = document.getElementById('reg-fullname').value.trim();
   const uName = document.getElementById('reg-user').value.trim();
@@ -2150,31 +2185,33 @@ document.getElementById('register-form').addEventListener('submit', function(e){
   const pass = document.getElementById('reg-pass').value.trim();
   const err = document.getElementById('register-error');
   if(!fullName || !uName || !pass){ err.textContent='Ad Soyad, kullanıcı adı ve şifre gereklidir.'; err.style.display='block'; return; }
-  const key = uName.toLowerCase();
-  if(admins[key] || users[key]){ err.textContent='Bu kullanıcı adı zaten kayıtlı.'; err.style.display='block'; return; }
-  err.style.display='none';
-
-  let seed=0; for(let i=0;i<uName.length;i++) seed += uName.charCodeAt(i)*(i+7);
-  const tcDigits = String(10000000000 + (seed*9973)%89999999999).padStart(11,'0');
-  users[key] = {
-    password:pass, fullName, phone: phone || '—', email: key+'@example.com',
-    tc: tcDigits, registeredAt:new Date().toLocaleString('tr-TR'), balance:0, futuresBalance:0,
-    positions:[], closedPositions:[], recentTx:[], depositHistory:[], withdrawHistory:[], transferHistory:[],
-    kycStatus:'Evrak Yok', kycDocuments:[], balanceAdjustments:[], notifications:[
-      {id:'n'+Date.now(), type:'ok', title:'BorsaX\'e hoş geldiniz!', desc:'Hesabınız başarıyla oluşturuldu.', date:new Date().toLocaleString('tr-TR'), read:false}
-    ]
-  };
-  currentUsername = key;
-  showScreen('app');
-  fillProfile();
-  initMarketData();
-  renderAccountWidgets();
-  goPage('hesabim');
+  try {
+    const res = await fetch(API_BASE + '/api/auth/register', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({username: uName, password: pass, fullName, phone})
+    });
+    const data = await res.json();
+    if(!res.ok){ err.textContent = data.detail || 'Kayıt başarısız.'; err.style.display='block'; return; }
+    err.style.display='none';
+    currentToken = data.token;
+    localStorage.setItem('bx_token', data.token);
+    currentUsername = data.username;
+    users[currentUsername] = data.data;
+    showScreen('app');
+    fillProfile();
+    initMarketData();
+    renderAccountWidgets();
+    goPage('hesabim');
+  } catch(ex){
+    err.textContent = 'Sunucuya bağlanılamadı.'; err.style.display='block';
+  }
 });
 
 function doLogout(){
   currentUsername = null;
   currentAdmin = null;
+  currentToken = null;
+  localStorage.removeItem('bx_token');
   showScreen('landing');
   document.getElementById('login-pass').value='';
   document.getElementById('profile-panel').classList.remove('open');
@@ -2193,8 +2230,7 @@ document.addEventListener('click', (e)=>{
   }
 });
 
-/* Profile edit: name/phone + password change */
-document.getElementById('pp-save-info').addEventListener('click', ()=>{
+document.getElementById('pp-save-info').addEventListener('click', async ()=>{
   const u = cu();
   const name = document.getElementById('pp-fullname').value.trim();
   const phone = document.getElementById('pp-phone').value.trim();
@@ -2202,11 +2238,12 @@ document.getElementById('pp-save-info').addEventListener('click', ()=>{
   if(!name){ msg.textContent='Ad Soyad boş olamaz.'; msg.className='pp-msg err'; return; }
   u.fullName = name;
   u.phone = phone || u.phone;
+  await saveUser();
   fillProfile();
   document.getElementById('pp-info-msg').textContent = 'Bilgiler güncellendi.';
   document.getElementById('pp-info-msg').className = 'pp-msg ok';
 });
-document.getElementById('pp-save-pass').addEventListener('click', ()=>{
+document.getElementById('pp-save-pass').addEventListener('click', async ()=>{
   const u = cu();
   const cur = document.getElementById('pp-pass-current').value;
   const next = document.getElementById('pp-pass-new').value;
@@ -2216,6 +2253,7 @@ document.getElementById('pp-save-pass').addEventListener('click', ()=>{
   if(!next || next.length<4){ msg.textContent='Yeni şifre en az 4 karakter olmalı.'; msg.className='pp-msg err'; return; }
   if(next!==conf){ msg.textContent='Yeni şifreler eşleşmiyor.'; msg.className='pp-msg err'; return; }
   u.password = next;
+  await saveUser();
   document.getElementById('pp-pass-current').value='';
   document.getElementById('pp-pass-new').value='';
   document.getElementById('pp-pass-confirm').value='';
@@ -2233,7 +2271,6 @@ const PAGE_META = {
   trade:     {icon:'<polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/>', label:'İşlem Ekranı'},
   ayarlar:   {icon:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>', label:'Ayarlar'}
 };
-
 function renderTopbarLeft(name){
   const el = document.getElementById('topbar-left');
   if(name==='hesabim'){
@@ -2252,7 +2289,6 @@ function renderTopbarLeft(name){
     el.innerHTML = `<div class="tb-page-label"><svg class="icon" viewBox="0 0 24 24">${meta.icon}</svg>${meta.label}</div>`;
   }
 }
-
 function goPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
@@ -2265,21 +2301,16 @@ function goPage(name){
 document.querySelectorAll('[data-page]').forEach(el=>{
   el.addEventListener('click', ()=>goPage(el.dataset.page));
 });
-
-/* ================= MARKET DATA ================= */
+  /* ================= MARKET DATA ================= */
 const bistList = ["THYAO|Türk Hava Yolları","GARAN|Garanti BBVA","AKBNK|Akbank","ISCTR|İş Bankası C","SISE|Şişecam","EREGL|Ereğli Demir Çelik","KCHOL|Koç Holding","SAHOL|Sabancı Holding","TUPRS|Tüpraş","BIMAS|BİM Mağazalar","ASELS|Aselsan","PETKM|Petkim","PGSUS|Pegasus","TOASO|Tofaş","FROTO|Ford Otosan","ARCLK|Arçelik","VESTL|Vestel","KOZAL|Koza Altın","KOZAA|Koza Madencilik","TCELL|Turkcell","TTKOM|Türk Telekom","YKBNK|Yapı Kredi","VAKBN|VakıfBank","HALKB|Halkbank","SASA|Sasa Polyester","HEKTS|Hektaş","KRDMD|Kardemir D","ENKAI|Enka İnşaat","EKGYO|Emlak Konut GYO","MGROS|Migros","ULKER|Ülker","AEFES|Anadolu Efes","CCOLA|Coca-Cola İçecek","SOKM|Şok Marketler","BRSAN|Borusan Boru","ALARK|Alarko Holding","OTKAR|Otokar","OYAKC|Oyak Çimento","TSKB|TSKB","ISGYO|İş GYO","ISMEN|İş Yatırım","DOHOL|Doğan Holding","GUBRF|Gübre Fabrikaları","ENJSA|Enerjisa","ODAS|Odaş Elektrik","AGHOL|AG Anadolu Grubu","ZOREN|Zorlu Enerji","KONTR|Kontrolmatik","KARSN|Karsan Otomotiv","ASUZU|Anadolu Isuzu","CIMSA|Çimsa","BUCIM|Bursa Çimento","ADANA|Adana Çimento","AKSA|Aksa Akrilik","AKSEN|Aksa Enerji","ALKIM|Alkim Kimya","ANHYT|Anadolu Hayat Emeklilik","ANSGR|Anadolu Sigorta","BAGFS|Bagfaş","BASGZ|Başkent Doğalgaz","BERA|Bera Holding","BFREN|Bosch Fren","BIOEN|Biotrend Enerji","BRISA|Brisa","BTCIM|Batıçim","CANTE|Çan2 Termik","CEMTS|Çemtaş","CWENE|CW Enerji","DOAS|Doğuş Otomotiv","ECILC|Eczacıbaşı İlaç","EGEEN|Ege Endüstri","EUPWR|Europower Enerji","GESAN|Girişim Elektrik","GOLTS|Göltaş Çimento","GSDHO|GSD Holding","GWIND|Galata Wind","HUNER|Hüner Elektronik","INDES|İndeks Bilgisayar","IPEKE|İpek Doğal Enerji","IZMDC|İzmir Demir Çelik","KARTN|Kartonsan","KLSER|Kaleseramik","KMPUR|Kimpur","KONYA|Konya Çimento","KORDS|Kordsa","KTLEV|Katılımevim","LOGO|Logo Yazılım","MAVI|Mavi Giyim","MPARK|MLP Sağlık","NTHOL|Net Holding","NUGYO|Nurol GYO","ORGE|Orge Enerji","PENTA|Penta Teknoloji","PSGYO|Pasifik GYO","QUAGR|Qua Granite","SEKFK|Şeker Finansal Kiralama","SKBNK|Şekerbank","SMRTG|Smart Güneş","SNGYO|Sinpaş GYO","TABGD|Tab Gıda","TATGD|Tat Gıda","TKFEN|Tekfen Holding","TMSN|Tümosan","TRGYO|Torunlar GYO","TURSG|Türkiye Sigorta","VESBE|Vestel Beyaz Eşya","YEOTK|Yeo Teknoloji","ZRGYO|Ziraat GYO"].slice(0,100);
-
 const usList = ["AAPL|Apple Inc.","MSFT|Microsoft Corp.","GOOGL|Alphabet Inc. A","GOOG|Alphabet Inc. C","AMZN|Amazon.com","NVDA|NVIDIA Corp.","META|Meta Platforms","TSLA|Tesla Inc.","BRK.B|Berkshire Hathaway","JPM|JPMorgan Chase","V|Visa Inc.","UNH|UnitedHealth","MA|Mastercard","HD|Home Depot","PG|Procter & Gamble","XOM|Exxon Mobil","CVX|Chevron Corp.","ABBV|AbbVie Inc.","MRK|Merck & Co.","LLY|Eli Lilly","PEP|PepsiCo Inc.","KO|Coca-Cola Co.","COST|Costco Wholesale","AVGO|Broadcom Inc.","WMT|Walmart Inc.","MCD|McDonald's Corp.","CSCO|Cisco Systems","ADBE|Adobe Inc.","CRM|Salesforce Inc.","NFLX|Netflix Inc.","INTC|Intel Corp.","AMD|Advanced Micro Devices","QCOM|Qualcomm Inc.","TXN|Texas Instruments","IBM|IBM Corp.","ORCL|Oracle Corp.","NKE|Nike Inc.","DIS|Walt Disney Co.","BA|Boeing Co.","CAT|Caterpillar Inc.","GE|General Electric","GS|Goldman Sachs","MS|Morgan Stanley","WFC|Wells Fargo","BAC|Bank of America","C|Citigroup Inc.","AXP|American Express","SBUX|Starbucks Corp.","PYPL|PayPal Holdings","INTU|Intuit Inc.","AMGN|Amgen Inc.","GILD|Gilead Sciences","BMY|Bristol-Myers Squibb","PFE|Pfizer Inc.","T|AT&T Inc.","VZ|Verizon Comm.","CMCSA|Comcast Corp.","HON|Honeywell Intl.","UPS|United Parcel Service","RTX|RTX Corp.","LMT|Lockheed Martin","DE|Deere & Co.","MMM|3M Company","UNP|Union Pacific","PM|Philip Morris","MO|Altria Group","TMO|Thermo Fisher","ABT|Abbott Labs","DHR|Danaher Corp.","MDT|Medtronic plc","SPGI|S&P Global","BLK|BlackRock Inc.","NOW|ServiceNow Inc."].slice(0,70);
-
 const commodityGroups = [
  {group:"Değerli Metaller", items:[["XAU","Altın (Ons)",2415],["XAG","Gümüş (Ons)",28.9],["XPT","Platin",982],["XPD","Paladyum",1005]]},
  {group:"Enerji", items:[["WTI","Ham Petrol (WTI)",78.4],["BRENT","Brent Petrol",82.1],["NATGAS","Doğalgaz",2.47],["GASOLINE","Benzin",2.31]]},
  {group:"Tarım Ürünleri", items:[["WHEAT","Buğday",601],["CORN","Mısır",431],["SOYBEAN","Soya Fasulyesi",1298],["COFFEE","Kahve",221],["COTTON","Pamuk",79.6],["SUGAR","Şeker",19.8],["COCOA","Kakao",8140]]},
  {group:"Endüstriyel Metaller", items:[["COPPER","Bakır",4.21],["ALUMINUM","Alüminyum",2412],["ZINC","Çinko",2789],["NICKEL","Nikel",16980]]}
 ];
-
 const indexList = [["XU100","BIST 100",9482],["XU030","BIST 30",10521],["SPX","S&P 500",5602],["DJI","Dow Jones",40012],["NDX","Nasdaq 100",19487],["DAX","DAX 40",18540],["FTSE","FTSE 100",8214],["CAC","CAC 40",7498],["N225","Nikkei 225",38210],["HSI","Hang Seng",17560],["SHCOMP","Shanghai Composite",3012],["SX5E","Euro Stoxx 50",4897],["RUT","Russell 2000",2104],["VIX","VIX Korku Endeksi",14.2],["MXEF","MSCI Gelişen Piyasalar",1108]];
-
 const cryptoList = [["BTC","Bitcoin",65134.38],["ETH","Ethereum",2845.60],["USDT","Tether",1.00],["SOL","Solana",149.35],["BNB","BNB",584.2],["XRP","XRP",0.612],["ADA","Cardano",0.452],["DOGE","Dogecoin",0.138],["AVAX","Avalanche",31.8],["DOT","Polkadot",6.42]];
 
 function rand(min,max){return Math.random()*(max-min)+min;}
@@ -2307,15 +2338,8 @@ function symBadge(sym, cat, size){
     <span class="sym-ic-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">${glyph}</svg></span>
   </div>`;
 }
-
 let marketData = {bist:[], us:[], commodity:[], index:[], crypto:[]};
-
 const SPREAD_PCT = {bist:0.09, us:0.08, commodity:0.05, index:0.04, crypto:0.15};
-
-/* Gerçek veri kaynağı: kendi barındırdığınız market_api.py (FastAPI) — borsahub'daki
-   kanıtlanmış Yahoo Finance + CoinGecko mantığının aynısı, sunucu tarafında (CORS'suz)
-   çalışıyor. Kendi API adresinizi buraya yazın: */
-const MARKET_API_BASE = 'http://localhost:8000';
 
 function initMarketData(){
   if(marketData.bist.length) return;
@@ -2327,56 +2351,32 @@ function initMarketData(){
   renderMarket();
   setInterval(tickMarket, 2200);
   loadRealMarketData();
-  setInterval(loadRealMarketData, 5*60*1000); // backend cache TTL'iyle aynı: 5 dk
+  setInterval(loadRealMarketData, 5*60*1000);
 }
 
-/* Gerçek, ~15 dk gecikmeli fiyatlar — market_api.py'deki /api/kriptox/all uç noktasından.
-   Bu istek sunucudan sunucuya değil, TARAYICIDAN backend'e atılıyor ama backend'in kendisi
-   Yahoo/CoinGecko'ya sunucu tarafından gittiği için CORS engeline hiç takılmıyor. */
 function applyRealRows(cat, rows){
   if(!rows) return;
   rows.forEach(row=>{
     const item = marketData[cat] && marketData[cat].find(x=>x.sym===row.id);
-    if(item){
-      item.anchor = row.price;
-      item.price = row.price;
-      item.change = row.change_pct;
-      item.real = true;
-    }
+    if(item){ item.anchor = row.price; item.price = row.price; item.change = row.change_pct; item.real = true; }
   });
 }
 async function loadRealMarketData(){
   try{
-    // Binance Canlı API (Tarayıcıdan doğrudan çekilir, CORS/IP engeli yoktur)
-    const cryptoRes = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]');
-    
-    if (cryptoRes.ok) {
-      const prices = await cryptoRes.json();
-      
-      // Gelen canlı verileri sistemdeki kripto listesine eşliyoruz
-      const cryptoList = prices.map(item => ({ 
-        sym: item.symbol, 
-        price: parseFloat(item.price) 
-      }));
-      
-      applyRealRows('crypto', cryptoList);
-    }
-
-    // Arayüzü güncelliyoruz
+    const res = await fetch(API_BASE + '/api/kriptox/all');
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    applyRealRows('bist', data.bist);
+    applyRealRows('us', data.us);
+    applyRealRows('index', data.indices);
+    applyRealRows('commodity', data.commodities);
+    applyRealRows('crypto', data.crypto);
     renderMarket();
     renderAccountWidgets();
-
-    // Ekrandaki uyarıyı başarı mesajına çeviriyoruz
-    const noteEl = document.getElementById('dataSourceNote');
-    if(noteEl) {
-      noteEl.innerHTML = '<span style="color:#10b981;">● Canlı veriler doğrudan istemci üzerinden bağlandı.</span>';
-    }
-  } catch(err){
-    console.warn('Canlı veri çekme hatası:', err);
-  }
+    updateDataSourceNote();
+  }catch(err){ console.warn('Gerçek piyasa verisi alınamadı:', err); }
 }
 
-/* Every ~2.2s: price wiggles back and forth within a small spread band around the anchor — no drift, just bid/ask-style jitter. */
 function tickMarket(){
   Object.keys(marketData).forEach(cat=>{
     const spread = SPREAD_PCT[cat] || 0.08;
@@ -2407,11 +2407,11 @@ function updateDataSourceNote(){
   const realCount = list.filter(it=>it.real).length;
   const srcName = activeCat==='crypto' ? 'CoinGecko' : 'Yahoo Finance';
   if(list.length && realCount===list.length){
-    note.innerHTML = `<span class="dot"></span>market_api.py üzerinden ${srcName} — gerçek, ~15 dakika gecikmeli veri. 5 dakikada bir yeniden senkronize edilir, aradaki hareketler makas içi simülasyondur.`;
+    note.innerHTML = `<span class="dot"></span>${srcName} — gerçek, ~15 dakika gecikmeli veri. 5 dakikada bir yeniden senkronize edilir.`;
   } else if(realCount>0){
-    note.innerHTML = `<span class="dot"></span>Çoğu varlık için ${srcName}'ten gerçek gecikmeli veri (${realCount}/${list.length}) — kalanlar bir sonraki senkronizasyonda tamamlanacak.`;
+    note.innerHTML = `<span class="dot"></span>${srcName}'ten gerçek veri (${realCount}/${list.length}) — kalanlar bir sonraki senkronizasyonda tamamlanacak.`;
   } else {
-    note.innerHTML = `<span class="dot sim"></span>market_api.py'ye henüz ulaşılamadı (MARKET_API_BASE adresini ve sunucunun çalıştığını kontrol edin) — şimdilik simüle veriyle gösteriliyor.`;
+    note.innerHTML = `<span class="dot sim"></span>Backend'e henüz ulaşılamadı — şimdilik simüle veriyle gösteriliyor.`;
   }
 }
 document.querySelectorAll('#market-tabs .tab-btn').forEach(btn=>{
@@ -2471,85 +2471,8 @@ document.getElementById('market-body').addEventListener('click', (e)=>{
 });
 
 /* ================= ACCOUNT WIDGETS ================= */
-/* Demo placeholder images (synthetic, not real documents) so CRM can preview uploads */
 const DEMO_ID_IMG = 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="400" height="252"><rect width="400" height="252" rx="14" fill="#1c2333"/><rect x="16" y="16" width="90" height="112" rx="8" fill="#3a4258"/><circle cx="61" cy="55" r="22" fill="#5b6478"/><rect x="35" y="85" width="52" height="30" rx="6" fill="#5b6478"/><rect x="120" y="24" width="180" height="14" rx="4" fill="#f0a83c"/><rect x="120" y="52" width="220" height="10" rx="3" fill="#8b90a6"/><rect x="120" y="70" width="200" height="10" rx="3" fill="#8b90a6"/><rect x="120" y="88" width="160" height="10" rx="3" fill="#8b90a6"/><rect x="16" y="150" width="368" height="1" fill="#2a2f42"/><text x="16" y="185" font-family="monospace" font-size="15" fill="#8b90a6">T.C. KIMLIK KARTI</text><rect x="16" y="200" width="368" height="26" rx="6" fill="#141724"/><text x="26" y="218" font-family="monospace" font-size="12" fill="#5b6478">**** **** **** DEMO ORNEK BELGE</text></svg>`);
 const DEMO_RECEIPT_IMG = 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="300" height="360"><rect width="300" height="360" fill="#f2f2f2"/><rect x="0" y="0" width="300" height="56" fill="#1c2333"/><text x="18" y="35" font-family="monospace" font-size="16" fill="#f0a83c">HAVALE DEKONTU</text><text x="18" y="86" font-family="monospace" font-size="12" fill="#333">Gonderen: Ayse Nur Kaya</text><text x="18" y="108" font-family="monospace" font-size="12" fill="#333">Alici: BorsaX Teknoloji A.S.</text><text x="18" y="130" font-family="monospace" font-size="11" fill="#333">IBAN: TR33 0006 1005 1978 6457 8413 26</text><text x="18" y="152" font-family="monospace" font-size="12" fill="#333">Tarih: 09.08.2026 10:05</text><rect x="18" y="172" width="264" height="1" fill="#ccc"/><text x="18" y="210" font-family="monospace" font-size="20" fill="#1c9d63">Tutar: 15.000,00 TRY</text><text x="18" y="236" font-family="monospace" font-size="11" fill="#999">Aciklama: Hesap Yatirimi</text><rect x="18" y="270" width="264" height="60" fill="none" stroke="#ccc" stroke-dasharray="4"/><text x="55" y="304" font-family="monospace" font-size="11" fill="#aaa">DEMO BELGE - ORNEK</text></svg>`);
-
-const users = {
-  demo: {
-    password:'demo123', fullName:'Demo Kullanıcı', phone:'+90 555 010 20 30', email:'demo@example.com',
-    tc:'12345678901', registeredAt:'01.03.2026 09:00', balance:2100890.00, futuresBalance:467000.00,
-    positions:[
-      {id:'seed1', symDisplay:'BTC/USDT', color:'#f0a83c', side:'Long', qty:0.250, qtyLabel:'0.250 BTC', entry:64250.00, cat:'crypto', tickerSym:'BTC', currency:'USDT'},
-      {id:'seed2', symDisplay:'ETH/USDT', color:'#4d8cf6', side:'Short', qty:5.000, qtyLabel:'5.000 ETH', entry:2890.50, cat:'crypto', tickerSym:'ETH', currency:'USDT'},
-      {id:'seed3', symDisplay:'SOL/USDT', color:'#2dd4c8', side:'Long', qty:10.00, qtyLabel:'10.00 SOL', entry:145.20, cat:'crypto', tickerSym:'SOL', currency:'USDT'}
-    ],
-    closedPositions:[],
-    recentTx:[
-      {label:'Para Yatırma', amount:'+10.000,00 TRY', up:true, date:'24.05.2026 14:32'},
-      {label:'BTC Çekme', amount:'-0.015 BTC', up:false, date:'24.05.2026 11:15'},
-      {label:'ETH Yatırma', amount:'+2.5 ETH', up:true, date:'23.05.2026 22:47'},
-      {label:'USDT Çekme', amount:'-500 USDT', up:false, date:'23.05.2026 19:03'},
-      {label:'Para Yatırma', amount:'+5.000,00 TRY', up:true, date:'23.05.2026 16:21'}
-    ],
-    depositHistory:[
-      {label:'Banka Transferi', method:'Banka Transferi', amount:'+10.000,00 TRY', date:'24.05.2026 14:32', status:'Onaylandı'},
-      {label:'Banka Transferi', method:'Banka Transferi', amount:'+5.000,00 TRY', date:'23.05.2026 16:21', status:'Onaylandı'},
-      {label:'Kripto Yatırma', method:'Kripto Yatırma', amount:'+0.08 BTC', date:'21.05.2026 09:04', status:'Onaylandı'}
-    ],
-    withdrawHistory:[
-      {label:'Banka Hesabına', method:'Banka Hesabına', amount:'-2.500,00 TRY', date:'22.05.2026 18:40', status:'Onaylandı'},
-      {label:'Kripto Cüzdana', method:'Kripto Cüzdana', amount:'-500 USDT', date:'20.05.2026 12:11', status:'Onaylandı'}
-    ],
-    transferHistory:[
-      {label:'Spot → Vadeli İşlemler', amount:'2.000,00 TRY', date:'21.05.2026 10:12'},
-      {label:'Vadeli İşlemler → Spot', amount:'750,00 TRY', date:'19.05.2026 08:47'}
-    ],
-    kycStatus:'Onaylandı',
-    kycDocuments:[
-      {id:'kyc1', type:'Kimlik Kartı (Ön Yüz)', name:'kimlik_on.jpg', dataUrl:DEMO_ID_IMG, date:'02.03.2026 11:10', status:'Onaylandı'},
-      {id:'kyc2', type:'Kimlik Kartı (Arka Yüz)', name:'kimlik_arka.jpg', dataUrl:DEMO_ID_IMG, date:'02.03.2026 11:11', status:'Onaylandı'}
-    ],
-    balanceAdjustments:[
-      {id:'badj1', amount:50000, note:'Manuel Bakiye Ekleme', date:'15.03.2026 09:30'}
-    ],
-    notifications:[
-      {id:'n1', type:'ok', title:'Para yatırma talebiniz onaylandı', desc:'10.000,00 TRY hesabınıza yansıdı', date:'24.05.2026 14:35', read:true},
-      {id:'n2', type:'info', title:'BTC/USDT hareketlendi', desc:'Son 24 saatte %1,38 değişim yaşandı', date:'23.05.2026 09:12', read:true},
-      {id:'n3', type:'ok', title:'KYC belgeniz onaylandı', desc:'Kimlik doğrulamanız tamamlandı', date:'02.03.2026 12:00', read:true}
-    ]
-  },
-  aysenur: {
-    password:'ayse123', fullName:'Ayşe Nur Kaya', phone:'+90 532 445 12 78', email:'aysenur@example.com',
-    tc:'21876554344', registeredAt:'02.06.2026 13:20', balance:184250.00, futuresBalance:0,
-    positions:[
-      {id:'seedA1', symDisplay:'THYAO', color:'#8b7cf6', side:'Long', qty:150, qtyLabel:'150 Lot', entry:262.40, cat:'bist', tickerSym:'THYAO', currency:'TRY'}
-    ],
-    closedPositions:[],
-    recentTx:[
-      {label:'Para Yatırma', amount:'+15.000,00 TRY', up:true, date:'09.08.2026 10:05'}
-    ],
-    depositHistory:[
-      {label:'Banka Transferi', method:'Banka Transferi', amount:'+15.000,00 TRY', date:'09.08.2026 10:05', status:'Beklemede', receiptName:'dekont_09082026.jpg', receiptData:DEMO_RECEIPT_IMG}
-    ],
-    withdrawHistory:[
-      {label:'Banka Hesabına', method:'Banka Hesabına', amount:'-4.000,00 TRY', date:'10.08.2026 17:40', status:'Beklemede'}
-    ],
-    transferHistory:[],
-    kycStatus:'Beklemede',
-    kycDocuments:[
-      {id:'kyc3', type:'Kimlik Kartı (Ön Yüz)', name:'ayse_kimlik.jpg', dataUrl:DEMO_ID_IMG, date:'03.06.2026 15:40', status:'Beklemede'}
-    ],
-    balanceAdjustments:[],
-    notifications:[
-      {id:'n4', type:'warn', title:'Yatırma talebiniz inceleniyor', desc:'15.000,00 TRY talebiniz onay bekliyor', date:'09.08.2026 10:06', read:false},
-      {id:'n5', type:'warn', title:'Çekim talebiniz inceleniyor', desc:'4.000,00 TRY çekim talebiniz onay bekliyor', date:'10.08.2026 17:41', read:false},
-      {id:'n6', type:'warn', title:'KYC belgeniz inceleniyor', desc:'Yüklediğiniz kimlik belgesi onay bekliyor', date:'03.06.2026 15:41', read:false}
-    ]
-  }
-};
-let currentUsername = null;
-function cu(){ return users[currentUsername]; }
 
 function getLivePrice(p){
   const list = marketData[p.cat];
@@ -2561,10 +2484,9 @@ function pnl(p, current){
   if(p.side==='Short') diff = -diff;
   return diff*p.qty;
 }
-const targetIcon = '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>';
 const closeIcon = '<svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
 
-function closePosition(id){
+async function closePosition(id){
   const u = cu();
   const idx = u.positions.findIndex(p=>p.id===id);
   if(idx===-1) return;
@@ -2576,10 +2498,10 @@ function closePosition(id){
   u.recentTx.unshift({
     label: 'Pozisyon Kapatıldı - '+p.symDisplay,
     amount: (pl>=0?'+':'')+pl.toFixed(2)+' '+p.currency,
-    up: pl>=0,
-    date: new Date().toLocaleString('tr-TR')
+    up: pl>=0, date: new Date().toLocaleString('tr-TR')
   });
   pushNotification(currentUsername, pl>=0?'ok':'warn', 'Pozisyon kapatıldı', `${p.symDisplay} · ${(pl>=0?'+':'')}${pl.toFixed(2)} ${p.currency}`);
+  await saveUser();
   renderAccountWidgets();
 }
 document.getElementById('positions-mobile').addEventListener('click', (e)=>{
@@ -2591,12 +2513,9 @@ document.getElementById('positions-mobile').addEventListener('click', (e)=>{
 function renderBalanceWidgets(){
   if(!currentUsername) return;
   const u = cu();
-  const openPl = u.positions.reduce((sum,p)=>{
-    const cur = getLivePrice(p);
-    return sum + pnl(p, cur);
-  }, 0);
+  if(!u) return;
+  const openPl = u.positions.reduce((sum,p)=>{ return sum + pnl(p, getLivePrice(p)); }, 0);
   const total = u.balance + u.futuresBalance;
-
   const heroTotal = document.getElementById('hero-total-value');
   if(heroTotal) heroTotal.innerHTML = fmtPrice(total)+'<span class="cur">TRY</span>';
   const statCash = document.getElementById('stat-cash');
@@ -2621,23 +2540,23 @@ function renderBalanceWidgets(){
 function renderAccountWidgets(){
   if(!currentUsername) return;
   const u = cu();
+  if(!u) return;
   renderBalanceWidgets();
   const txBody = document.getElementById('recent-tx-body');
   if(txBody){
-    txBody.innerHTML = u.recentTx.map(t=>`<tr>
+    txBody.innerHTML = (u.recentTx||[]).map(t=>`<tr>
       <td>${t.label}<div class="tx-date">${t.date}</div></td>
       <td class="mono num ${t.up?'up':'down'}">${t.amount}</td>
       <td class="num"><span class="pill pill-green">Tamamlandı</span></td>
     </tr>`).join('');
   }
-  const rowsHtml = u.positions.map(p=>{
+  const rowsHtml = (u.positions||[]).map(p=>{
     const cur = getLivePrice(p);
     const pl = pnl(p, cur);
     const plPct = (pl/(p.entry*p.qty)*100);
     const up = pl>=0;
     return {p,cur,pl,plPct,up};
   });
-
   const accBody = document.getElementById('account-positions-body');
   if(accBody){
     accBody.innerHTML = rowsHtml.map(r=>`<tr>
@@ -2649,7 +2568,6 @@ function renderAccountWidgets(){
       <td class="mono num pl-cell ${r.up?'up':'down'}">${r.up?'+':''}${r.pl.toFixed(2)} ${r.p.currency}<br><span class="pl-pct">${r.up?'+':''}${r.plPct.toFixed(2)}%</span></td>
     </tr>`).join('');
   }
-
   const posMobile = document.getElementById('positions-mobile');
   if(posMobile){
     if(!rowsHtml.length){
@@ -2672,7 +2590,6 @@ function renderAccountWidgets(){
       </div>`).join('');
     }
   }
-
   const closedList = document.getElementById('closed-positions-list');
   if(closedList){
     if(!u.closedPositions.length){
@@ -2694,7 +2611,6 @@ function renderAccountWidgets(){
       }).join('');
     }
   }
-
   const posTotal = document.getElementById('pos-total');
   if(posTotal){
     if(!rowsHtml.length){
@@ -2712,14 +2628,12 @@ function renderAccountWidgets(){
         </span>`;
     }
   }
-
   const dh = document.getElementById('deposit-history');
-  if(dh) dh.innerHTML = u.depositHistory.map(t=>`<div class="tx-row"><div>${t.label}<div class="tx-date">${t.date}</div></div><div class="mono up">${t.amount}</div></div>`).join('');
+  if(dh) dh.innerHTML = (u.depositHistory||[]).map(t=>`<div class="tx-row"><div>${t.label}<div class="tx-date">${t.date}</div></div><div class="mono up">${t.amount}</div></div>`).join('');
   const wh = document.getElementById('withdraw-history');
-  if(wh) wh.innerHTML = u.withdrawHistory.map(t=>`<div class="tx-row"><div>${t.label}<div class="tx-date">${t.date}</div></div><div class="mono down">${t.amount}</div></div>`).join('');
+  if(wh) wh.innerHTML = (u.withdrawHistory||[]).map(t=>`<div class="tx-row"><div>${t.label}<div class="tx-date">${t.date}</div></div><div class="mono down">${t.amount}</div></div>`).join('');
   const th_ = document.getElementById('transfer-history');
-  if(th_) th_.innerHTML = u.transferHistory.map(t=>`<div class="tx-row"><div>${t.label}<div class="tx-date">${t.date}</div></div><div class="mono">${t.amount}</div></div>`).join('');
-
+  if(th_) th_.innerHTML = (u.transferHistory||[]).map(t=>`<div class="tx-row"><div>${t.label}<div class="tx-date">${t.date}</div></div><div class="mono">${t.amount}</div></div>`).join('');
   renderKycSection();
 }
 
@@ -2732,11 +2646,9 @@ function kycPillClass(status){
 function renderKycSection(){
   if(!currentUsername) return;
   const u = cu();
+  if(!u) return;
   const pill = document.getElementById('kyc-status-pill');
-  if(pill){
-    pill.textContent = u.kycStatus;
-    pill.className = 'crm-status-pill '+kycPillClass(u.kycStatus);
-  }
+  if(pill){ pill.textContent = u.kycStatus; pill.className = 'crm-status-pill '+kycPillClass(u.kycStatus); }
   const list = document.getElementById('kyc-doc-list');
   if(list){
     if(!u.kycDocuments.length){
@@ -2754,77 +2666,6 @@ function renderKycSection(){
   }
 }
 
-/* ================= KYC UPLOAD (user side) ================= */
-wireUpload('[data-target="upload-kyc-input"]', 'upload-kyc-input', 'upload-kyc-preview');
-document.getElementById('kyc-submit').addEventListener('click', ()=>{
-  const u = cu();
-  const type = document.getElementById('kyc-doc-type').value;
-  const receipt = uploadedReceipts['upload-kyc-input'];
-  if(!receipt){ return; }
-  u.kycDocuments.unshift({
-    id:'kyc'+Date.now(), type, name:receipt.name, dataUrl:receipt.dataUrl,
-    date:new Date().toLocaleString('tr-TR'), status:'Beklemede'
-  });
-  if(u.kycStatus==='Evrak Yok' || u.kycStatus==='Reddedildi') u.kycStatus = 'Beklemede';
-  document.getElementById('upload-kyc-input').value = '';
-  document.getElementById('upload-kyc-preview').innerHTML = '';
-  delete uploadedReceipts['upload-kyc-input'];
-  renderKycSection();
-});
-
-/* ================= DEPOSIT / WITHDRAW UI ================= */
-document.querySelectorAll('.method-item').forEach(m=>{
-  m.addEventListener('click', ()=>{
-    m.parentElement.querySelectorAll('.method-item').forEach(x=>x.classList.remove('active'));
-    m.classList.add('active');
-    if(m.dataset.panel){
-      m.parentElement.querySelectorAll('.deposit-panel').forEach(p=>p.hidden = true);
-      const target = document.getElementById(m.dataset.panel);
-      if(target) target.hidden = false;
-    }
-  });
-});
-document.querySelectorAll('.amount-quick button').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('sel'));
-    btn.classList.add('sel');
-    const scope = btn.closest('.deposit-panel') || btn.closest('.card');
-    const input = scope.querySelector('.amount-input');
-    if(input) input.value = btn.dataset.amt;
-  });
-});
-
-/* Copy-to-clipboard for IBAN / crypto addresses */
-document.querySelectorAll('.copy-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    const text = btn.dataset.copy;
-    const done = ()=>{
-      const original = btn.textContent;
-      btn.textContent = 'Kopyalandı';
-      btn.classList.add('copied');
-      setTimeout(()=>{ btn.textContent = original; btn.classList.remove('copied'); }, 1600);
-    };
-    if(navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(text).then(done).catch(done);
-    } else {
-      done();
-    }
-  });
-});
-
-/* Network selection for crypto deposit */
-const NETWORK_CURRENCY = {BTC:'BTC', ERC20:'USDT', TRC20:'USDT'};
-document.querySelectorAll('#network-chips button').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('#network-chips button').forEach(b=>b.classList.remove('sel'));
-    btn.classList.add('sel');
-    const cur = NETWORK_CURRENCY[btn.dataset.net] || 'USDT';
-    const curEl = document.getElementById('crypto-amount-currency');
-    if(curEl) curEl.textContent = cur;
-  });
-});
-
-/* File upload boxes */
 const uploadedReceipts = {};
 function wireUpload(boxSelector, inputId, previewId){
   const box = document.querySelector(boxSelector);
@@ -2862,10 +2703,76 @@ function wireUpload(boxSelector, inputId, previewId){
     }
   });
 }
+
+wireUpload('[data-target="upload-kyc-input"]', 'upload-kyc-input', 'upload-kyc-preview');
 wireUpload('[data-target="upload-bank-input"]', 'upload-bank-input', 'upload-bank-preview');
 wireUpload('[data-target="upload-crypto-input"]', 'upload-crypto-input', 'upload-crypto-preview');
 
-document.getElementById('deposit-submit-bank').addEventListener('click', ()=>{
+document.getElementById('kyc-submit').addEventListener('click', async ()=>{
+  const u = cu();
+  const type = document.getElementById('kyc-doc-type').value;
+  const receipt = uploadedReceipts['upload-kyc-input'];
+  if(!receipt){ return; }
+  u.kycDocuments.unshift({
+    id:'kyc'+Date.now(), type, name:receipt.name, dataUrl:receipt.dataUrl,
+    date:new Date().toLocaleString('tr-TR'), status:'Beklemede'
+  });
+  if(u.kycStatus==='Evrak Yok' || u.kycStatus==='Reddedildi') u.kycStatus = 'Beklemede';
+  document.getElementById('upload-kyc-input').value = '';
+  document.getElementById('upload-kyc-preview').innerHTML = '';
+  delete uploadedReceipts['upload-kyc-input'];
+  await saveUser();
+  renderKycSection();
+});
+
+/* ================= DEPOSIT / WITHDRAW UI ================= */
+document.querySelectorAll('.method-item').forEach(m=>{
+  m.addEventListener('click', ()=>{
+    m.parentElement.querySelectorAll('.method-item').forEach(x=>x.classList.remove('active'));
+    m.classList.add('active');
+    if(m.dataset.panel){
+      m.parentElement.querySelectorAll('.deposit-panel').forEach(p=>p.hidden = true);
+      const target = document.getElementById(m.dataset.panel);
+      if(target) target.hidden = false;
+    }
+  });
+});
+document.querySelectorAll('.amount-quick button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('sel'));
+    btn.classList.add('sel');
+    const scope = btn.closest('.deposit-panel') || btn.closest('.card');
+    const input = scope.querySelector('.amount-input');
+    if(input) input.value = btn.dataset.amt;
+  });
+});
+document.querySelectorAll('.copy-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const text = btn.dataset.copy;
+    const done = ()=>{
+      const original = btn.textContent;
+      btn.textContent = 'Kopyalandı';
+      btn.classList.add('copied');
+      setTimeout(()=>{ btn.textContent = original; btn.classList.remove('copied'); }, 1600);
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(done);
+    } else { done(); }
+  });
+});
+
+const NETWORK_CURRENCY = {BTC:'BTC', ERC20:'USDT', TRC20:'USDT'};
+document.querySelectorAll('#network-chips button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#network-chips button').forEach(b=>b.classList.remove('sel'));
+    btn.classList.add('sel');
+    const cur = NETWORK_CURRENCY[btn.dataset.net] || 'USDT';
+    const curEl = document.getElementById('crypto-amount-currency');
+    if(curEl) curEl.textContent = cur;
+  });
+});
+
+document.getElementById('deposit-submit-bank').addEventListener('click', async ()=>{
   const amt = document.getElementById('deposit-amount-bank').value;
   const receipt = uploadedReceipts['upload-bank-input'];
   cu().depositHistory.unshift({
@@ -2873,10 +2780,11 @@ document.getElementById('deposit-submit-bank').addEventListener('click', ()=>{
     date:new Date().toLocaleString('tr-TR'), status:'Beklemede',
     receiptName: receipt ? receipt.name : null, receiptData: receipt ? receipt.dataUrl : null
   });
+  await saveUser();
   renderAccountWidgets();
   goPage('hesabim');
 });
-document.getElementById('deposit-submit-crypto').addEventListener('click', ()=>{
+document.getElementById('deposit-submit-crypto').addEventListener('click', async ()=>{
   const amt = document.getElementById('deposit-amount-crypto').value;
   const cur = document.getElementById('crypto-amount-currency').textContent;
   const activeNet = document.querySelector('#network-chips button.sel');
@@ -2887,22 +2795,25 @@ document.getElementById('deposit-submit-crypto').addEventListener('click', ()=>{
     date:new Date().toLocaleString('tr-TR'), status:'Beklemede',
     receiptName: receipt ? receipt.name : null, receiptData: receipt ? receipt.dataUrl : null
   });
+  await saveUser();
   renderAccountWidgets();
   goPage('hesabim');
 });
-document.getElementById('deposit-submit-card').addEventListener('click', ()=>{
+document.getElementById('deposit-submit-card').addEventListener('click', async ()=>{
   const amt = document.getElementById('deposit-amount-card').value;
   cu().depositHistory.unshift({label:'Kredi/Banka Kartı', method:'Kredi/Banka Kartı', amount:'+'+amt+',00 TRY', date:new Date().toLocaleString('tr-TR'), status:'Onaylandı'});
+  await saveUser();
   renderAccountWidgets();
   goPage('hesabim');
 });
-document.getElementById('withdraw-submit').addEventListener('click', ()=>{
+document.getElementById('withdraw-submit').addEventListener('click', async ()=>{
   const amt = document.getElementById('withdraw-amount').value;
   cu().withdrawHistory.unshift({label:'Banka Hesabına', method:'Banka Hesabına', amount:'-'+amt+',00 TRY', date:new Date().toLocaleString('tr-TR'), status:'Beklemede'});
+  await saveUser();
   renderAccountWidgets();
   goPage('hesabim');
 });
-document.getElementById('transfer-submit').addEventListener('click', ()=>{
+document.getElementById('transfer-submit').addEventListener('click', async ()=>{
   const u = cu();
   const hint = document.getElementById('transfer-error-hint');
   const amtRaw = document.getElementById('transfer-amount').value;
@@ -2910,10 +2821,7 @@ document.getElementById('transfer-submit').addEventListener('click', ()=>{
   const activeMethod = document.querySelector('#page-transfer .method-item.active');
   const dirIdx = activeMethod ? activeMethod.dataset.method : '0';
   const dir = activeMethod ? activeMethod.querySelector('b').textContent : 'Transfer';
-  if(isNaN(amt) || amt<=0){
-    hint.textContent = 'Geçerli bir tutar girin.'; hint.style.color = 'var(--red)';
-    return;
-  }
+  if(isNaN(amt) || amt<=0){ hint.textContent = 'Geçerli bir tutar girin.'; hint.style.color = 'var(--red)'; return; }
   if(dirIdx==='0'){
     if(amt>u.balance){ hint.textContent = 'Yetersiz Spot bakiye.'; hint.style.color = 'var(--red)'; return; }
     u.balance -= amt; u.futuresBalance += amt;
@@ -2924,6 +2832,7 @@ document.getElementById('transfer-submit').addEventListener('click', ()=>{
   hint.style.color = '';
   u.transferHistory.unshift({label:dir, amount:fmtPrice(amt)+' TRY', date:new Date().toLocaleString('tr-TR')});
   pushNotification(currentUsername, 'ok', 'Transfer başarıyla tamamlandı', `${dir} · ${fmtPrice(amt)} TRY`);
+  await saveUser();
   renderAccountWidgets();
   goPage('hesabim');
 });
@@ -2938,6 +2847,7 @@ document.getElementById('hero-history-btn').addEventListener('click', ()=>{
 /* ================= SETTINGS PAGE ================= */
 function loadSettingsPage(){
   const u = cu();
+  if(!u) return;
   if(!u.settings) u.settings = {inapp:true, email:true, sms:false, market:true, currency:'TRY'};
   document.getElementById('pref-inapp').checked = u.settings.inapp;
   document.getElementById('pref-email').checked = u.settings.email;
@@ -2946,7 +2856,7 @@ function loadSettingsPage(){
   document.getElementById('pref-currency').value = u.settings.currency;
   document.getElementById('settings-save-msg').textContent = '';
 }
-document.getElementById('settings-save').addEventListener('click', ()=>{
+document.getElementById('settings-save').addEventListener('click', async ()=>{
   const u = cu();
   u.settings = {
     inapp: document.getElementById('pref-inapp').checked,
@@ -2955,6 +2865,7 @@ document.getElementById('settings-save').addEventListener('click', ()=>{
     market: document.getElementById('pref-market').checked,
     currency: document.getElementById('pref-currency').value
   };
+  await saveUser();
   const msg = document.getElementById('settings-save-msg');
   msg.textContent = 'Tercihleriniz kaydedildi.';
   msg.className = 'pp-msg ok';
@@ -2978,8 +2889,7 @@ document.getElementById('settings-goto-kyc').addEventListener('click', ()=>{
 document.getElementById('settings-goto-notifs').addEventListener('click', ()=>{
   document.getElementById('notif-panel').classList.add('open');
 });
-
-/* ================= TRADE SCREEN ================= */
+  /* ================= TRADE SCREEN ================= */
 let currentTrade = null;
 let chartData = [];
 let currentTimeframe = '1G';
@@ -2990,21 +2900,16 @@ const TF_CONFIG = {
   '1H': {points:70, vol:0.012, span:0.045, label:'Son 1 Hafta'},
   '1A': {points:90, vol:0.020, span:0.08, label:'Son 1 Ay'}
 };
-
 function currencyFor(cat){
   if(cat==='crypto') return 'USDT';
   if(cat==='us' || cat==='commodity') return 'USD';
   return 'TRY';
 }
-
 function openTrade(cat, item){
   currentTrade = {
-    cat,
-    tickerSym: item.sym,
+    cat, tickerSym: item.sym,
     symDisplay: cat==='crypto' ? item.sym+'/USDT' : item.sym,
-    name: item.name,
-    color: colorFor(item.sym),
-    currency: currencyFor(cat)
+    name: item.name, color: colorFor(item.sym), currency: currencyFor(cat)
   };
   document.getElementById('lot-input').value = '1';
   currentTimeframe = '1G';
@@ -3015,7 +2920,6 @@ function openTrade(cat, item){
   updateOrderSummary();
   goPage('trade');
 }
-
 function generateChartData(basePrice){
   const cfg = TF_CONFIG[currentTimeframe] || TF_CONFIG['1G'];
   chartData = [];
@@ -3026,7 +2930,6 @@ function generateChartData(basePrice){
   }
   chartData.push(basePrice);
 }
-
 document.querySelectorAll('#tf-tabs .tf-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     if(!currentTrade) return;
@@ -3038,7 +2941,6 @@ document.querySelectorAll('#tf-tabs .tf-btn').forEach(btn=>{
     renderChart();
   });
 });
-
 function renderChart(){
   const svg = document.getElementById('trade-chart-svg');
   if(!svg || !chartData.length) return;
@@ -3070,7 +2972,6 @@ function renderChart(){
     <polyline points="${lineStr}" fill="none" stroke="${strokeColor}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
   `;
 }
-
 function renderTradeHeader(){
   if(!currentTrade) return;
   const item = marketData[currentTrade.cat].find(x=>x.sym===currentTrade.tickerSym);
@@ -3085,18 +2986,14 @@ function renderTradeHeader(){
   chEl.className = 'trade-change mono '+(up?'up':'down');
   chEl.textContent = (up?'+':'')+item.change.toFixed(2)+'%';
 }
-
 function updateOrderSummary(){
   if(!currentTrade) return;
   const item = marketData[currentTrade.cat].find(x=>x.sym===currentTrade.tickerSym);
   const price = item ? item.price : 0;
   const lot = parseFloat(document.getElementById('lot-input').value) || 0;
-  const notional = price*lot;
-  document.getElementById('order-value').textContent = fmtPrice(notional)+' '+currentTrade.currency;
+  document.getElementById('order-value').textContent = fmtPrice(price*lot)+' '+currentTrade.currency;
 }
-
 document.getElementById('trade-back').addEventListener('click', ()=>goPage('piyasa'));
-
 function lotStep(){ return currentTrade && currentTrade.cat==='crypto' ? 0.01 : 1; }
 document.getElementById('lot-minus').addEventListener('click', ()=>{
   const inp = document.getElementById('lot-input');
@@ -3119,8 +3016,7 @@ document.querySelectorAll('.lot-quick button').forEach(btn=>{
     updateOrderSummary();
   });
 });
-
-function executeTrade(side){
+async function executeTrade(side){
   if(!currentTrade) return;
   const item = marketData[currentTrade.cat].find(x=>x.sym===currentTrade.tickerSym);
   if(!item) return;
@@ -3128,44 +3024,38 @@ function executeTrade(side){
   const unitLabel = currentTrade.cat==='crypto' ? currentTrade.tickerSym : 'Lot';
   const newPos = {
     id: 'p'+Date.now()+Math.floor(Math.random()*1000),
-    symDisplay: currentTrade.symDisplay,
-    color: currentTrade.color,
+    symDisplay: currentTrade.symDisplay, color: currentTrade.color,
     side: side==='buy' ? 'Long' : 'Short',
-    qty: lot,
-    qtyLabel: lot+' '+unitLabel,
-    entry: item.price,
-    cat: currentTrade.cat,
-    tickerSym: currentTrade.tickerSym,
-    currency: currentTrade.currency
+    qty: lot, qtyLabel: lot+' '+unitLabel,
+    entry: item.price, cat: currentTrade.cat,
+    tickerSym: currentTrade.tickerSym, currency: currentTrade.currency
   };
   const u = cu();
   u.positions.unshift(newPos);
   u.recentTx.unshift({
     label: (side==='buy'?'Alış':'Satış')+' - '+currentTrade.symDisplay,
     amount: (side==='buy'?'+':'-')+lot+' '+unitLabel,
-    up: side==='buy',
-    date: new Date().toLocaleString('tr-TR')
+    up: side==='buy', date: new Date().toLocaleString('tr-TR')
   });
   pushNotification(currentUsername, 'ok', 'İşlem başarıyla açıldı', `${newPos.symDisplay} · ${newPos.side} · ${newPos.qtyLabel} @ ${fmtPrice(newPos.entry)}`);
+  await saveUser();
   renderAccountWidgets();
   goPage('pozisyonlar');
 }
 document.getElementById('btn-buy').addEventListener('click', ()=>executeTrade('buy'));
 document.getElementById('btn-sell').addEventListener('click', ()=>executeTrade('sell'));
 
-/* ================= CRM (ADMIN PANEL) ================= */
+/* ================= CRM (ADMIN) ================= */
 let crmSelectedUser = null;
-
 function pendingCount(u){
-  return u.depositHistory.filter(d=>d.status==='Beklemede').length + u.withdrawHistory.filter(w=>w.status==='Beklemede').length;
+  return (u.depositHistory||[]).filter(d=>d.status==='Beklemede').length + (u.withdrawHistory||[]).filter(w=>w.status==='Beklemede').length;
 }
-
 function renderCrmUserList(){
   const body = document.getElementById('crm-user-list');
   const q = (document.getElementById('crm-user-search').value||'').toLowerCase();
   const rows = Object.keys(users).filter(key=>{
     const u = users[key];
-    return !q || key.includes(q) || u.fullName.toLowerCase().includes(q);
+    return !q || key.includes(q) || (u.fullName||'').toLowerCase().includes(q);
   }).map(key=>{
     const u = users[key];
     const pending = pendingCount(u);
@@ -3185,7 +3075,6 @@ document.getElementById('crm-user-list').addEventListener('click', (e)=>{
   if(!tr) return;
   openCrmUser(tr.dataset.user);
 });
-
 function openCrmUser(key){
   crmSelectedUser = key;
   const u = users[key];
@@ -3205,8 +3094,6 @@ document.getElementById('crm-back-btn').addEventListener('click', ()=>{
   crmSelectedUser = null;
   renderCrmUserList();
 });
-
-/* ================= CRM: nav switching (Kullanıcılar / Yöneticiler) ================= */
 function crmShowView(view){
   document.getElementById('crm-list-view').hidden = view!=='users';
   document.getElementById('crm-detail-view').hidden = true;
@@ -3222,7 +3109,6 @@ document.getElementById('crm-nav-admins').addEventListener('click', ()=>{
   if(!canDo('manageAdmins')) return;
   crmShowView('admins');
 });
-
 function applyCrmPermissions(){
   if(!currentAdmin) return;
   const a = ca();
@@ -3231,8 +3117,6 @@ function applyCrmPermissions(){
   document.getElementById('crm-nav-admins').hidden = !canDo('manageAdmins');
   crmShowView('users');
 }
-
-/* ================= CRM: Admin management ================= */
 function renderNewAdminPerms(){
   const wrap = document.getElementById('new-admin-perms');
   wrap.innerHTML = ALL_PERMISSIONS.map(p=>`
@@ -3255,31 +3139,40 @@ function renderCrmAdminsList(){
   }).join('');
   body.innerHTML = rows || `<tr><td colspan="3" class="crm-empty">Yönetici bulunamadı.</td></tr>`;
 }
-document.getElementById('crm-admins-list').addEventListener('click', (e)=>{
+document.getElementById('crm-admins-list').addEventListener('click', async (e)=>{
   const btn = e.target.closest('[data-del-admin]');
   if(!btn) return;
-  delete admins[btn.dataset.delAdmin];
+  const key = btn.dataset.delAdmin;
+  const r = await fetch(API_BASE + '/api/admin/admins/' + key, {
+    method:'DELETE', headers:{'Authorization':'Bearer '+currentToken}
+  });
+  if(!r.ok){ const d = await r.json(); alert(d.detail || 'Silinemedi'); return; }
+  delete admins[key];
   renderCrmAdminsList();
 });
-document.getElementById('new-admin-submit').addEventListener('click', ()=>{
+document.getElementById('new-admin-submit').addEventListener('click', async ()=>{
   const msg = document.getElementById('new-admin-msg');
   const name = document.getElementById('new-admin-name').value.trim();
   const uName = document.getElementById('new-admin-user').value.trim();
   const pass = document.getElementById('new-admin-pass').value.trim();
   if(!name || !uName || !pass){ msg.textContent='Ad Soyad, kullanıcı adı ve şifre gereklidir.'; msg.className='pp-msg err'; return; }
-  const key = uName.toLowerCase();
-  if(admins[key] || users[key]){ msg.textContent='Bu kullanıcı adı zaten kullanılıyor.'; msg.className='pp-msg err'; return; }
   const permissions = {};
   document.querySelectorAll('#new-admin-perms [data-perm]').forEach(inp=>{ permissions[inp.dataset.perm] = inp.checked; });
-  admins[key] = {password:pass, displayName:name, isSuper:false, permissions};
+  const r = await fetch(API_BASE + '/api/admin/admins', {
+    method:'POST',
+    headers:{'Content-Type':'application/json', 'Authorization':'Bearer '+currentToken},
+    body: JSON.stringify({username: uName.toLowerCase(), password: pass, displayName: name, permissions})
+  });
+  const d = await r.json();
+  if(!r.ok){ msg.textContent = d.detail || 'Oluşturulamadı.'; msg.className='pp-msg err'; return; }
+  admins[uName.toLowerCase()] = {displayName: name, isSuper:false, permissions};
   document.getElementById('new-admin-name').value='';
   document.getElementById('new-admin-user').value='';
   document.getElementById('new-admin-pass').value='';
   renderNewAdminPerms();
-  msg.textContent = 'Yönetici oluşturuldu.'; msg.className='pp-msg ok';
+  msg.textContent='Yönetici oluşturuldu.'; msg.className='pp-msg ok';
   renderCrmAdminsList();
 });
-
 document.querySelectorAll('#crm-tabs .tab-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('#crm-tabs .tab-btn').forEach(b=>b.classList.remove('active'));
@@ -3292,7 +3185,6 @@ document.querySelectorAll('#crm-tabs .tab-btn').forEach(btn=>{
 function renderCrmDetail(){
   if(!crmSelectedUser) return;
   const u = users[crmSelectedUser];
-
   const infoGrid = document.getElementById('crm-user-info');
   const kycPill = `<span class="crm-status-pill ${kycPillClass(u.kycStatus)}">${u.kycStatus}</span>`;
   infoGrid.innerHTML = `
@@ -3305,7 +3197,6 @@ function renderCrmDetail(){
     <div class="stat-box"><div class="stat-box-label">Bakiye</div><div class="stat-box-val mono">${fmtPrice(u.balance)} TRY</div></div>
     <div class="stat-box"><div class="stat-box-label">KYC Durumu</div><div class="stat-box-val">${kycPill}</div></div>
   `;
-
   const posBody = document.getElementById('crm-positions-body');
   const canPos = canDo('positions');
   if(!u.positions.length){
@@ -3332,7 +3223,6 @@ function renderCrmDetail(){
       </tr>`;
     }).join('');
   }
-
   const closedBody = document.getElementById('crm-closed-body');
   if(!u.closedPositions.length){
     closedBody.innerHTML = `<tr><td colspan="6" class="crm-empty">Kapatılmış işlem yok.</td></tr>`;
@@ -3349,21 +3239,18 @@ function renderCrmDetail(){
       </tr>`;
     }).join('');
   }
-
   const depList = document.getElementById('crm-deposits-list');
   if(!u.depositHistory.length){
     depList.innerHTML = `<div class="crm-empty">Yatırma talebi yok.</div>`;
   } else {
     depList.innerHTML = u.depositHistory.map((d,i)=>crmRequestCard(d,i,'deposit',canDo('deposits'))).join('');
   }
-
   const wdList = document.getElementById('crm-withdrawals-list');
   if(!u.withdrawHistory.length){
     wdList.innerHTML = `<div class="crm-empty">Çekim talebi yok.</div>`;
   } else {
     wdList.innerHTML = u.withdrawHistory.map((w,i)=>crmRequestCard(w,i,'withdraw',canDo('withdrawals'))).join('');
   }
-
   const balanceCard = document.getElementById('crm-balance-form-card');
   if(balanceCard) balanceCard.style.display = canDo('balance') ? '' : 'none';
   document.getElementById('crm-balance-value').textContent = fmtPrice(u.balance)+' TRY';
@@ -3380,7 +3267,6 @@ function renderCrmDetail(){
       </span>
     </div>`).join('');
   }
-
   const canKyc = canDo('kyc');
   document.querySelectorAll('#kyc-quickset button').forEach(b=>{
     b.disabled = !canKyc;
@@ -3444,7 +3330,7 @@ function crmRequestCard(item, idx, kind, canAct){
   </div>`;
 }
 
-document.getElementById('crm-positions-body').addEventListener('click', (e)=>{
+document.getElementById('crm-positions-body').addEventListener('click', async (e)=>{
   const btn = e.target.closest('button[data-action]');
   if(!btn || !crmSelectedUser || !canDo('positions')) return;
   const tr = btn.closest('tr[data-pos-id]');
@@ -3458,6 +3344,7 @@ document.getElementById('crm-positions-body').addEventListener('click', (e)=>{
     const newEntry = parseFloat(entryInput.value);
     if(!isNaN(newLot) && newLot>0) { p.qty = newLot; p.qtyLabel = newLot+' '+btn.dataset.unit; }
     if(!isNaN(newEntry) && newEntry>0) p.entry = newEntry;
+    await saveAdminUserChange(crmSelectedUser);
     renderCrmDetail();
   } else if(btn.dataset.action==='close-pos'){
     const cur = getLivePrice(p);
@@ -3470,6 +3357,7 @@ document.getElementById('crm-positions-body').addEventListener('click', (e)=>{
     u.closedPositions.unshift({...p, exit, pl, closedDate:new Date().toLocaleString('tr-TR')});
     u.positions.splice(idx,1);
     u.recentTx.unshift({label:'Pozisyon Kapatıldı (CRM) - '+p.symDisplay, amount:(pl>=0?'+':'')+pl.toFixed(2)+' '+p.currency, up:pl>=0, date:new Date().toLocaleString('tr-TR')});
+    await saveAdminUserChange(crmSelectedUser);
     renderCrmDetail();
   }
 });
@@ -3481,7 +3369,7 @@ function parseTRYAmount(str){
 }
 
 function handleRequestAction(container, key, list){
-  container.addEventListener('click', (e)=>{
+  container.addEventListener('click', async (e)=>{
     const btn = e.target.closest('button[data-action]');
     if(!btn || !crmSelectedUser) return;
     const permKey = key==='deposit' ? 'deposits' : 'withdrawals';
@@ -3503,6 +3391,7 @@ function handleRequestAction(container, key, list){
       item.status = 'Reddedildi';
       pushNotification(crmSelectedUser, 'bad', kindLabel+' talebiniz reddedildi', (item.method||item.label)+' · '+item.amount);
     }
+    await saveAdminUserChange(crmSelectedUser);
     renderCrmDetail();
     if(currentUsername===crmSelectedUser) renderAccountWidgets();
   });
@@ -3510,8 +3399,7 @@ function handleRequestAction(container, key, list){
 handleRequestAction(document.getElementById('crm-deposits-list'), 'deposit', 'depositHistory');
 handleRequestAction(document.getElementById('crm-withdrawals-list'), 'withdraw', 'withdrawHistory');
 
-/* Balance management */
-document.getElementById('crm-balance-add').addEventListener('click', ()=>{
+document.getElementById('crm-balance-add').addEventListener('click', async ()=>{
   if(!crmSelectedUser || !canDo('balance')) return;
   const u = users[crmSelectedUser];
   const input = document.getElementById('crm-balance-amount');
@@ -3526,9 +3414,10 @@ document.getElementById('crm-balance-add').addEventListener('click', ()=>{
   pushNotification(crmSelectedUser, amt>=0?'ok':'warn', amt>=0?'Bakiyenize ekleme yapıldı':'Bakiyenizden çıkarma yapıldı', note+' · '+(amt>=0?'+':'')+fmtPrice(amt)+' TRY');
   input.value = '';
   noteInput.value = '';
+  await saveAdminUserChange(crmSelectedUser);
   renderCrmDetail();
 });
-document.getElementById('crm-balance-adjustments').addEventListener('click', (e)=>{
+document.getElementById('crm-balance-adjustments').addEventListener('click', async (e)=>{
   const del = e.target.closest('[data-adj-idx]');
   if(!del || !crmSelectedUser || !canDo('balance')) return;
   const u = users[crmSelectedUser];
@@ -3537,19 +3426,20 @@ document.getElementById('crm-balance-adjustments').addEventListener('click', (e)
   if(!adj) return;
   u.balance -= adj.amount;
   u.balanceAdjustments.splice(idx,1);
+  await saveAdminUserChange(crmSelectedUser);
   renderCrmDetail();
 });
 
-/* KYC management */
-document.getElementById('kyc-quickset').addEventListener('click', (e)=>{
+document.getElementById('kyc-quickset').addEventListener('click', async (e)=>{
   const btn = e.target.closest('button[data-kyc]');
   if(!btn || !crmSelectedUser || !canDo('kyc')) return;
   users[crmSelectedUser].kycStatus = btn.dataset.kyc;
   if(btn.dataset.kyc==='Onaylandı') pushNotification(crmSelectedUser, 'ok', 'KYC durumunuz onaylandı', 'Kimlik doğrulamanız tamamlandı.');
   else if(btn.dataset.kyc==='Reddedildi') pushNotification(crmSelectedUser, 'bad', 'KYC durumunuz reddedildi', 'Lütfen belgelerinizi kontrol edip tekrar yükleyin.');
+  await saveAdminUserChange(crmSelectedUser);
   renderCrmDetail();
 });
-document.getElementById('crm-kyc-docs').addEventListener('click', (e)=>{
+document.getElementById('crm-kyc-docs').addEventListener('click', async (e)=>{
   const btn = e.target.closest('button[data-kyc-action]');
   if(!btn || !crmSelectedUser || !canDo('kyc')) return;
   const u = users[crmSelectedUser];
@@ -3558,8 +3448,38 @@ document.getElementById('crm-kyc-docs').addEventListener('click', (e)=>{
   if(!doc) return;
   doc.status = btn.dataset.kycAction==='approve' ? 'Onaylandı' : 'Reddedildi';
   pushNotification(crmSelectedUser, doc.status==='Onaylandı'?'ok':'bad', doc.type+' belgesi '+(doc.status==='Onaylandı'?'onaylandı':'reddedildi'), doc.name);
+  await saveAdminUserChange(crmSelectedUser);
   renderCrmDetail();
 });
+
+/* ================= SAYFA AÇILIŞINDA OTURUM KONTROL ================= */
+(async function bootstrap(){
+  if(!currentToken){ showScreen('landing'); return; }
+  try{
+    const r = await fetch(API_BASE + '/api/me', {headers:{'Authorization':'Bearer '+currentToken}});
+    if(!r.ok){ localStorage.removeItem('bx_token'); currentToken = null; showScreen('landing'); return; }
+    const data = await r.json();
+    if(data.role === 'admin'){
+      currentAdmin = data.username;
+      admins[currentAdmin] = data.admin;
+      const ar = await fetch(API_BASE + '/api/admin/admins', {headers:{'Authorization':'Bearer '+currentToken}});
+      if(ar.ok){ const ad = await ar.json(); Object.assign(admins, ad.admins); }
+      await loadAllUsers();
+      showScreen('crm');
+      applyCrmPermissions();
+      return;
+    }
+    currentUsername = data.username;
+    users[currentUsername] = data.data;
+    showScreen('app');
+    fillProfile();
+    initMarketData();
+    renderAccountWidgets();
+    goPage('hesabim');
+  }catch(e){
+    showScreen('landing');
+  }
+})();
 </script>
 </body>
 </html>
