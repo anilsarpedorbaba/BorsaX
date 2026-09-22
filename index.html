@@ -322,7 +322,7 @@ svg{display:block;}
 .topbar{
   display:flex; align-items:center; justify-content:space-between; gap:20px;
   padding:15px 28px; border-bottom:1px solid var(--border-soft); background:rgba(8,9,16,0.72);
-  backdrop-filter:blur(10px); position:sticky; top:0; z-index:5; min-height:68px;
+  backdrop-filter:blur(10px); position:sticky; top:0; z-index:25; min-height:68px;   /* alttaki mobil menünün üzerinde kalsın (o menü daha düşük bir katmanda), aksi halde profil panelindeki Çıkış Yap onun arkasında kalıyordu */
 }
 .topbar-left{display:flex; align-items:center; gap:28px;}
 .tb-stat-label{font-size:11px; color:var(--text-dim); margin-bottom:3px; font-weight:500;}
@@ -996,6 +996,71 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
 .chart-range b.down{color:var(--red);}
 .chart-live-dot em{font-style:normal;}
 .chart-live-dot.closed span{background:var(--gray); box-shadow:none; animation:none;}
+
+/* ===== Yatırma / çekme: USD tutar alanı ===== */
+.amount-field{position:relative; margin-bottom:6px;}
+.amount-field .amount-input{margin-bottom:0; padding-right:72px;}
+.amount-suffix{position:absolute; right:16px; top:50%; transform:translateY(-50%); font-size:13px; font-weight:700; color:var(--text-dim); letter-spacing:.05em; pointer-events:none;}
+.amount-hint{font-size:12px; color:var(--text-dim); margin:0 0 16px; min-height:16px;}
+
+/* ===== Kaldıraç ===== */
+.lev-badge{display:inline-block; padding:2px 9px; border-radius:20px; background:var(--accent-soft); color:var(--accent); font-weight:700;}
+.lev-badge.hi{background:rgba(246,70,93,0.14); color:var(--red);}
+.order-note{font-size:11px; color:var(--text-dim); line-height:1.5; margin-top:8px;}
+.lev-head{display:flex; align-items:center; gap:20px; padding:10px 0 2px; flex-wrap:wrap;}
+.lev-value{font-size:38px; font-weight:800; letter-spacing:-0.02em; min-width:110px; color:var(--green);}
+.lev-value.mid{color:var(--accent);}
+.lev-value.high{color:var(--red);}
+.lev-desc{flex:1; min-width:220px; font-size:12px; color:var(--text-dim); line-height:1.6;}
+.lev-range{width:100%; accent-color:var(--accent); margin:16px 0 4px; cursor:pointer;}
+.lev-scale{display:flex; justify-content:space-between; font-size:10.5px; color:var(--text-dim2);}
+.lev-controls{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:16px;}
+.lev-chips{display:flex; gap:6px; flex-wrap:wrap; flex:1; min-width:200px;}
+.lev-chips button{padding:8px 12px; border-radius:9px; background:var(--bg); border:1px solid var(--border-soft); color:var(--text-dim); font-size:12px; font-weight:700; cursor:pointer;}
+.lev-chips button:hover{color:var(--text);}
+.lev-chips button.sel{background:var(--accent-soft); color:var(--accent); border-color:var(--accent);}
+.lev-num{width:84px !important; text-align:center;}
+
+/* ===== KYC görsel yükleme ===== */
+.kyc-warn{display:flex; gap:12px; background:rgba(246,70,93,0.10); border:1px solid rgba(246,70,93,0.5); border-radius:12px; padding:14px 16px; margin:0 0 16px;}
+.kyc-warn .icon{width:22px; height:22px; color:var(--red); flex-shrink:0; margin-top:1px;}
+.kyc-warn b{display:block; color:var(--red); font-size:13px; margin-bottom:4px; letter-spacing:.01em;}
+.kyc-warn span{display:block; font-size:12px; line-height:1.6; color:var(--text-dim);}
+.kyc-drop{display:flex; flex-direction:column; align-items:center; gap:6px; padding:22px 16px; border:1.5px dashed var(--border); border-radius:12px; cursor:pointer; color:var(--text-dim); font-size:12.5px; text-align:center; transition:border-color .15s, background .15s;}
+.kyc-drop:hover, .kyc-drop.drag{border-color:var(--accent); background:var(--accent-soft);}
+.kyc-drop .icon{width:22px; height:22px; color:var(--accent);}
+.kyc-drop small{font-size:11px; color:var(--text-dim2);}
+.kyc-confirm{display:flex; gap:10px; align-items:flex-start; margin:14px 0; font-size:12.5px; line-height:1.55; cursor:pointer;}
+.kyc-confirm input{margin-top:3px; accent-color:var(--accent); flex-shrink:0;}
+#kyc-file-list{margin:12px 0 4px;}
+.kyc-x{background:transparent; border:1px solid var(--border-soft); color:var(--text-dim); width:28px; height:28px; border-radius:8px; cursor:pointer; font-size:15px; line-height:1; flex-shrink:0;}
+.kyc-x:hover{color:var(--red); border-color:var(--red);}
+.kyc-gallery{display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; margin-top:14px;}
+.kyc-shot{background:var(--bg); border:1px solid var(--border-soft); border-radius:12px; overflow:hidden;}
+.kyc-shot img{width:100%; height:130px; object-fit:cover; display:block; cursor:zoom-in;}
+.kyc-shot .kyc-noimg{height:130px; display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--text-dim2);}
+.kyc-shot-meta{padding:8px 10px; font-size:11px; color:var(--text-dim); display:flex; justify-content:space-between; align-items:center; gap:6px;}
+#img-lightbox{position:fixed; inset:0; z-index:240; background:rgba(0,0,0,0.88); display:none; align-items:center; justify-content:center; padding:24px; cursor:zoom-out;}
+#img-lightbox.open{display:flex;}
+#img-lightbox img{max-width:100%; max-height:100%; border-radius:10px;}
+
+/* ===== CRM · mobilde çekmece menü =====
+   CRM'in kendi soldaki menüsü (Kullanıcılar / Yatırma Bilgileri / Yönetici Yönetimi) ana uygulamanınkinden
+   ayrı ve normal ekranda hep açık duruyor. Mobilde .sidebar tamamen gizleniyordu ve yerine hiçbir şey
+   konmamıştı, yani bu menüye mobilden ulaşmanın yolu yoktu. Aşağıdaki kurallar onu kaydırmalı bir çekmeceye çeviriyor. */
+.crm-menu-btn{display:none; background:transparent; border:1px solid var(--border-soft); color:var(--text); width:38px; height:38px; border-radius:10px; align-items:center; justify-content:center; flex-shrink:0; cursor:pointer;}
+.crm-menu-btn .icon{width:18px; height:18px;}
+#crm-sidebar-backdrop{display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:239;}
+#crm-sidebar-backdrop.open{display:block;}
+@media (max-width:840px){
+  #crm-sidebar{
+    position:fixed; top:0; left:0; z-index:240; width:78vw; max-width:300px;
+    transform:translateX(-100%); transition:transform .22s ease; box-shadow:0 0 40px rgba(0,0,0,.5);
+  }
+  #crm-sidebar.open{transform:translateX(0);}
+  #crm-app .topbar-left{display:flex; align-items:center; gap:12px;}
+  .crm-menu-btn{display:flex;}
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -1123,7 +1188,7 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
       </div>
       <div class="lp-feature-card">
         <div class="lp-feature-ic"><svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-        <b>Belge Yüklemek Yok</b><span>Kimlik belgesi, kart veya banka bilgisi istenmez; TC kimlik no alanı simülasyon içindir.</span>
+        <b>Gerçek Belge Yok</b><span>Gerçek kimlik belgesi, kart veya banka bilgisi istenmez; KYC adımında yalnızca örnek bir görsel yüklenir.</span>
       </div>
       <div class="lp-feature-card">
         <div class="lp-feature-ic"><svg class="icon" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
@@ -1502,7 +1567,24 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
             <div class="card-title">Kimlik Doğrulama (KYC) — Demo</div>
             <span class="crm-status-pill crm-status-pending" id="kyc-status-pill">—</span>
           </div>
-          <div class="page-desc" style="margin:6px 0 14px;">Eğitim amaçlı simülasyon: belge yüklemeniz veya kimlik fotoğrafı vermeniz gerekmez. Başvurunuz eğitmen onayına gider.</div>
+          <div class="page-desc" style="margin:6px 0 14px;">Eğitim amaçlı simülasyon: örnek bir görsel yükleyip başvurunuzu gönderin. Başvurunuz eğitmen onayına gider.</div>
+          <div class="kyc-warn" role="alert">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div>
+              <b>Buraya kimlik vb. belge YÜKLEMEYİNİZ</b>
+              <span>Bu bir simülasyondur. Kimlik kartı, pasaport, ehliyet, banka veya kredi kartı, fatura, selfie gibi gerçek kişisel belge ve fotoğraflarınızı yüklemeyin. Yalnızca önemsiz bir örnek görsel (ör. manzara fotoğrafı, rastgele bir ekran görüntüsü) yükleyin. Yanlışlıkla yüklediyseniz göndermeden önce silebilirsiniz.</span>
+            </div>
+          </div>
+          <div id="kyc-upload-area">
+            <label class="kyc-drop" id="kyc-drop" for="kyc-file-input">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <b>Örnek görsel seçin veya buraya sürükleyin</b>
+              <small>JPG, PNG veya WebP · en fazla 5 MB · en çok 3 dosya</small>
+            </label>
+            <input type="file" id="kyc-file-input" accept="image/jpeg,image/png,image/webp" multiple hidden>
+            <label class="kyc-confirm"><input type="checkbox" id="kyc-confirm"><span>Yüklediğim görselin gerçek bir kimlik, kart veya kişisel belge olmadığını onaylıyorum.</span></label>
+          </div>
+          <div id="kyc-file-list"></div>
           <button class="btn btn-primary" id="kyc-submit-btn">KYC Başvurusu Gönder</button>
         </div>
       </section>
@@ -1611,7 +1693,10 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
             </div>
 
             <div class="order-summary">
+              <div class="order-row"><span>Kaldıraç</span><span class="mono lev-badge" id="order-lev">×1</span></div>
+              <div class="order-row"><span>Pozisyon Büyüklüğü</span><span class="mono" id="order-size">--</span></div>
               <div class="order-row"><span>Tahmini Değer</span><span class="mono" id="order-value">--</span></div>
+              <div class="order-note" id="order-lev-note" hidden>Kaldıraç, açtığınız pozisyonun büyüklüğünü ve dolayısıyla kâr ve zararı aynı oranda büyütür.</div>
             </div>
 
             <div class="trade-actions">
@@ -1639,13 +1724,13 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
             </div>
             <div id="dep-info" style="margin-top:18px;"></div>
             <div class="card-title" style="margin:22px 0 12px;">Tutar</div>
-            <input type="text" class="amount-input mono js-amount-target" id="dep-amount" value="100.000">
-            <div class="amount-currency">TRY</div>
+            <div class="amount-field"><input type="text" class="amount-input mono js-amount-target" id="dep-amount" value="2.500" inputmode="decimal" autocomplete="off"><span class="amount-suffix">USD</span></div>
+            <div class="amount-hint" id="dep-fx-hint"></div>
             <div class="amount-quick">
+              <button data-amt="250">250</button>
+              <button data-amt="1.000">1.000</button>
+              <button data-amt="2.500" class="sel">2.500</button>
               <button data-amt="10.000">10.000</button>
-              <button data-amt="50.000">50.000</button>
-              <button data-amt="100.000" class="sel">100.000</button>
-              <button data-amt="500.000">500.000</button>
             </div>
             <div class="card-title" style="margin:18px 0 8px;">Not (opsiyonel)</div>
             <input type="text" class="amount-input" id="dep-note" maxlength="170" placeholder="Eğitmene not" style="font-size:13px; padding:12px 14px;">
@@ -1690,13 +1775,13 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
               </div>
             </div>
             <div class="card-title" style="margin:22px 0 12px;">Tutar</div>
-            <input type="text" class="amount-input mono js-amount-target" id="wd-amount" value="10.000">
-            <div class="amount-currency">TRY</div>
+            <div class="amount-field"><input type="text" class="amount-input mono js-amount-target" id="wd-amount" value="250" inputmode="decimal" autocomplete="off"><span class="amount-suffix">USD</span></div>
+            <div class="amount-hint" id="wd-fx-hint"></div>
             <div class="amount-quick">
+              <button data-amt="250" class="sel">250</button>
+              <button data-amt="1.000">1.000</button>
+              <button data-amt="2.500">2.500</button>
               <button data-amt="10.000">10.000</button>
-              <button data-amt="50.000">50.000</button>
-              <button data-amt="100.000" class="sel">100.000</button>
-              <button data-amt="500.000">500.000</button>
             </div>
             <div class="card-title" style="margin:18px 0 8px;">Not (opsiyonel)</div>
             <input type="text" class="amount-input" id="wd-note" maxlength="60" placeholder="Eğitmene not" style="font-size:13px; padding:12px 14px;">
@@ -1824,7 +1909,7 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
 <!-- ================= CRM (ADMIN) ================= -->
 <div id="crm-app">
   <div class="shell">
-    <aside class="sidebar">
+    <aside class="sidebar" id="crm-sidebar">
       <div class="sidebar-logo">
         <div class="sidebar-logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20V10"/><path d="M12 20V4"/><path d="M18 20v-7"/></svg></div>
         <div class="sidebar-logo-text">Borsa<span>X</span></div>
@@ -1838,10 +1923,14 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
         <div class="sidebar-brand-foot" id="crm-admin-name">Borsa<span style="color:var(--accent)">X</span> CRM © 2026</div>
       </div>
     </aside>
+    <div id="crm-sidebar-backdrop"></div>
 
     <div class="main">
       <header class="topbar">
-        <div class="topbar-left"><div class="tb-page-label"><svg class="icon" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21c0-4.4 3.6-7 7-7s7 2.6 7 7"/></svg>CRM Paneli</div></div>
+        <div class="topbar-left">
+          <button type="button" class="crm-menu-btn" id="crm-menu-btn" aria-label="Menüyü aç" aria-expanded="false" aria-controls="crm-sidebar"><svg class="icon" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+          <div class="tb-page-label"><svg class="icon" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21c0-4.4 3.6-7 7-7s7 2.6 7 7"/></svg>CRM Paneli</div>
+        </div>
         <div class="topbar-right"><div class="avatar" style="cursor:default;" id="crm-avatar">A</div></div>
       </header>
 
@@ -1989,6 +2078,23 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
             </div>
           </div>
 
+          <div class="card section-gap" id="crm-leverage-card">
+            <div class="card-title"><svg class="icon" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>Kaldıraç</div>
+            <div class="lev-head">
+              <div class="lev-value mono" id="crm-lev-value">×1</div>
+              <div class="lev-desc">Kullanıcının bundan sonra açacağı pozisyonlarda miktar bu çarpanla büyür; kâr ve zarar da aynı oranda değişir. Kullanıcı kaldıracı işlem ekranında ve pozisyon etiketinde görür. Açık pozisyonlar etkilenmez.</div>
+            </div>
+            <input type="range" class="lev-range" id="crm-lev-range" min="1" max="100" step="1" value="1" aria-label="Kaldıraç">
+            <div class="lev-scale"><span>1x</span><span>25x</span><span>50x</span><span>75x</span><span>100x</span></div>
+            <div class="lev-controls">
+              <div class="lev-chips" id="crm-lev-chips">
+                <button type="button" data-lev="1">1x</button><button type="button" data-lev="2">2x</button><button type="button" data-lev="5">5x</button><button type="button" data-lev="10">10x</button><button type="button" data-lev="25">25x</button><button type="button" data-lev="50">50x</button><button type="button" data-lev="100">100x</button>
+              </div>
+              <input type="number" class="acct-input mono lev-num" id="crm-lev-input" min="1" max="100" step="1" value="1" aria-label="Kaldıraç değeri">
+              <button type="button" class="btn btn-primary" id="crm-lev-save" disabled>Kaydet</button>
+            </div>
+          </div>
+
           <div class="grid-2 section-gap">
             <div class="card" id="crm-balance-form-card">
               <div class="card-title" style="margin-bottom:14px;">Bakiye Ekle / Çıkar</div>
@@ -2067,6 +2173,11 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
                 <button data-kyc="Onaylandı">Onaylandı</button>
                 <button data-kyc="Reddedildi">Reddedildi</button>
               </div>
+            </div>
+            <div class="card section-gap">
+              <div class="card-title" style="margin-bottom:4px;">Yüklenen Görseller</div>
+              <div class="page-desc" style="margin-bottom:2px;">Görsele tıklayınca büyür. Kullanıcı yanlışlıkla gerçek bir kimlik/kart belgesi yüklediyse <b>Sil</b> ile kalıcı olarak kaldırın.</div>
+              <div id="crm-kyc-gallery"></div>
             </div>
           </div>
 
@@ -2148,6 +2259,7 @@ async function loadUserData(){
     notifications: (data.notifications || []).map(n=>({id:n.id, type:n.type, title:n.title, desc:n.description, date:trDate(n.created_at), read:n.read}))
   };
   fetchOwnSettings();
+  fetchMyLeverage();
 }
 async function refreshUserData(){
   await loadUserData();
@@ -2170,7 +2282,9 @@ const ERR_MAP = {
   kyc_not_allowed: 'KYC başvurusu şu an gönderilemez.',
   profile_missing: 'Profil bulunamadı.',
   weak_password: 'Şifre en az 8 karakter olmalı.',
-  invalid_tc: 'Geçersiz TC kimlik numarası (11 haneli olmalı, 0 ile başlamamalı).'
+  invalid_tc: 'Geçersiz TC kimlik numarası (11 haneli olmalı, 0 ile başlamamalı).',
+  too_many_files: 'En fazla 3 görsel yükleyebilirsiniz.',
+  kyc_locked: 'KYC başvurunuz işleme alındığı için görsel eklenemez ya da silinemez.'
 };
 function friendlyError(e){
   const m = String((e && (e.message || e.details)) || '');
@@ -2416,6 +2530,21 @@ async function doLogout(){
 document.getElementById('logout-btn').addEventListener('click', doLogout);
 document.getElementById('profile-logout').addEventListener('click', doLogout);
 document.getElementById('crm-logout-btn').addEventListener('click', doLogout);
+
+/* Mobil çekmece menü */
+function crmMenuToggle(open){
+  const sb = document.getElementById('crm-sidebar');
+  const bd = document.getElementById('crm-sidebar-backdrop');
+  const btn = document.getElementById('crm-menu-btn');
+  sb.classList.toggle('open', open);
+  bd.classList.toggle('open', open);
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+document.querySelectorAll('#crm-menu-btn').forEach(b=>b.addEventListener('click', ()=>crmMenuToggle(!document.getElementById('crm-sidebar').classList.contains('open'))));
+document.getElementById('crm-sidebar-backdrop').addEventListener('click', ()=>crmMenuToggle(false));
+document.getElementById('crm-sidebar').addEventListener('click', (e)=>{ if(e.target.closest('.nav-item')) crmMenuToggle(false); });
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') crmMenuToggle(false); });
+
 document.getElementById('user-avatar').addEventListener('click', (e)=>{
   e.stopPropagation();
   document.getElementById('profile-panel').classList.toggle('open');
@@ -2500,6 +2629,7 @@ function goPage(name){
   renderTopbarLeft(name);
   if(name==='ayarlar') loadSettingsPage();
   if(name==='yatirma'){ renderDepositInfo(); loadDepositInfo(); }
+  if(name==='hesabim') loadKycFiles();
   window.scrollTo(0,0);
 }
 document.querySelectorAll('[data-page]').forEach(el=>{
@@ -2898,6 +3028,16 @@ function dispCur(){
 function toDisp(tryVal){ return dispCur()==='TRY' ? tryVal : tryVal / fxRate(); }
 function fromDisp(v){ return dispCur()==='TRY' ? v : v * fxRate(); }
 function cashText(tryVal){ return fmtMoney(toDisp(tryVal)) + ' ' + dispCur(); }
+function usdText(tryVal){ return fmtMoney(tryVal / fxRate()) + ' USD'; }            // yatırma/çekme her zaman USD
+function usdToTry(v){ return Math.round(v * fxRate() * 100) / 100; }
+function updateFxHints(){                                                             // kutunun altında TRY karşılığı ve kur
+  [['dep-amount','dep-fx-hint'],['wd-amount','wd-fx-hint']].forEach(([inp, hint])=>{
+    const i = document.getElementById(inp), h = document.getElementById(hint);
+    if(!i || !h) return;
+    const v = parseAmount(i.value), fx = fxRate();
+    h.textContent = (isFinite(v) && v > 0 ? '≈ ' + fmtMoney(v * fx) + ' TRY · ' : '') + '1 USD = ' + fmtMoney(fx) + ' TRY';
+  });
+}
 function curMark(){ const c = dispCur(); return c==='TRY' ? '₺' : c==='USD' ? '$' : 'USDT'; }
 function cashBrief(tryVal){                                    // üst çubuk için kısa biçim: ₺1.234,00 / $1.234,00 / 1.234,00 USDT
   const n = fmtMoney(toDisp(tryVal)); const c = dispCur();
@@ -2926,12 +3066,13 @@ function convertTxText(txt){                                   // sunucudan gele
 }
 
 /* Tutar formlarındaki birim etiketi, hızlı tutar düğmeleri ve varsayılan tutarlar para birimine göre değişir. */
+const USD_QUICK = ['250','1.000','2.500','10.000'];
 const CUR_UI = {
-  'page-yatirma':  { input:'dep-amount',      quick:{ TRY:['10.000','50.000','100.000','500.000'], USD:['250','1.000','2.500','10.000'] }, def:{ TRY:'100.000', USD:'2.500' } },
-  'page-cekme':    { input:'wd-amount',       quick:{ TRY:['10.000','50.000','100.000','500.000'], USD:['250','1.000','2.500','10.000'] }, def:{ TRY:'10.000',  USD:'250' } },
-  'page-transfer': { input:'transfer-amount', quick:{ TRY:['500','1.000','5.000','10.000'],         USD:['10','25','100','250'] },          def:{ TRY:'1.000',   USD:'25' } }
+  'page-yatirma':  { input:'dep-amount',      fixed:true, quick:{ TRY:USD_QUICK, USD:USD_QUICK }, def:{ TRY:'2.500', USD:'2.500' } },   // yatırma ve çekme her zaman USD
+  'page-cekme':    { input:'wd-amount',       fixed:true, quick:{ TRY:USD_QUICK, USD:USD_QUICK }, def:{ TRY:'250',   USD:'250' } },
+  'page-transfer': { input:'transfer-amount', quick:{ TRY:['500','1.000','5.000','10.000'], USD:['10','25','100','250'] }, def:{ TRY:'1.000', USD:'25' } }
 };
-let lastUiCur = null;
+let lastUiCur = null, uiInitDone = false;
 function applyCurrencyUI(){
   const cur = dispCur();
   if(cur === lastUiCur) return;
@@ -2939,6 +3080,7 @@ function applyCurrencyUI(){
   const set = cur==='TRY' ? 'TRY' : 'USD';           // USDT, USD ile aynı ölçekte
   Object.keys(CUR_UI).forEach(pid=>{
     const cfg = CUR_UI[pid];
+    if(cfg.fixed && uiInitDone) return;              // para birimi değişince yatırma/çekme tutarını sıfırlama
     const page = document.getElementById(pid); if(!page) return;
     page.querySelectorAll('.amount-currency').forEach(el=>{
       if(/^(TRY|USD|USDT)$/.test(el.textContent.trim())) el.textContent = cur;
@@ -2949,6 +3091,7 @@ function applyCurrencyUI(){
     if(input) input.value = cfg.def[set];
     btns.forEach(b=> b.classList.toggle('sel', b.dataset.amt === cfg.def[set]));
   });
+  uiInitDone = true;
   const lbl = document.getElementById('alloc-center-label'); if(lbl) lbl.textContent = 'TOPLAM ' + cur;
 }
 
@@ -3025,7 +3168,7 @@ function renderBalanceWidgets(){
   const tFutures = document.getElementById('transfer-futures-balance');
   if(tFutures) tFutures.textContent = cashText(u.futuresBalance);
   const wdHint = document.getElementById('withdraw-available-hint');
-  if(wdHint) wdHint.textContent = cashText(u.balance);
+  if(wdHint) wdHint.textContent = usdText(u.balance);
   const heroChange = document.getElementById('hero-change');
   if(heroChange){
     const pct = cashTotal>0 ? (openPl/cashTotal*100) : 0;   // yüzde, nakit bakiyeye göre
@@ -3046,6 +3189,7 @@ function renderAccountWidgets(){
   if(!currentUid || !currentUser) return;
   const u = cu();
   applyCurrencyUI();
+  updateFxHints();
   renderBalanceWidgets();
   const txBody = document.getElementById('recent-tx-body');
   if(txBody){
@@ -3138,7 +3282,7 @@ function renderAccountWidgets(){
     }
   }
 
-  const fundRow = (t)=>`<div class="tx-row"><div>${esc(t.method)}<div class="tx-date">${esc(t.date)}</div></div><div style="text-align:right;"><div class="mono">${esc(cashText(t.amountNum))}</div><span class="crm-status-pill ${FUND_STATUS_CLASS[t.status]||''}">${esc(t.status)}</span></div></div>`;
+  const fundRow = (t)=>`<div class="tx-row"><div>${esc(t.method)}<div class="tx-date">${esc(t.date)}</div></div><div style="text-align:right;"><div class="mono">${esc(usdText(t.amountNum))}</div><span class="crm-status-pill ${FUND_STATUS_CLASS[t.status]||''}">${esc(t.status)}</span></div></div>`;
   const dh = document.getElementById('deposit-history');
   if(dh) dh.innerHTML = u.depositHistory.length ? u.depositHistory.map(fundRow).join('') : '<div class="closed-empty">Henüz talep yok.</div>';
   const wh = document.getElementById('withdraw-history');
@@ -3147,7 +3291,7 @@ function renderAccountWidgets(){
   if(kp){
     kp.textContent = u.kycStatus;
     kp.className = 'crm-status-pill '+(FUND_STATUS_CLASS[u.kycStatus]||'crm-status-pending');
-    document.getElementById('kyc-submit-btn').style.display = (u.kycStatus==='Doğrulanmadı' || u.kycStatus==='Reddedildi') ? '' : 'none';
+    updateKycUI();
   }
   const th_ = document.getElementById('transfer-history');
   if(th_) th_.innerHTML = u.transferHistory.map(t=>`<div class="tx-row"><div>${t.label}<div class="tx-date">${t.date}</div></div><div class="mono">${esc(cashText(t.amountNum))}</div></div>`).join('');
@@ -3266,6 +3410,8 @@ function renderDepositInfo(){
   }
 }
 document.getElementById('dep-methods').addEventListener('click', renderDepositInfo);
+['dep-amount','wd-amount'].forEach(id=>document.getElementById(id).addEventListener('input', updateFxHints));
+['page-yatirma','page-cekme'].forEach(pid=>document.getElementById(pid).addEventListener('click', (e)=>{ if(e.target.closest('.amount-quick')) setTimeout(updateFxHints, 0); }));
 document.getElementById('dep-info').addEventListener('click', async (e)=>{
   const chip = e.target.closest('[data-net]');
   if(chip){ depNet = chip.dataset.net; renderDepositInfo(); return; }
@@ -3340,7 +3486,7 @@ async function submitFunding(kind){
   if(fundBusy) return;
   const pre = kind==='deposit' ? 'dep' : 'wd';
   const amtDisp = parseAmount(document.getElementById(pre+'-amount').value);
-  let amt = tryFromInput(amtDisp);                              // sunucu TRY bekler
+  let amt = (kind==='deposit' || kind==='withdraw') ? usdToTry(amtDisp) : tryFromInput(amtDisp);   // tutar USD girilir, sunucu TRY bekler
   const m = document.querySelector('#page-'+(kind==='deposit'?'yatirma':'cekme')+' .method-item.active');
   const method = FUND_METHODS[m ? parseInt(m.dataset.method,10) : 0];
   let note = document.getElementById(pre+'-note').value.trim();
@@ -3363,7 +3509,7 @@ async function submitFunding(kind){
     document.getElementById(pre+'-note').value = '';
     if(kind==='withdraw'){ ['wd-recipient','wd-iban','wd-tc','wd-address'].forEach(id=>{ document.getElementById(id).value = ''; }); wdNet = null; renderWithdrawFields(); }
     await refreshUserData();
-    showSuccessModal(kind==='deposit' ? 'Yatırma Talebi Alındı' : 'Çekim Talebi Alındı', fmtMoney(amtDisp)+' '+dispCur()+' · eğitmen onayı bekleniyor.');
+    showSuccessModal(kind==='deposit' ? 'Yatırma Talebi Alındı' : 'Çekim Talebi Alındı', fmtMoney(amtDisp)+' USD · eğitmen onayı bekleniyor.');
   }catch(e){
     showErrorModal('Talep Gönderilemedi', friendlyError(e));
   }finally{
@@ -3373,14 +3519,147 @@ async function submitFunding(kind){
 document.getElementById('dep-submit').addEventListener('click', ()=>submitFunding('deposit'));
 document.getElementById('wd-submit').addEventListener('click', ()=>submitFunding('withdraw'));
 
-document.getElementById('kyc-submit-btn').addEventListener('click', async ()=>{
+/* ================= KYC · GÖRSEL YÜKLEME ================= */
+const KYC_BUCKET = 'kyc-uploads', KYC_MAX_FILES = 3, KYC_MAX_BYTES = 5 * 1024 * 1024;
+const KYC_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+let kycPending = [];        // henüz gönderilmemiş, seçilmiş dosyalar
+let kycSent = [];           // sunucuya yüklenmiş dosyalar: {id, path, file_name, size_bytes, created_at, url}
+
+function fmtBytes(n){ n = Number(n) || 0; return n >= 1048576 ? (n/1048576).toFixed(1).replace('.', ',') + ' MB' : Math.max(1, Math.round(n/1024)) + ' KB'; }
+function kycObjectName(file){
+  const ext = ((file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5)) || 'jpg';
+  return Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;     // özgün ad dosya yoluna yazılmaz
+}
+function kycErrorText(e){
+  const m = String((e && (e.message || e.error)) || e || '');
+  if(/bucket not found|not found|404/i.test(m)) return 'Görsel yükleme henüz kurulmamış görünüyor. Lütfen eğitmeninize bildirin.';
+  if(/row-level security|policy|403|unauthorized/i.test(m)) return 'Görsel yükleme izni verilmemiş. Lütfen eğitmeninize bildirin.';
+  return friendlyError(e);
+}
+function kycRow(url, name, sub, delAttrs){
+  return `<div class="kyc-doc-row">${url ? `<img src="${esc(url)}" alt="">` : '<div class="kyc-doc-icon">🖼</div>'}
+    <div class="kyc-doc-mid"><b>${esc(name)}</b><span>${esc(sub)}</span></div>
+    ${delAttrs ? `<button type="button" class="kyc-x" ${delAttrs} aria-label="Kaldır" title="Kaldır">×</button>` : ''}</div>`;
+}
+function updateKycUI(){
+  if(!currentUid) return;
+  const u = cu();
+  const editable = u.kycStatus==='Doğrulanmadı' || u.kycStatus==='Reddedildi';
+  const area = document.getElementById('kyc-upload-area'), btn = document.getElementById('kyc-submit-btn');
+  if(area) area.style.display = editable ? '' : 'none';
+  if(btn) btn.style.display = editable ? '' : 'none';
+  const host = document.getElementById('kyc-file-list');
+  if(!host) return;
+  host.innerHTML =
+    kycSent.map((f, i)=>kycRow(f.url, f.file_name, fmtBytes(f.size_bytes) + ' · yüklendi', editable ? `data-kind="sent" data-i="${i}"` : '')).join('') +
+    kycPending.map((f, i)=>kycRow(f._url, f.name, fmtBytes(f.size) + ' · gönderilmeyi bekliyor', `data-kind="pending" data-i="${i}"`)).join('');
+}
+async function loadKycFiles(){
+  if(!currentUid) return;
   try{
+    const { data, error } = await sb.rpc('list_my_kyc_files');
+    if(error) throw error;
+    const files = Array.isArray(data) ? data : [];
+    const urls = {};
+    if(files.length){
+      const r = await sb.storage.from(KYC_BUCKET).createSignedUrls(files.map(f=>f.path), 600);
+      (r.data || []).forEach(x=>{ if(x && x.path && x.signedUrl) urls[x.path] = x.signedUrl; });
+    }
+    kycSent = files.map(f=>Object.assign({}, f, { url: urls[f.path] || '' }));
+  }catch(e){
+    console.warn('KYC dosyaları okunamadı (kyc_upload.sql çalıştırıldı mı?):', e);
+    kycSent = [];
+  }
+  updateKycUI();
+}
+function kycAddFiles(list){
+  const files = Array.from(list || []);
+  for(const f of files){
+    if(kycSent.length + kycPending.length >= KYC_MAX_FILES){ showToast('En fazla ' + KYC_MAX_FILES + ' görsel yükleyebilirsiniz.', 'err'); break; }
+    if(!KYC_TYPES.includes(f.type)){ showToast('"' + f.name + '" desteklenmiyor. Yalnızca JPG, PNG veya WebP.', 'err'); continue; }
+    if(f.size > KYC_MAX_BYTES){ showToast('"' + f.name + '" 5 MB\'tan büyük.', 'err'); continue; }
+    try{ f._url = URL.createObjectURL(f); }catch(_){ f._url = ''; }
+    kycPending.push(f);
+  }
+  updateKycUI();
+}
+document.getElementById('kyc-file-input').addEventListener('change', (e)=>{ kycAddFiles(e.target.files); e.target.value = ''; });
+const kycDrop = document.getElementById('kyc-drop');
+['dragenter', 'dragover'].forEach(ev=>kycDrop.addEventListener(ev, (e)=>{ e.preventDefault(); kycDrop.classList.add('drag'); }));
+['dragleave', 'drop'].forEach(ev=>kycDrop.addEventListener(ev, (e)=>{ e.preventDefault(); kycDrop.classList.remove('drag'); }));
+kycDrop.addEventListener('drop', (e)=>{ kycAddFiles(e.dataTransfer && e.dataTransfer.files); });
+
+function openLightbox(url){
+  if(!url) return;
+  let lb = document.getElementById('img-lightbox');
+  if(!lb){
+    lb = document.createElement('div');
+    lb.id = 'img-lightbox';
+    lb.innerHTML = '<img alt="">';
+    lb.addEventListener('click', ()=>lb.classList.remove('open'));
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') lb.classList.remove('open'); });
+    document.body.appendChild(lb);
+  }
+  lb.querySelector('img').src = url;
+  lb.classList.add('open');
+}
+
+document.getElementById('kyc-file-list').addEventListener('click', async (e)=>{
+  const img = e.target.closest('.kyc-doc-row img');
+  if(img){ openLightbox(img.src); return; }
+  const x = e.target.closest('.kyc-x');
+  if(!x) return;
+  const i = Number(x.dataset.i);
+  if(x.dataset.kind === 'pending'){
+    const f = kycPending[i];
+    if(f && f._url){ try{ URL.revokeObjectURL(f._url); }catch(_){} }
+    kycPending.splice(i, 1);
+    updateKycUI();
+    return;
+  }
+  const f = kycSent[i];
+  if(!f) return;
+  try{
+    const { error } = await sb.rpc('delete_my_kyc_file', { p_id: f.id });
+    if(error) throw error;
+    await sb.storage.from(KYC_BUCKET).remove([f.path]);
+    showToast('Görsel silindi.');
+  }catch(err){
+    showErrorModal('Silinemedi', kycErrorText(err));
+  }
+  await loadKycFiles();
+});
+
+document.getElementById('kyc-submit-btn').addEventListener('click', async ()=>{
+  const btn = document.getElementById('kyc-submit-btn');
+  if(kycSent.length + kycPending.length === 0){ showErrorModal('Görsel Seçin', 'Göndermek için en az bir örnek görsel seçin.'); return; }
+  if(!document.getElementById('kyc-confirm').checked){
+    showErrorModal('Onay Gerekli', 'Devam etmek için yüklediğiniz görselin gerçek bir kimlik, kart veya kişisel belge olmadığını onaylayın.');
+    return;
+  }
+  btn.disabled = true; btn.textContent = 'Gönderiliyor…';
+  try{
+    for(const file of kycPending.slice()){
+      const path = currentUid + '/' + kycObjectName(file);
+      const up = await sb.storage.from(KYC_BUCKET).upload(path, file, { contentType: file.type, upsert: false });
+      if(up.error) throw up.error;
+      const { error: regErr } = await sb.rpc('register_kyc_file', { p_path: path, p_name: String(file.name).slice(0, 80), p_mime: file.type, p_size: file.size });
+      if(regErr){ await sb.storage.from(KYC_BUCKET).remove([path]); throw regErr; }
+      if(file._url){ try{ URL.revokeObjectURL(file._url); }catch(_){} }
+      kycPending = kycPending.filter(f=>f !== file);
+    }
     const { error } = await sb.rpc('submit_kyc');
     if(error) throw error;
+    document.getElementById('kyc-confirm').checked = false;
+    await loadKycFiles();
     await refreshUserData();
-    showSuccessModal('KYC Başvurusu Alındı', 'Demo KYC başvurunuz eğitmen onayına gönderildi.');
+    showSuccessModal('KYC Başvurusu Alındı', 'Görselleriniz eğitmene iletildi ve başvurunuz onaya gönderildi.');
   }catch(e){
-    showErrorModal('Başvuru Gönderilemedi', friendlyError(e));
+    console.warn('KYC gönderimi başarısız:', e);
+    showErrorModal('Başvuru Gönderilemedi', kycErrorText(e));
+  }finally{
+    btn.disabled = false; btn.textContent = 'KYC Başvurusu Gönder';
+    updateKycUI();
   }
 });
 
@@ -3565,6 +3844,7 @@ function openTrade(cat, item){
   currentTimeframe = '1G';
   document.querySelectorAll('#tf-tabs .tf-btn').forEach(b=>b.classList.toggle('active', b.dataset.tf==='1G'));
   generateChartData(item);
+  fetchMyLeverage();
   renderTradeHeader();
   renderChart();
   updateOrderSummary();
@@ -3698,8 +3978,33 @@ function updateOrderSummary(){
   const item = marketData[currentTrade.cat].find(x=>x.sym===currentTrade.tickerSym);
   const price = item ? item.price : 0;
   const lot = parseFloat(document.getElementById('lot-input').value) || 0;
-  const notional = price*lot;
-  document.getElementById('order-value').textContent = fmtPrice(notional)+' '+currentTrade.currency;
+  const lev = myLeverage || 1;
+  const eff = Math.round(lot * lev * 1e8) / 1e8;
+  const unit = currentTrade.cat==='crypto' ? currentTrade.tickerSym : 'Lot';
+  const levEl = document.getElementById('order-lev');
+  if(levEl){ levEl.textContent = '×' + lev; levEl.classList.toggle('hi', lev > 50); }
+  const sizeEl = document.getElementById('order-size');
+  if(sizeEl) sizeEl.textContent = lev > 1 ? eff + ' ' + unit + ' (' + lot + ' × ' + lev + ')' : lot + ' ' + unit;
+  const note = document.getElementById('order-lev-note'); if(note) note.hidden = !(lev > 1);
+  document.getElementById('order-value').textContent = fmtPrice(price * eff)+' '+currentTrade.currency;
+}
+
+/* Hesabın kaldıracı CRM'den ayarlanır (1–100). Kullanıcı bunu işlem ekranında görür; pozisyonun miktarı bu çarpanla büyür,
+   kâr/zarar sunucuda miktar × fiyat farkı olarak hesaplandığı için aynı oranda değişir. */
+let myLeverage = 1;
+async function fetchMyLeverage(){
+  if(!currentUid) return myLeverage;
+  try{
+    const { data, error } = await sb.rpc('get_my_leverage');
+    if(error) throw error;
+    const v = Math.round(Number(data));
+    myLeverage = (v >= 1 && v <= 100) ? v : 1;
+  }catch(e){
+    console.warn('get_my_leverage çağrısı başarısız (leverage.sql çalıştırıldı mı?):', e);
+    myLeverage = 1;
+  }
+  try{ updateOrderSummary(); }catch(_){}
+  return myLeverage;
 }
 
 document.getElementById('trade-back').addEventListener('click', ()=>goPage('piyasa'));
@@ -3741,14 +4046,16 @@ async function executeTrade(side){
   const unitLabel = currentTrade.cat==='crypto' ? currentTrade.tickerSym : 'Lot';
   tradeBusy = true;
   try{
+    const lev = await fetchMyLeverage();                          // CRM'den ayarlanan güncel kaldıraç
+    const effQty = Math.round(lot * lev * 1e8) / 1e8;
     const { error } = await sb.rpc('open_position', {
       p_cat: currentTrade.cat,
       p_ticker: currentTrade.tickerSym,
       p_sym_display: currentTrade.symDisplay,
       p_color: currentTrade.color,
       p_side: side==='buy' ? 'Long' : 'Short',
-      p_qty: lot,
-      p_qty_label: lot+' '+unitLabel,
+      p_qty: effQty,
+      p_qty_label: lev > 1 ? effQty+' '+unitLabel+' ('+lot+' × '+lev+'x)' : lot+' '+unitLabel,
       p_entry: item.price,
       p_currency: currentTrade.currency
     });
@@ -3854,7 +4161,7 @@ async function openCrmUser(uid){
 async function reloadCrmDetail(){
   if(!crmSelectedUid) return;
   crmDetail = await rpcOrThrow('admin_get_user', { p_uid: crmSelectedUid });
-  await loadCrmTc();
+  await Promise.all([loadCrmTc(), loadCrmKyc(), loadCrmLeverage()]);
   renderCrmDetail();
 }
 async function loadCrmTc(){
@@ -3889,6 +4196,110 @@ function crmShowView(view){
 }
 document.getElementById('crm-nav-users').addEventListener('click', ()=>crmShowView('users'));
 document.getElementById('crm-nav-admins').addEventListener('click', ()=>{ if(canDo('manageAdmins')) crmShowView('admins'); });
+
+/* ----- Kaldıraç (CRM) ----- */
+let crmLev = { ok:false, value:1 };
+async function loadCrmLeverage(){
+  crmLev = { ok:false, value:1 };
+  if(!canDo('positions')) return;
+  try{
+    const v = await rpcOrThrow('admin_get_user_leverage', { p_uid: crmSelectedUid });
+    crmLev = { ok:true, value: Math.min(100, Math.max(1, Math.round(Number(v)) || 1)) };
+  }catch(e){
+    console.warn('admin_get_user_leverage başarısız (leverage.sql çalıştırıldı mı?):', e);
+  }
+}
+function crmLevRead(){
+  const v = Math.round(Number(document.getElementById('crm-lev-input').value));
+  return Math.min(100, Math.max(1, isFinite(v) ? v : 1));
+}
+function crmLevPaint(v){
+  const val = document.getElementById('crm-lev-value');
+  val.textContent = '×' + v;
+  val.className = 'lev-value mono ' + (v <= 10 ? '' : v <= 50 ? 'mid' : 'high');
+  document.getElementById('crm-lev-range').value = v;
+  document.getElementById('crm-lev-input').value = v;
+  document.querySelectorAll('#crm-lev-chips button').forEach(b=>b.classList.toggle('sel', Number(b.dataset.lev) === v));
+  document.getElementById('crm-lev-save').disabled = !crmLev.ok || v === crmLev.value;
+}
+function renderCrmLeverage(){
+  const card = document.getElementById('crm-leverage-card');
+  if(!card) return;
+  card.style.display = canDo('positions') ? '' : 'none';
+  ['crm-lev-range', 'crm-lev-input'].forEach(id=>{ document.getElementById(id).disabled = !crmLev.ok; });
+  document.querySelectorAll('#crm-lev-chips button').forEach(b=>{ b.disabled = !crmLev.ok; });
+  crmLevPaint(crmLev.value);
+}
+document.getElementById('crm-lev-range').addEventListener('input', (e)=>crmLevPaint(Number(e.target.value)));
+document.getElementById('crm-lev-input').addEventListener('input', ()=>crmLevPaint(crmLevRead()));
+document.getElementById('crm-lev-chips').addEventListener('click', (e)=>{
+  const b = e.target.closest('button[data-lev]');
+  if(b && !b.disabled) crmLevPaint(Number(b.dataset.lev));
+});
+document.getElementById('crm-lev-save').addEventListener('click', ()=>{
+  if(!crmSelectedUid || !canDo('positions')) return;
+  const v = crmLevRead();
+  const btn = document.getElementById('crm-lev-save');
+  btn.disabled = true; btn.textContent = 'Kaydediliyor…';
+  crmAction(async ()=>{
+    try{
+      await rpcOrThrow('admin_set_user_leverage', { p_uid: crmSelectedUid, p_leverage: v });
+      await reloadCrmDetail();
+      showToast('Kaldıraç ×' + v + ' olarak kaydedildi.');
+    } finally {
+      btn.textContent = 'Kaydet';
+      crmLevPaint(crmLevRead());
+    }
+  });
+});
+
+/* ----- KYC görselleri (CRM) ----- */
+let crmKyc = { ok:false, files:[] };
+async function loadCrmKyc(){
+  crmKyc = { ok:false, files:[] };
+  if(!canDo('kyc')) return;
+  try{
+    const data = await rpcOrThrow('admin_list_kyc_files', { p_uid: crmSelectedUid });
+    const files = Array.isArray(data) ? data : [];
+    const urls = {};
+    if(files.length){
+      const r = await sb.storage.from(KYC_BUCKET).createSignedUrls(files.map(f=>f.path), 600);
+      (r.data || []).forEach(x=>{ if(x && x.path && x.signedUrl) urls[x.path] = x.signedUrl; });
+    }
+    crmKyc = { ok:true, files: files.map(f=>Object.assign({}, f, { url: urls[f.path] || '' })) };
+  }catch(e){
+    console.warn('admin_list_kyc_files başarısız (kyc_upload.sql çalıştırıldı mı?):', e);
+  }
+}
+function renderCrmKyc(){
+  const tab = document.querySelector('[data-crmtab="kyc"]');
+  const n = crmKyc.files.length;
+  if(tab) tab.textContent = 'KYC Durumu' + (n ? ' (' + n + ')' : '');
+  const host = document.getElementById('crm-kyc-gallery');
+  if(!host) return;
+  if(!crmKyc.ok){ host.innerHTML = '<div class="closed-empty">Görseller okunamadı (kyc_upload.sql çalıştırıldı mı?).</div>'; return; }
+  if(!n){ host.innerHTML = '<div class="closed-empty">Kullanıcı henüz görsel yüklemedi.</div>'; return; }
+  host.innerHTML = '<div class="kyc-gallery">' + crmKyc.files.map(f=>`
+    <div class="kyc-shot">
+      ${f.url ? `<img src="${esc(f.url)}" alt="${esc(f.file_name)}" loading="lazy">` : '<div class="kyc-noimg">Önizleme yok</div>'}
+      <div class="kyc-shot-meta"><span title="${esc(f.file_name)}">${esc(fmtBytes(f.size_bytes))} · ${esc(trDate(f.created_at))}</span>
+      ${canDo('kyc') ? `<button type="button" class="btn btn-sm btn-close" data-del="${esc(f.id)}" data-path="${esc(f.path)}">Sil</button>` : ''}</div>
+    </div>`).join('') + '</div>';
+}
+document.getElementById('crm-kyc-gallery').addEventListener('click', (e)=>{
+  const img = e.target.closest('.kyc-shot img');
+  if(img){ openLightbox(img.src); return; }
+  const del = e.target.closest('button[data-del]');
+  if(!del || !canDo('kyc')) return;
+  if(!window.confirm('Bu görsel kalıcı olarak silinsin mi?')) return;
+  crmAction(async ()=>{
+    await rpcOrThrow('admin_delete_kyc_file', { p_id: del.dataset.del });
+    const r = await sb.storage.from(KYC_BUCKET).remove([del.dataset.path]);
+    if(r && r.error) console.warn('Depolamadan silinemedi:', r.error);
+    await reloadCrmDetail();
+    showToast('Görsel silindi.');
+  });
+});
 
 /* ----- Yatırma bilgileri (Havale/EFT + kripto adresleri) ----- */
 const DEPINFO_INPUTS = { bank_name:'di-bank', account_holder:'di-holder', iban:'di-iban', swift:'di-swift',
@@ -4095,6 +4506,8 @@ function renderCrmDetail(){
   document.getElementById('crm-balance-value').textContent = fmtPrice(Number(p.balance))+' / '+fmtPrice(Number(p.futures_balance))+' TRY';
   document.getElementById('crm-account-card').style.display = canDo('users') ? '' : 'none';
   crmAccountSync();
+  renderCrmKyc();
+  renderCrmLeverage();
   const adjs = crmDetail.balance_adjustments || [];
   document.getElementById('crm-balance-adjustments').innerHTML = !adjs.length ? '<div class="crm-adj-empty">Henüz bakiye işlemi yapılmadı.</div>' : adjs.map(a=>{
     const amt = Number(a.amount);
