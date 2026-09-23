@@ -1695,8 +1695,8 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
             <div class="order-summary">
               <div class="order-row"><span>Kaldıraç</span><span class="mono lev-badge" id="order-lev">×1</span></div>
               <div class="order-row"><span>Pozisyon Büyüklüğü</span><span class="mono" id="order-size">--</span></div>
-              <div class="order-row"><span>Tahmini Değer</span><span class="mono" id="order-value">--</span></div>
-              <div class="order-note" id="order-lev-note" hidden>Kaldıraç, açtığınız pozisyonun büyüklüğünü ve dolayısıyla kâr ve zararı aynı oranda büyütür.</div>
+              <div class="order-row"><span>Pozisyon Değeri (Nominal)</span><span class="mono" id="order-value">--</span></div>
+              <div class="order-note" id="order-lev-note" hidden>Bu tutar hesabınızdan çekilmez — yalnızca kâr/zararın hesaplanacağı büyüklüğü gösterir. Kaldıraç sayesinde <b id="order-lev-note-lot">1 Lot</b>'luk bir işlem, <b id="order-lev-note-eff">100 Lot</b> büyüklüğünde kâr/zarar üretir.</div>
             </div>
 
             <div class="trade-actions">
@@ -3985,7 +3985,14 @@ function updateOrderSummary(){
   if(levEl){ levEl.textContent = '×' + lev; levEl.classList.toggle('hi', lev > 50); }
   const sizeEl = document.getElementById('order-size');
   if(sizeEl) sizeEl.textContent = lev > 1 ? eff + ' ' + unit + ' (' + lot + ' × ' + lev + ')' : lot + ' ' + unit;
-  const note = document.getElementById('order-lev-note'); if(note) note.hidden = !(lev > 1);
+  const note = document.getElementById('order-lev-note');
+  if(note){
+    note.hidden = !(lev > 1);
+    if(lev > 1){
+      document.getElementById('order-lev-note-lot').textContent = lot + ' ' + unit;
+      document.getElementById('order-lev-note-eff').textContent = eff + ' ' + unit;
+    }
+  }
   document.getElementById('order-value').textContent = fmtPrice(price * eff)+' '+currentTrade.currency;
 }
 
@@ -4055,7 +4062,7 @@ async function executeTrade(side){
       p_color: currentTrade.color,
       p_side: side==='buy' ? 'Long' : 'Short',
       p_qty: effQty,
-      p_qty_label: lev > 1 ? effQty+' '+unitLabel+' ('+lot+' × '+lev+'x)' : lot+' '+unitLabel,
+      p_qty_label: effQty+' '+unitLabel,   // sunucu bu alanı sıkı bir kalıpla doğruluyor: yalnızca "sayı birim" (parantez/× kabul etmiyor)
       p_entry: item.price,
       p_currency: currentTrade.currency
     });
