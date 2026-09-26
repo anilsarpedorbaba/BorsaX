@@ -315,6 +315,7 @@ svg{display:block;}
 .nav-item.active .icon{color:var(--accent);}
 .nav-item:hover{background:var(--card-2); color:var(--text);}
 .nav-item.active{background:var(--accent-soft); color:var(--accent);}
+.nav-badge{width:8px; height:8px; border-radius:50%; background:var(--red); margin-left:auto; flex-shrink:0;}
 .sidebar-bottom{margin-top:auto; padding-top:12px; border-top:1px solid var(--border-soft);}
 .sidebar-brand-foot{color:var(--text-dim2); font-size:11px; padding:12px 10px 0;}
 
@@ -625,11 +626,19 @@ svg{display:block;}
 /* CRM user info + balance management */
 .crm-info-grid{grid-template-columns:repeat(4,1fr);}
 @media (max-width:900px){ .crm-info-grid{grid-template-columns:repeat(2,1fr);} }
-.crm-adj-row{display:flex; align-items:center; justify-content:space-between; padding:9px 0; border-top:1px solid var(--border-soft); font-size:12px;}
+.crm-adj-title{font-size:11.5px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;}
+.crm-adj-list{max-height:336px; overflow-y:auto; padding-right:6px; margin-right:-6px;}
+.crm-adj-row{display:flex; align-items:center; justify-content:space-between; gap:14px; padding:12px 4px; border-top:1px solid var(--border-soft); font-size:12.5px; border-radius:8px; transition:background .15s;}
+.crm-adj-row:hover{background:var(--card-2);}
 .crm-adj-row:first-child{border-top:none;}
-.crm-adj-empty{font-size:12px; color:var(--text-dim); padding:6px 0;}
-.crm-adj-row .crm-adj-del{color:var(--text-dim); cursor:pointer;}
-.crm-adj-row .crm-adj-del:hover{color:var(--red);}
+.crm-adj-desc{min-width:0;}
+.crm-adj-desc b{display:block; font-size:13px; font-weight:600; color:var(--text); margin-bottom:2px;}
+.crm-adj-desc span{font-size:11px; color:var(--text-dim);}
+.crm-adj-empty{font-size:12.5px; color:var(--text-dim); padding:10px 4px;}
+.crm-adj-amt{display:flex; align-items:center; gap:12px; flex-shrink:0; white-space:nowrap;}
+.crm-adj-amt b{font-size:13.5px;}
+.crm-adj-row .crm-adj-del{color:var(--text-dim2); cursor:pointer; display:flex; padding:4px; border-radius:6px; transition:color .15s,background .15s;}
+.crm-adj-row .crm-adj-del:hover{color:var(--red); background:rgba(246,70,93,0.13);}
 .kyc-quickset{display:flex; gap:8px; margin:4px 0 16px;}
 .kyc-quickset button{padding:8px 14px; border-radius:9px; background:var(--bg); border:1px solid var(--border-soft); color:var(--text-dim); font-size:12px; font-weight:700;}
 .kyc-quickset button.sel-pending{background:rgba(240,168,60,0.15); color:var(--accent); border-color:var(--accent);}
@@ -713,6 +722,65 @@ tbody tr:hover{background:rgba(255,255,255,0.02);}
 .pos-actions .btn{flex:1; justify-content:center;}
 .btn-close{background:rgba(246,70,93,0.13); color:var(--red);}
 .btn-close:hover{background:rgba(246,70,93,0.2);}
+
+/* Pozisyon grupları — "dosya" gibi katlanan aynı hisseye ait çoklu işlemler */
+.pos-group-card{padding:0; overflow:hidden;}
+.pos-group-summary{padding:15px; cursor:pointer; transition:background .15s;}
+.pos-group-summary:hover{background:var(--card-2);}
+.pos-group-summary .pos-top{margin-bottom:11px;}
+.pos-group-count{
+  font-size:10px; font-weight:700; margin-left:8px; padding:2px 8px; border-radius:20px;
+  background:var(--accent-soft); color:var(--accent); vertical-align:middle;
+}
+.pos-group-right{display:flex; align-items:center; gap:10px;}
+.pos-group-grid{grid-template-columns:repeat(3,1fr); margin-bottom:0;}
+.pos-group-summary .pos-sym .icon{width:15px; height:15px; color:var(--text-dim); margin-right:2px; flex-shrink:0;}
+.pos-group-chevron{width:16px; height:16px; color:var(--text-dim); flex-shrink:0;}
+
+/* Genel "sheet" modal (alttan açılan panel) — pozisyon grubu ve destek talebi modalları bunu paylaşır */
+.sheet-modal{
+  display:none; position:fixed; inset:0; z-index:220; background:rgba(4,5,9,0.85); backdrop-filter:blur(6px);
+  align-items:flex-end; justify-content:center;
+}
+.sheet-modal.open{display:flex;}
+.pgm-card{
+  width:100%; max-width:680px; max-height:88vh; background:var(--card); border:1px solid var(--border);
+  border-radius:20px 20px 0 0; box-shadow:var(--shadow-pop); display:flex; flex-direction:column; overflow:hidden;
+  animation:pgmSlideUp .22s ease;
+}
+@keyframes pgmSlideUp{from{transform:translateY(28px); opacity:0;} to{transform:translateY(0); opacity:1;}}
+@media (min-width:680px){
+  .sheet-modal{align-items:center; padding:24px;}
+  .pgm-card{border-radius:20px; max-height:82vh; animation:fadeIn .2s ease;}
+}
+.pgm-head{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:18px 20px; border-bottom:1px solid var(--border-soft); flex-shrink:0;}
+.pgm-title{display:flex; align-items:center; gap:10px; font-size:14.5px; font-weight:800; min-width:0;}
+.pgm-title .icon{width:16px; height:16px; color:var(--text-dim); flex-shrink:0;}
+.pgm-close{width:34px; height:34px; border-radius:10px; background:var(--card-2); border:1px solid var(--border-soft); color:var(--text-dim); display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:color .15s,border-color .15s;}
+.pgm-close:hover{color:var(--text); border-color:var(--accent);}
+.pgm-close .icon{width:16px; height:16px;}
+.pgm-summary{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding:14px 20px; border-bottom:1px solid var(--border-soft); font-size:11.5px; flex-shrink:0; background:var(--bg);}
+.pgm-summary div span{display:block; color:var(--text-dim); font-size:9.5px; text-transform:uppercase; letter-spacing:.3px; margin-bottom:3px;}
+.pgm-body{padding:16px 20px 22px; overflow-y:auto; display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:12px;}
+@media (max-width:520px){
+  .pgm-summary{grid-template-columns:repeat(2,1fr);}
+  .pgm-body{grid-template-columns:1fr;}
+}
+
+/* Destek talebi kartları/listesi/mesaj balonları */
+.destek-ticket-row{display:flex; align-items:center; gap:12px; padding:13px 4px; border-top:1px solid var(--border-soft); cursor:pointer; border-radius:8px; transition:background .15s;}
+.destek-ticket-row:first-child{border-top:none;}
+.destek-ticket-row:hover{background:var(--card-2);}
+.destek-ticket-row-txt{flex:1; min-width:0;}
+.destek-ticket-row-txt b{display:block; font-size:13px; font-weight:600; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.destek-ticket-row-txt span{font-size:11px; color:var(--text-dim);}
+.destek-status{font-size:10px; font-weight:700; padding:3px 9px; border-radius:20px; flex-shrink:0; text-transform:uppercase; letter-spacing:.3px;}
+.destek-status.open{background:rgba(34,207,148,0.13); color:var(--green);}
+.destek-status.closed{background:var(--card-2); color:var(--text-dim);}
+.destek-msg{max-width:85%; padding:10px 13px; border-radius:14px; font-size:13px; line-height:1.5;}
+.destek-msg.from-user{align-self:flex-end; background:var(--accent-soft); color:var(--text); border-bottom-right-radius:4px;}
+.destek-msg.from-admin{align-self:flex-start; background:var(--card-2); color:var(--text); border-bottom-left-radius:4px;}
+.destek-msg-meta{font-size:9.5px; color:var(--text-dim); margin-top:5px; display:block;}
 
 /* Trade screen */
 .trade-back{
@@ -1418,8 +1486,8 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
     <div class="nav-item" data-page="ayarlar">
       <svg class="icon" viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="10" cy="18" r="2"/></svg>Ayarlar
     </div>
-    <div class="nav-item">
-      <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2-3 4"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Destek
+    <div class="nav-item" data-page="destek">
+      <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2-3 4"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Destek<span class="nav-badge" id="destek-unread-badge" hidden></span>
     </div>
 
     <div class="sidebar-bottom">
@@ -1513,6 +1581,15 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
               <div class="hero-action-circle"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg></div>
               <span>Geçmiş</span>
             </div>
+          </div>
+        </div>
+
+        <div class="card section-gap" id="destek-entry-card" data-page="destek" style="cursor:pointer;">
+          <div class="acct-row" style="border-top:none; padding:0;">
+            <div class="acct-row-ic"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2-3 4"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+            <div class="acct-row-txt"><b>Destek</b><span>Sorularınız için bize yazın, taleplerinizin durumunu takip edin.</span></div>
+            <span class="nav-badge" id="destek-entry-badge" hidden style="margin-right:6px;"></span>
+            <svg class="icon" viewBox="0 0 24 24" style="color:var(--text-dim); flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
           </div>
         </div>
 
@@ -1685,10 +1762,10 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
                 <button id="lot-plus">+</button>
               </div>
               <div class="lot-quick">
+                <button data-lot="0.01">0.01</button>
+                <button data-lot="0.1">0.1</button>
                 <button data-lot="0.5">0.5</button>
                 <button data-lot="1">1</button>
-                <button data-lot="5">5</button>
-                <button data-lot="10">10</button>
               </div>
             </div>
 
@@ -1892,6 +1969,54 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
         </div>
       </section>
 
+      <!-- ===== DESTEK ===== -->
+      <section class="page" id="page-destek">
+        <div class="page-head">
+          <div class="page-title">Destek</div>
+          <div class="page-desc">Sık sorulan soruları inceleyin ya da bize doğrudan yazın</div>
+        </div>
+
+        <div class="card section-gap">
+          <div class="card-title" style="margin-bottom:6px;">Sıkça Sorulan Sorular</div>
+          <div class="lp-faq-item">
+            <div class="lp-faq-q">Bu platform gerçek para ile mi çalışıyor?<span class="lp-faq-chev"><svg class="icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
+            <div class="lp-faq-a">Hayır, BorsaX bir eğitim/demo platformudur. Bakiyeniz sanaldır, gerçek bir finansal işlem gerçekleşmez.</div>
+          </div>
+          <div class="lp-faq-item">
+            <div class="lp-faq-q">Kaldıraç (leverage) nedir, nasıl değişir?<span class="lp-faq-chev"><svg class="icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
+            <div class="lp-faq-a">Kaldıraç, açtığınız pozisyonun büyüklüğünü kaç kat gösterdiğinizi belirler; kâr ve zarar da aynı oranda büyür. Kaldıraç seviyeniz eğitmeniniz tarafından belirlenir, işlem ekranında görebilirsiniz.</div>
+          </div>
+          <div class="lp-faq-item">
+            <div class="lp-faq-q">Para yatırma/çekme talebim ne zaman onaylanır?<span class="lp-faq-chev"><svg class="icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
+            <div class="lp-faq-a">Talepleriniz eğitmen/yönetici onayına gider; onaylandığında veya reddedildiğinde bildirim alırsınız. Durumu Para Yatırma/Çekme sayfalarındaki geçmişten takip edebilirsiniz.</div>
+          </div>
+          <div class="lp-faq-item">
+            <div class="lp-faq-q">KYC için neden görsel yüklüyorum?<span class="lp-faq-chev"><svg class="icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
+            <div class="lp-faq-a">Bu adım, gerçek bir platformdaki kimlik doğrulama sürecini öğretmek için simüle edilir. Gerçek kimlik/kart görseli YÜKLEMEYİN — önemsiz bir örnek görsel yeterlidir.</div>
+          </div>
+          <div class="lp-faq-item">
+            <div class="lp-faq-q">Minimum işlem büyüklüğü (lot) nedir?<span class="lp-faq-chev"><svg class="icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
+            <div class="lp-faq-a">İşlem ekranında 0,01 lot'a kadar küçük büyüklüklerle pozisyon açabilirsiniz; hızlı seçim butonlarını veya tutarı elle girebilirsiniz.</div>
+          </div>
+        </div>
+
+        <div class="grid-2 section-gap" style="align-items:start;">
+          <div class="card">
+            <div class="card-title" style="margin-bottom:14px;">Yeni Destek Talebi</div>
+            <div class="ticket-row-label">Konu</div>
+            <input type="text" id="destek-new-subject" class="amount-input" placeholder="Kısaca konu başlığı" maxlength="120" style="padding:12px 14px; font-size:14px; margin-bottom:14px;">
+            <div class="ticket-row-label">Mesaj</div>
+            <textarea id="destek-new-body" class="amount-input" placeholder="Sorunuzu veya talebinizi yazın" maxlength="2000" rows="5" style="padding:12px 14px; font-size:13.5px; margin-bottom:16px; resize:vertical; font-family:inherit;"></textarea>
+            <button class="btn btn-primary" style="width:100%; justify-content:center;" id="destek-new-submit">Gönder</button>
+            <div class="pp-msg" id="destek-new-msg" role="status" style="text-align:center; font-size:12px; margin-top:10px;"></div>
+          </div>
+          <div class="card">
+            <div class="card-title" style="margin-bottom:10px;">Taleplerim</div>
+            <div id="destek-ticket-list" class="crm-adj-list" style="max-height:420px;"></div>
+          </div>
+        </div>
+      </section>
+
     </div>
   </div>
 </div>
@@ -1917,6 +2042,7 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
       <div class="nav-section-label">CRM Paneli</div>
       <div class="nav-item active" id="crm-nav-users"><svg class="icon" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21c0-4.4 3.6-7 7-7s7 2.6 7 7"/><circle cx="17" cy="7" r="3"/><path d="M22 21c0-3.3-1.8-5.6-4.5-6.6"/></svg>Kullanıcılar</div>
       <div class="nav-item" id="crm-nav-depinfo" hidden><svg class="icon" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V10M9.5 21V10M14.5 21V10M19 21V10"/><path d="M12 3l9 5H3z"/></svg>Yatırma Bilgileri</div>
+      <div class="nav-item" id="crm-nav-support" hidden><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2-3 4"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Destek Talepleri<span class="nav-badge" id="crm-support-badge" hidden></span></div>
       <div class="nav-item" id="crm-nav-admins" hidden><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Yöneticiler</div>
       <div class="sidebar-bottom">
         <div class="nav-item" id="crm-logout-btn"><svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Çıkış Yap</div>
@@ -1979,6 +2105,16 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
           <div class="depinfo-bar">
             <div class="pp-msg" id="di-msg" role="status"></div>
             <button type="button" class="btn btn-primary" id="di-save" disabled>Değişiklikleri kaydet</button>
+          </div>
+        </div>
+
+        <div id="crm-support-view" hidden>
+          <div class="page-head">
+            <div class="page-title">Destek Talepleri</div>
+            <div class="page-desc">Kullanıcılardan gelen destek taleplerini görüntüleyin ve yanıtlayın.</div>
+          </div>
+          <div class="card">
+            <div id="crm-support-list" class="crm-request-list"></div>
           </div>
         </div>
 
@@ -2095,7 +2231,7 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
             </div>
           </div>
 
-          <div class="grid-2 section-gap">
+          <div class="grid-2 section-gap" style="align-items:start;">
             <div class="card" id="crm-balance-form-card">
               <div class="card-title" style="margin-bottom:14px;">Bakiye Ekle / Çıkar</div>
               <div class="ticket-row-label">Tutar</div>
@@ -2115,11 +2251,19 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
               <button class="btn btn-primary" style="width:100%; justify-content:center;" id="crm-balance-add">Kaydet</button>
             </div>
             <div class="card">
-              <div class="card-title" style="margin-bottom:12px;">
-                Bakiye (Spot / Vadeli)
-                <span class="mono" id="crm-balance-value" style="margin-left:auto; font-size:19px; font-weight:800; color:var(--text);">—</span>
+              <div class="card-title" style="margin-bottom:14px;">Bakiye</div>
+              <div class="stat-grid" style="margin-bottom:20px;">
+                <div class="stat-box">
+                  <div class="stat-box-label">Spot Bakiye</div>
+                  <div class="stat-box-val mono" id="crm-balance-spot">—</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-box-label">Vadeli Bakiye</div>
+                  <div class="stat-box-val mono" id="crm-balance-futures">—</div>
+                </div>
               </div>
-              <div id="crm-balance-adjustments"></div>
+              <div class="crm-adj-title">İşlem Geçmişi</div>
+              <div id="crm-balance-adjustments" class="crm-adj-list"></div>
             </div>
           </div>
 
@@ -2201,6 +2345,51 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
     <div class="success-title" id="success-modal-title">Başarılı</div>
     <div class="success-desc" id="success-modal-desc">İşleminiz alındı.</div>
     <button class="btn btn-primary" id="success-modal-ok" style="width:100%; justify-content:center;">Tamam</button>
+  </div>
+</div>
+
+<!-- ================= POZİSYON GRUBU MODALI (klasör açılınca) ================= -->
+<div id="pos-group-modal" class="sheet-modal">
+  <div class="pgm-card">
+    <div class="pgm-head">
+      <div class="pgm-title" id="pgm-title"></div>
+      <button class="pgm-close" id="pgm-close"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="pgm-summary" id="pgm-summary"></div>
+    <div class="pgm-body" id="pgm-body"></div>
+  </div>
+</div>
+
+<!-- ================= DESTEK TALEBİ MODALI (kullanıcı tarafı — talep detayı/yanıt) ================= -->
+<div id="destek-modal" class="sheet-modal">
+  <div class="pgm-card">
+    <div class="pgm-head">
+      <div class="pgm-title" id="destek-modal-title"></div>
+      <button class="pgm-close" id="destek-modal-close"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="pgm-body" id="destek-modal-messages" style="display:flex; flex-direction:column; gap:10px;"></div>
+    <div id="destek-modal-replybox" style="padding:14px 20px 18px; border-top:1px solid var(--border-soft); flex-shrink:0;">
+      <textarea id="destek-modal-reply" class="amount-input" rows="2" maxlength="2000" placeholder="Yanıt yazın..." style="resize:vertical; font-family:inherit; margin-bottom:10px;"></textarea>
+      <button class="btn btn-primary" style="width:100%; justify-content:center;" id="destek-modal-send">Gönder</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= DESTEK TALEBİ MODALI (CRM/admin tarafı) ================= -->
+<div id="crm-destek-modal" class="sheet-modal">
+  <div class="pgm-card">
+    <div class="pgm-head">
+      <div class="pgm-title" id="crm-destek-modal-title"></div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button class="btn btn-sm acct-ghost" id="crm-destek-modal-toggle"></button>
+        <button class="pgm-close" id="crm-destek-modal-close"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+    </div>
+    <div class="pgm-body" id="crm-destek-modal-messages" style="display:flex; flex-direction:column; gap:10px;"></div>
+    <div style="padding:14px 20px 18px; border-top:1px solid var(--border-soft); flex-shrink:0;">
+      <textarea id="crm-destek-modal-reply" class="amount-input" rows="2" maxlength="2000" placeholder="Yanıt yazın..." style="resize:vertical; font-family:inherit; margin-bottom:10px;"></textarea>
+      <button class="btn btn-primary" style="width:100%; justify-content:center;" id="crm-destek-modal-send">Gönder</button>
+    </div>
   </div>
 </div>
 
@@ -2630,6 +2819,7 @@ function goPage(name){
   if(name==='ayarlar') loadSettingsPage();
   if(name==='yatirma'){ renderDepositInfo(); loadDepositInfo(); }
   if(name==='hesabim') loadKycFiles();
+  if(name==='destek') loadDestekTickets();
   window.scrollTo(0,0);
 }
 document.querySelectorAll('[data-page]').forEach(el=>{
@@ -3005,9 +3195,18 @@ async function closePosition(id){
   }
 }
 document.getElementById('positions-mobile').addEventListener('click', (e)=>{
-  const btn = e.target.closest('[data-close-id]');
-  if(!btn) return;
-  closePosition(btn.dataset.closeId);
+  const closeBtn = e.target.closest('[data-close-id]');
+  if(closeBtn){ closePosition(closeBtn.dataset.closeId); return; }
+  const openBtn = e.target.closest('[data-open-group]');
+  if(openBtn) openGroupModal(openBtn.dataset.openGroup);
+});
+document.getElementById('pgm-body').addEventListener('click', (e)=>{
+  const closeBtn = e.target.closest('[data-close-id]');
+  if(closeBtn) closePosition(closeBtn.dataset.closeId);
+});
+document.getElementById('pgm-close').addEventListener('click', closeGroupModal);
+document.getElementById('pos-group-modal').addEventListener('click', (e)=>{
+  if(e.target.id==='pos-group-modal') closeGroupModal();
 });
 
 /* ================= GÖRÜNTÜLEME PARA BİRİMİ (TRY / USD / USDT) =================
@@ -3185,6 +3384,112 @@ function renderBalanceWidgets(){
   renderAllocation(u);
 }
 
+let openPosGroupKey = null;                  // şu an modalda açık olan grup ("dosya") anahtarı
+let lastPosRowsHtml = [];                    // en son çizilen pozisyon satırları — grup modalını tazelemek için
+const POS_GROUP_THRESHOLD = 3;               // aynı hisseden bu sayının ÜZERİNDE açık pozisyon varsa gruplanır
+
+function renderPosCard(r){
+  return `<div class="pos-card" data-id="${r.p.id}">
+    <div class="pos-top">
+      <div class="pos-sym">${symBadge(r.p.tickerSym, r.p.cat)}${r.p.symDisplay}${adjBadge(r.p.adminAdjusted)}<span class="pos-side" style="color:${r.p.side==='Long'?'var(--green)':'var(--red)'};background:${r.p.side==='Long'?'rgba(34,207,148,0.13)':'rgba(246,70,93,0.13)'};">${r.p.side}</span></div>
+      <div class="mono pos-pl ${r.up?'up':'down'}" style="font-weight:700;">${r.up?'+':''}${fmtMoney(plInDispCur(r.pl, r.p.currency))} ${dispCur()}</div>
+    </div>
+    <div class="pos-grid">
+      <div><span>Büyüklük</span>${unleveragedQtyLabel(r.p.qtyLabel)}</div>
+      <div><span>Giriş</span>${fmtPrice(r.p.entry)}</div>
+      <div><span>Güncel</span>${fmtPrice(r.cur)}</div>
+      <div><span>Kar/Zarar</span><span class="${r.up?'up':'down'}">${r.up?'+':''}${r.plPct.toFixed(2)}%</span></div>
+    </div>
+    <div class="pos-actions">
+      <button class="btn btn-sm btn-close" data-close-id="${r.p.id}">${closeIcon}Kapat</button>
+    </div>
+  </div>`;
+}
+
+function groupPositionsForDisplay(rowsHtml){
+  const bySym = new Map();
+  rowsHtml.forEach(r=>{
+    const key = r.p.cat + ':' + r.p.tickerSym;
+    if(!bySym.has(key)) bySym.set(key, []);
+    bySym.get(key).push(r);
+  });
+  const out = [];
+  bySym.forEach((items, key)=>{
+    if(items.length > POS_GROUP_THRESHOLD){ out.push({type:'group', key, items}); }
+    else { items.forEach(r=>out.push({type:'single', r})); }
+  });
+  return out;
+}
+
+function qtyNumFromLabel(qtyLabel){                           // unleveragedQtyLabel ile aynı hesap, ama toplanabilir sayı döner
+  const m = String(qtyLabel||'').match(/^([0-9.]+)\s+(.+)$/);
+  if(!m) return {num:0, unit:''};
+  const lev = myLeverage || 1;
+  return {num: lev>1 ? Number(m[1])/lev : Number(m[1]), unit: m[2]};
+}
+
+const folderIcon = `<svg class="icon" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>`;
+const chevronIcon = `<svg class="icon pos-group-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
+
+function groupAgg(items){                    // grup için toplam büyüklük/yön/K-Z hesabı
+  const first = items[0].p;
+  let totalQty=0, unit='', totalPl=0, totalCost=0, longCount=0, shortCount=0;
+  items.forEach(r=>{
+    const q = qtyNumFromLabel(r.p.qtyLabel);
+    totalQty += q.num; unit = q.unit;
+    totalPl += r.pl;
+    totalCost += r.p.entry * r.p.qty;
+    if(r.p.side==='Long') longCount++; else shortCount++;
+  });
+  const totalPlPct = totalCost ? (totalPl/totalCost*100) : 0;
+  const qtyStr = Number.isInteger(totalQty) ? String(totalQty) : String(Math.round(totalQty*1e8)/1e8);
+  const sideLabel = (longCount && shortCount) ? `${longCount} Long · ${shortCount} Short` : (longCount ? 'Long' : 'Short');
+  return {first, totalPl, totalPlPct, up: totalPl>=0, qtyStr, unit, sideLabel};
+}
+
+function renderPosGroupCard(g){
+  const a = groupAgg(g.items);
+  return `<div class="pos-card pos-group-card">
+    <div class="pos-group-summary" data-open-group="${esc(g.key)}">
+      <div class="pos-top">
+        <div class="pos-sym">${folderIcon}${symBadge(a.first.tickerSym, a.first.cat)}${a.first.symDisplay}<span class="pos-group-count">${g.items.length} İşlem</span></div>
+        <div class="pos-group-right">
+          <div class="mono pos-pl ${a.up?'up':'down'}" style="font-weight:700;">${a.up?'+':''}${fmtMoney(plInDispCur(a.totalPl, a.first.currency))} ${dispCur()}</div>
+          ${chevronIcon}
+        </div>
+      </div>
+      <div class="pos-grid pos-group-grid">
+        <div><span>Toplam Büyüklük</span>${a.qtyStr} ${a.unit}</div>
+        <div><span>Yön</span>${a.sideLabel}</div>
+        <div><span>Kar/Zarar</span><span class="${a.up?'up':'down'}">${a.up?'+':''}${a.totalPlPct.toFixed(2)}%</span></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderGroupModalContent(items){
+  const a = groupAgg(items);
+  document.getElementById('pgm-title').innerHTML = `${folderIcon}${symBadge(a.first.tickerSym, a.first.cat)}<span>${a.first.symDisplay}</span>`;
+  document.getElementById('pgm-summary').innerHTML = `
+    <div><span>İşlem Sayısı</span>${items.length}</div>
+    <div><span>Toplam Büyüklük</span>${a.qtyStr} ${a.unit}</div>
+    <div><span>Yön</span>${a.sideLabel}</div>
+    <div><span>Toplam Kar/Zarar</span><span class="${a.up?'up':'down'}" style="font-weight:700;">${a.up?'+':''}${fmtMoney(plInDispCur(a.totalPl, a.first.currency))} ${dispCur()} (${a.up?'+':''}${a.totalPlPct.toFixed(2)}%)</span></div>`;
+  document.getElementById('pgm-body').innerHTML = items.map(renderPosCard).join('');
+}
+
+function openGroupModal(key){
+  const items = lastPosRowsHtml.filter(r => (r.p.cat+':'+r.p.tickerSym)===key);
+  if(!items.length) return;
+  openPosGroupKey = key;
+  renderGroupModalContent(items);
+  document.getElementById('pos-group-modal').classList.add('open');
+}
+function closeGroupModal(){
+  openPosGroupKey = null;
+  document.getElementById('pos-group-modal').classList.remove('open');
+}
+
 function renderAccountWidgets(){
   if(!currentUid || !currentUser) return;
   const u = cu();
@@ -3212,10 +3517,10 @@ function renderAccountWidgets(){
     accBody.innerHTML = rowsHtml.map(r=>`<tr>
       <td><div class="badge-sym">${symBadge(r.p.tickerSym, r.p.cat)}${r.p.symDisplay}${adjBadge(r.p.adminAdjusted)}</div></td>
       <td style="color:${r.p.side==='Long'?'var(--green)':'var(--red)'};font-weight:700; font-size:11.5px;">${r.p.side}</td>
-      <td class="mono num">${r.p.qtyLabel}</td>
+      <td class="mono num">${unleveragedQtyLabel(r.p.qtyLabel)}</td>
       <td class="mono num">${fmtPrice(r.p.entry)}</td>
       <td class="mono num">${fmtPrice(r.cur)}</td>
-      <td class="mono num pl-cell ${r.up?'up':'down'}">${r.up?'+':''}${r.pl.toFixed(2)} ${r.p.currency}<br><span class="pl-pct">${r.up?'+':''}${r.plPct.toFixed(2)}%</span></td>
+      <td class="mono num pl-cell ${r.up?'up':'down'}">${r.up?'+':''}${fmtMoney(plInDispCur(r.pl, r.p.currency))} ${dispCur()}<br><span class="pl-pct">${r.up?'+':''}${r.plPct.toFixed(2)}%</span></td>
     </tr>`).join('');
   }
 
@@ -3224,22 +3529,14 @@ function renderAccountWidgets(){
     if(!rowsHtml.length){
       posMobile.innerHTML = `<div class="closed-empty">Açık pozisyonunuz bulunmuyor. Piyasa sayfasından bir varlık seçerek işlem açabilirsiniz.</div>`;
     } else {
-      posMobile.innerHTML = rowsHtml.map(r=>`<div class="pos-card" data-id="${r.p.id}">
-        <div class="pos-top">
-          <div class="pos-sym">${symBadge(r.p.tickerSym, r.p.cat)}${r.p.symDisplay}${adjBadge(r.p.adminAdjusted)}<span class="pos-side" style="color:${r.p.side==='Long'?'var(--green)':'var(--red)'};background:${r.p.side==='Long'?'rgba(34,207,148,0.13)':'rgba(246,70,93,0.13)'};">${r.p.side}</span></div>
-          <div class="mono pos-pl ${r.up?'up':'down'}" style="font-weight:700;">${r.up?'+':''}${r.pl.toFixed(2)} ${r.p.currency}</div>
-        </div>
-        <div class="pos-grid">
-          <div><span>Büyüklük</span>${r.p.qtyLabel}</div>
-          <div><span>Giriş</span>${fmtPrice(r.p.entry)}</div>
-          <div><span>Güncel</span>${fmtPrice(r.cur)}</div>
-          <div><span>Kar/Zarar</span><span class="${r.up?'up':'down'}">${r.up?'+':''}${r.plPct.toFixed(2)}%</span></div>
-        </div>
-        <div class="pos-actions">
-          <button class="btn btn-sm btn-close" data-close-id="${r.p.id}">${closeIcon}Kapat</button>
-        </div>
-      </div>`).join('');
+      posMobile.innerHTML = groupPositionsForDisplay(rowsHtml).map(item=>item.type==='group' ? renderPosGroupCard(item) : renderPosCard(item.r)).join('');
     }
+  }
+  lastPosRowsHtml = rowsHtml;
+  if(openPosGroupKey){                       // grup modalı açıkken veri tazelenirse (fiyat/kapatma) içeriğini de güncelle
+    const items = rowsHtml.filter(r => (r.p.cat+':'+r.p.tickerSym)===openPosGroupKey);
+    if(items.length > POS_GROUP_THRESHOLD) renderGroupModalContent(items);
+    else closeGroupModal();
   }
 
   const closedList = document.getElementById('closed-positions-list');
@@ -3253,7 +3550,7 @@ function renderAccountWidgets(){
           ${symBadge(c.tickerSym, c.cat)}
           <div class="closed-item-mid">
             <div class="closed-item-sym">${c.symDisplay}${adjBadge(c.adminAdjusted)}<span class="pos-side" style="color:${c.side==='Long'?'var(--green)':'var(--red)'};background:${c.side==='Long'?'rgba(34,207,148,0.13)':'rgba(246,70,93,0.13)'};">${c.side}</span></div>
-            <div class="closed-item-meta">${c.qtyLabel} · Giriş ${fmtPrice(c.entry)} → Çıkış ${fmtPrice(c.exit)}</div>
+            <div class="closed-item-meta">${unleveragedQtyLabel(c.qtyLabel)} · Giriş ${fmtPrice(c.entry)} → Çıkış ${fmtPrice(c.exit)}</div>
           </div>
           <div>
             <div class="closed-item-pl mono ${up?'up':'down'}">${up?'+':''}${c.pl.toFixed(2)} ${c.currency}</div>
@@ -3825,6 +4122,19 @@ Object.keys(TF_CONFIG).forEach(k=>{
 });
 let chartLastStep = 0;      // son noktanın eklendiği an (ms)
 
+function unleveragedQtyLabel(qtyLabel){                       // gösterimde kaldıraçsız (yazılan) lotu geri çıkarır
+  const m = String(qtyLabel||'').match(/^([0-9.]+)\s+(.+)$/);
+  if(!m) return qtyLabel;
+  const lev = myLeverage || 1;
+  if(lev <= 1) return qtyLabel;
+  const base = Number(m[1]) / lev;
+  const num = Number.isInteger(base) ? String(base) : String(Math.round(base * 1e8) / 1e8);
+  return num + ' ' + m[2];
+}
+function plInDispCur(pl, curr){                                // pozisyonun kendi para biriminden görüntüleme para birimine çevirir
+  const tryVal = curr==='TRY' ? pl : pl * fxRate();
+  return toDisp(tryVal);
+}
 function currencyFor(cat){
   if(cat==='crypto') return 'USDT';
   if(cat==='us' || cat==='commodity') return 'USD';
@@ -4011,12 +4321,13 @@ async function fetchMyLeverage(){
     myLeverage = 1;
   }
   try{ updateOrderSummary(); }catch(_){}
+  try{ renderAccountWidgets(); }catch(_){}    // Büyüklük (lot) gösterimi kaldıraca bağlı; değer gelince listeyi tazele
   return myLeverage;
 }
 
 document.getElementById('trade-back').addEventListener('click', ()=>goPage('piyasa'));
 
-function lotStep(){ return currentTrade && currentTrade.cat==='crypto' ? 0.01 : 1; }
+function lotStep(){ return 0.01; }
 document.getElementById('lot-minus').addEventListener('click', ()=>{
   const inp = document.getElementById('lot-input');
   const step = lotStep();
@@ -4078,6 +4389,118 @@ async function executeTrade(side){
 document.getElementById('btn-buy').addEventListener('click', ()=>executeTrade('buy'));
 document.getElementById('btn-sell').addEventListener('click', ()=>executeTrade('sell'));
 
+/* ================= DESTEK (KULLANICI) ================= */
+let destekTickets = [];
+let destekOpenTicketId = null;
+
+function destekStatusLabel(s){ return s==='closed' ? 'Kapalı' : 'Açık'; }
+
+async function loadDestekTickets(){
+  if(!currentUid) return;
+  try{
+    const { data, error } = await sb.from('support_tickets').select('*').eq('user_id', currentUid).order('last_message_at', { ascending:false });
+    if(error) throw error;
+    destekTickets = data || [];
+  }catch(e){
+    console.warn('Destek talepleri okunamadı (support_tickets.sql çalıştırıldı mı?):', e);
+    destekTickets = [];
+  }
+  renderDestekTicketList();
+  const unread = destekTickets.some(t=>t.unread_by_user);
+  document.getElementById('destek-unread-badge').hidden = !unread;
+  document.getElementById('destek-entry-badge').hidden = !unread;
+}
+
+function renderDestekTicketList(){
+  const el = document.getElementById('destek-ticket-list');
+  if(!destekTickets.length){
+    el.innerHTML = '<div class="crm-adj-empty">Henüz destek talebiniz yok. Sağdaki/yukarıdaki formdan yeni bir talep oluşturabilirsiniz.</div>';
+    return;
+  }
+  el.innerHTML = destekTickets.map(t=>`
+    <div class="destek-ticket-row" data-ticket-id="${esc(t.id)}">
+      <div class="destek-ticket-row-txt">
+        <b>${esc(t.subject)}${t.unread_by_user ? ' <span class="nav-badge" style="display:inline-block; vertical-align:middle;"></span>' : ''}</b>
+        <span>${esc(trDate(t.last_message_at))}</span>
+      </div>
+      <span class="destek-status ${t.status}">${destekStatusLabel(t.status)}</span>
+    </div>`).join('');
+}
+document.getElementById('destek-ticket-list').addEventListener('click', (e)=>{
+  const row = e.target.closest('[data-ticket-id]');
+  if(row) openDestekTicket(row.dataset.ticketId);
+});
+
+async function openDestekTicket(id){
+  const t = destekTickets.find(x=>x.id===id);
+  if(!t) return;
+  destekOpenTicketId = id;
+  document.getElementById('destek-modal-title').innerHTML = `${folderIcon}<span>${esc(t.subject)}</span><span class="destek-status ${t.status}" style="margin-left:8px;">${destekStatusLabel(t.status)}</span>`;
+  document.getElementById('destek-modal-messages').innerHTML = '<div class="crm-adj-empty">Yükleniyor…</div>';
+  document.getElementById('destek-modal').classList.add('open');
+  try{
+    const { data, error } = await sb.from('support_messages').select('*').eq('ticket_id', id).order('created_at', { ascending:true });
+    if(error) throw error;
+    renderDestekModalMessages(data || []);
+    if(t.unread_by_user){
+      await sb.rpc('mark_support_ticket_read', { p_ticket_id: id });
+      t.unread_by_user = false;
+      renderDestekTicketList();
+      document.getElementById('destek-unread-badge').hidden = !destekTickets.some(x=>x.unread_by_user);
+      document.getElementById('destek-entry-badge').hidden = !destekTickets.some(x=>x.unread_by_user);
+    }
+  }catch(e){
+    document.getElementById('destek-modal-messages').innerHTML = '<div class="crm-adj-empty">Mesajlar yüklenemedi.</div>';
+  }
+}
+function renderDestekModalMessages(messages){
+  const el = document.getElementById('destek-modal-messages');
+  el.innerHTML = !messages.length ? '<div class="crm-adj-empty">Henüz mesaj yok.</div>' : messages.map(m=>`
+    <div class="destek-msg ${m.sender==='admin' ? 'from-admin' : 'from-user'}">
+      ${esc(m.body)}
+      <span class="destek-msg-meta">${m.sender==='admin' ? 'Destek Ekibi' : 'Siz'} · ${esc(trDate(m.created_at))}</span>
+    </div>`).join('');
+  el.scrollTop = el.scrollHeight;
+}
+function closeDestekModal(){ destekOpenTicketId = null; document.getElementById('destek-modal').classList.remove('open'); }
+document.getElementById('destek-modal-close').addEventListener('click', closeDestekModal);
+document.getElementById('destek-modal').addEventListener('click', (e)=>{ if(e.target.id==='destek-modal') closeDestekModal(); });
+document.getElementById('destek-modal-send').addEventListener('click', async ()=>{
+  const ta = document.getElementById('destek-modal-reply');
+  const body = ta.value.trim();
+  if(!body || !destekOpenTicketId) return;
+  const btn = document.getElementById('destek-modal-send');
+  btn.disabled = true;
+  try{
+    const { error } = await sb.rpc('add_support_message', { p_ticket_id: destekOpenTicketId, p_body: body });
+    if(error) throw error;
+    ta.value = '';
+    await loadDestekTickets();
+    await openDestekTicket(destekOpenTicketId);
+  }catch(e){ showToast(friendlyError(e), 'err'); }
+  finally{ btn.disabled = false; }
+});
+
+document.getElementById('destek-new-submit').addEventListener('click', async ()=>{
+  const subjectEl = document.getElementById('destek-new-subject');
+  const bodyEl = document.getElementById('destek-new-body');
+  const msgEl = document.getElementById('destek-new-msg');
+  const subject = subjectEl.value.trim(), body = bodyEl.value.trim();
+  msgEl.textContent = '';
+  if(!subject || !body){ msgEl.textContent = 'Konu ve mesaj alanlarını doldurun.'; msgEl.style.color = 'var(--red)'; return; }
+  const btn = document.getElementById('destek-new-submit');
+  btn.disabled = true;
+  try{
+    const { error } = await sb.rpc('create_support_ticket', { p_subject: subject, p_body: body });
+    if(error) throw error;
+    subjectEl.value = ''; bodyEl.value = '';
+    msgEl.style.color = 'var(--green)';
+    msgEl.textContent = 'Talebiniz gönderildi.';
+    await loadDestekTickets();
+  }catch(e){ msgEl.style.color = 'var(--red)'; msgEl.textContent = friendlyError(e); }
+  finally{ btn.disabled = false; }
+});
+
 /* ================= CRM (YÖNETİCİ / EĞİTMEN PANELİ) ================= */
 const ALL_PERMISSIONS = [
   {key:'balance', label:'Bakiye Yönetimi'},
@@ -4086,6 +4509,7 @@ const ALL_PERMISSIONS = [
   {key:'withdrawals', label:'Çekme Onayları'},
   {key:'kyc', label:'KYC Onayları'},
   {key:'users', label:'Kullanıcı Yönetimi (bilgi, şifre, silme)'},
+  {key:'support', label:'Destek Talepleri'},
   {key:'manageAdmins', label:'Yönetici Tanımlama'}
 ];
 const AUDIT_LABELS = {
@@ -4125,6 +4549,7 @@ function applyCrmPermissions(){
   document.getElementById('crm-avatar').textContent = a.display_name.charAt(0).toUpperCase();
   document.getElementById('crm-nav-admins').hidden = !canDo('manageAdmins');
   document.getElementById('crm-nav-depinfo').hidden = !canDo('deposits');
+  document.getElementById('crm-nav-support').hidden = !canDo('support');
   crmShowView('users');
 }
 
@@ -4193,15 +4618,19 @@ function crmShowView(view){
   document.getElementById('crm-detail-view').hidden = true;
   document.getElementById('crm-admins-view').hidden = view!=='admins';
   document.getElementById('crm-depinfo-view').hidden = view!=='depinfo';
+  document.getElementById('crm-support-view').hidden = view!=='support';
   document.getElementById('crm-nav-users').classList.toggle('active', view==='users');
   document.getElementById('crm-nav-admins').classList.toggle('active', view==='admins');
   document.getElementById('crm-nav-depinfo').classList.toggle('active', view==='depinfo');
+  document.getElementById('crm-nav-support').classList.toggle('active', view==='support');
   crmSelectedUid = null; crmDetail = null;
   if(view==='users') renderCrmUserList();
   if(view==='depinfo') loadDepInfoView();
   if(view==='admins'){ renderNewAdminPerms(); crmAction(renderCrmAdminsList); }
+  if(view==='support') loadCrmSupportView();
 }
 document.getElementById('crm-nav-users').addEventListener('click', ()=>crmShowView('users'));
+document.getElementById('crm-nav-support').addEventListener('click', ()=>{ if(canDo('support')) crmShowView('support'); });
 document.getElementById('crm-nav-admins').addEventListener('click', ()=>{ if(canDo('manageAdmins')) crmShowView('admins'); });
 
 /* ----- Kaldıraç (CRM) ----- */
@@ -4370,6 +4799,88 @@ document.getElementById('di-save').addEventListener('click', ()=>{
 });
 document.getElementById('crm-nav-depinfo').addEventListener('click', ()=>{ if(canDo('deposits')) crmShowView('depinfo'); });
 
+/* ================= CRM: DESTEK TALEPLERİ ================= */
+let crmSupportTickets = [];
+let crmOpenSupportId = null;
+
+async function loadCrmSupportView(){
+  const el = document.getElementById('crm-support-list');
+  el.innerHTML = '<div class="crm-adj-empty">Yükleniyor…</div>';
+  try{
+    const data = await rpcOrThrow('admin_list_support_tickets');
+    crmSupportTickets = Array.isArray(data) ? data : [];
+  }catch(e){
+    console.warn('Destek talepleri okunamadı (support_tickets.sql çalıştırıldı mı?):', e);
+    crmSupportTickets = [];
+  }
+  crmSupportTickets.sort((a,b)=> (b.unread_by_admin - a.unread_by_admin) || (new Date(b.last_message_at) - new Date(a.last_message_at)));
+  renderCrmSupportList();
+  document.getElementById('crm-support-badge').hidden = !crmSupportTickets.some(t=>t.unread_by_admin);
+}
+function renderCrmSupportList(){
+  const el = document.getElementById('crm-support-list');
+  if(!crmSupportTickets.length){ el.innerHTML = '<div class="crm-adj-empty">Henüz destek talebi yok.</div>'; return; }
+  el.innerHTML = crmSupportTickets.map(t=>`
+    <div class="destek-ticket-row" data-ticket-id="${esc(t.id)}">
+      <div class="destek-ticket-row-txt">
+        <b>${esc(t.subject)}${t.unread_by_admin ? ' <span class="nav-badge" style="display:inline-block; vertical-align:middle;"></span>' : ''}</b>
+        <span>${esc(t.full_name || t.email || '')} · ${esc(trDate(t.last_message_at))}</span>
+      </div>
+      <span class="destek-status ${t.status}">${destekStatusLabel(t.status)}</span>
+    </div>`).join('');
+}
+document.getElementById('crm-support-list').addEventListener('click', (e)=>{
+  const row = e.target.closest('[data-ticket-id]');
+  if(row) openCrmSupportTicket(row.dataset.ticketId);
+});
+
+async function openCrmSupportTicket(id){
+  crmOpenSupportId = id;
+  document.getElementById('crm-destek-modal-messages').innerHTML = '<div class="crm-adj-empty">Yükleniyor…</div>';
+  document.getElementById('crm-destek-modal').classList.add('open');
+  try{
+    const res = await rpcOrThrow('admin_get_support_ticket', { p_id: id });
+    const t = res.ticket, messages = res.messages || [];
+    document.getElementById('crm-destek-modal-title').innerHTML = `${folderIcon}<span>${esc(t.subject)}</span><span class="destek-status ${t.status}" style="margin-left:8px;">${destekStatusLabel(t.status)}</span>`;
+    const toggleBtn = document.getElementById('crm-destek-modal-toggle');
+    toggleBtn.textContent = t.status==='closed' ? 'Yeniden Aç' : 'Kapat';
+    toggleBtn.onclick = ()=>crmAction(async ()=>{
+      await rpcOrThrow('admin_set_support_status', { p_id: id, p_status: t.status==='closed' ? 'open' : 'closed' });
+      await openCrmSupportTicket(id);
+      await loadCrmSupportView();
+    });
+    document.getElementById('crm-destek-modal-messages').innerHTML = !messages.length ? '<div class="crm-adj-empty">Henüz mesaj yok.</div>' : messages.map(m=>`
+      <div class="destek-msg ${m.sender==='admin' ? 'from-admin' : 'from-user'}">
+        ${esc(m.body)}
+        <span class="destek-msg-meta">${m.sender==='admin' ? 'Siz (Destek)' : esc(t.full_name || t.email || 'Kullanıcı')} · ${esc(trDate(m.created_at))}</span>
+      </div>`).join('');
+    const box = document.getElementById('crm-destek-modal-messages');
+    box.scrollTop = box.scrollHeight;
+    const idx = crmSupportTickets.findIndex(x=>x.id===id);
+    if(idx>-1){ crmSupportTickets[idx].unread_by_admin = false; renderCrmSupportList(); }
+    document.getElementById('crm-support-badge').hidden = !crmSupportTickets.some(x=>x.unread_by_admin);
+  }catch(e){
+    document.getElementById('crm-destek-modal-messages').innerHTML = '<div class="crm-adj-empty">Talep yüklenemedi.</div>';
+  }
+}
+function closeCrmSupportModal(){ crmOpenSupportId = null; document.getElementById('crm-destek-modal').classList.remove('open'); }
+document.getElementById('crm-destek-modal-close').addEventListener('click', closeCrmSupportModal);
+document.getElementById('crm-destek-modal').addEventListener('click', (e)=>{ if(e.target.id==='crm-destek-modal') closeCrmSupportModal(); });
+document.getElementById('crm-destek-modal-send').addEventListener('click', async ()=>{
+  const ta = document.getElementById('crm-destek-modal-reply');
+  const body = ta.value.trim();
+  if(!body || !crmOpenSupportId) return;
+  const btn = document.getElementById('crm-destek-modal-send');
+  btn.disabled = true;
+  try{
+    await rpcOrThrow('admin_reply_support_ticket', { p_id: crmOpenSupportId, p_body: body });
+    ta.value = '';
+    await openCrmSupportTicket(crmOpenSupportId);
+    await loadCrmSupportView();
+  }catch(e){ showToast(friendlyError(e), 'err'); }
+  finally{ btn.disabled = false; }
+});
+
 /* ----- Yönetici yönetimi ----- */
 function renderNewAdminPerms(){
   document.getElementById('new-admin-perms').innerHTML = ALL_PERMISSIONS.map(p=>`
@@ -4510,7 +5021,8 @@ function renderCrmDetail(){
 
   // bakiye
   document.getElementById('crm-balance-form-card').style.display = canDo('balance') ? '' : 'none';
-  document.getElementById('crm-balance-value').textContent = fmtPrice(Number(p.balance))+' / '+fmtPrice(Number(p.futures_balance))+' TRY';
+  document.getElementById('crm-balance-spot').textContent = fmtMoney(Number(p.balance))+' TRY';
+  document.getElementById('crm-balance-futures').textContent = fmtMoney(Number(p.futures_balance))+' TRY';
   document.getElementById('crm-account-card').style.display = canDo('users') ? '' : 'none';
   crmAccountSync();
   renderCrmKyc();
@@ -4519,11 +5031,14 @@ function renderCrmDetail(){
   document.getElementById('crm-balance-adjustments').innerHTML = !adjs.length ? '<div class="crm-adj-empty">Henüz bakiye işlemi yapılmadı.</div>' : adjs.map(a=>{
     const amt = Number(a.amount);
     return `<div class="crm-adj-row">
-      <span>${a.wallet==='futures' ? 'Vadeli · ' : ''}${esc(a.note)} · ${esc(trDate(a.created_at))}</span>
-      <span style="display:flex; align-items:center; gap:10px;">
-        <b class="mono ${amt>=0?'up':'down'}">${amt>=0?'+':''}${fmtPrice(amt)} TRY</b>
+      <div class="crm-adj-desc">
+        <b>${a.wallet==='futures' ? 'Vadeli · ' : ''}${esc(a.note)}</b>
+        <span>${esc(trDate(a.created_at))}</span>
+      </div>
+      <div class="crm-adj-amt">
+        <b class="mono ${amt>=0?'up':'down'}">${amt>=0?'+':''}${fmtMoney(amt)} TRY</b>
         ${canDo('balance') ? `<span class="crm-adj-del" data-adj-id="${esc(a.id)}" title="Sil"><svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>` : ''}
-      </span></div>`;
+      </div></div>`;
   }).join('');
 
   // KYC
