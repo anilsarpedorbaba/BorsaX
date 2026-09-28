@@ -547,6 +547,32 @@ svg{display:block;}
 
 /* CRM */
 .crm-detail-head{display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:20px;}
+/* Bakiye formu — kompakt segment kontroller */
+.crm-balance-card{display:flex; flex-direction:column;}
+.crm-adj-wrap{flex:1; position:relative; min-height:150px;}
+.crm-adj-wrap .crm-adj-list{position:absolute; inset:0; max-height:none; margin-right:0; padding-right:6px;}
+@media (max-width:840px){ .crm-adj-wrap{min-height:336px;} }
+.crm-amt-quick{display:flex; gap:8px; flex-wrap:wrap; margin:2px 0 14px;}
+.crm-amt-quick button{padding:7px 13px; border-radius:9px; background:var(--bg); border:1px solid var(--border-soft); color:var(--text-dim); font-size:12px; font-weight:700; transition:border-color .15s,color .15s;}
+.crm-amt-quick button:hover{border-color:var(--accent); color:var(--accent);}
+#crm-balance-form-card{display:flex; flex-direction:column;}
+.crm-amt-input{padding:16px 16px;}
+.crm-amt-row{display:flex; gap:10px; align-items:stretch; margin-bottom:6px;}
+.crm-amt-input{flex:1; min-width:0; padding:14px 16px; font-size:20px; font-weight:700;}
+.crm-fx-hint{font-size:11.5px; color:var(--text-dim); min-height:16px; margin-bottom:12px;}
+.crm-seg-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.seg{display:flex; background:var(--bg); border:1px solid var(--border-soft); border-radius:11px; padding:3px; gap:3px;}
+.seg button{flex:1; background:transparent; padding:11px 10px; border-radius:8px; font-size:13px; font-weight:600; color:var(--text-dim); transition:background .15s,color .15s;}
+.seg button:hover{color:var(--text);}
+.seg button.active{background:var(--accent-soft); color:var(--accent);}
+.seg-cur{flex-shrink:0; width:88px;}
+.seg-cur button{font-size:16px; font-weight:700;}
+.seg-op button[data-v="add"].active{background:rgba(34,207,148,0.14); color:var(--green);}
+.seg-op button[data-v="remove"].active{background:rgba(246,70,93,0.14); color:var(--red);}
+.crm-cur-toggle{margin-left:auto; display:inline-flex; background:var(--card-2); border-radius:8px; padding:2px; gap:2px;}
+.crm-cur-toggle button{background:transparent; width:28px; height:24px; border-radius:6px; font-size:12.5px; font-weight:700; color:var(--text-dim); transition:background .15s,color .15s;}
+.crm-cur-toggle button:hover{color:var(--text);}
+.crm-cur-toggle button.active{background:var(--accent-soft); color:var(--accent);}
 .crm-detail-user{display:flex; align-items:center; gap:12px;}
 .crm-detail-name{font-size:15.5px; font-weight:800;}
 .crm-detail-meta{font-size:11.5px; color:var(--text-dim); margin-top:2px;}
@@ -2165,7 +2191,12 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
           </div>
 
           <div class="card">
-            <div class="card-title" style="margin-bottom:14px;"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Kullanıcı Bilgileri</div>
+            <div class="card-title" style="margin-bottom:14px;"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Kullanıcı Bilgileri
+              <div class="crm-cur-toggle" id="crm-cur-toggle" title="Bakiye ve kâr/zarar para birimi (görüntüleme)">
+                <button type="button" data-crm-cur="TRY" class="active">₺</button>
+                <button type="button" data-crm-cur="USD">$</button>
+              </div>
+            </div>
             <div class="stat-grid crm-info-grid" id="crm-user-info"></div>
           </div>
 
@@ -2231,26 +2262,41 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
             </div>
           </div>
 
-          <div class="grid-2 section-gap" style="align-items:start;">
+          <div class="grid-2 section-gap">
             <div class="card" id="crm-balance-form-card">
               <div class="card-title" style="margin-bottom:14px;">Bakiye Ekle / Çıkar</div>
-              <div class="ticket-row-label">Tutar</div>
-              <input type="text" id="crm-balance-amount" placeholder="0,00" class="mono amount-input" style="padding:12px 14px; font-size:16px; margin-bottom:14px;">
-              <div class="ticket-row-label">İşlem</div>
-              <select id="crm-balance-op" class="amount-input mono" style="padding:12px 14px; font-size:14px; margin-bottom:14px;">
-                <option value="add">Bakiye Ekle</option>
-                <option value="remove">Bakiye Çıkar</option>
-              </select>
-              <div class="ticket-row-label">Cüzdan</div>
-              <select id="crm-balance-wallet" class="amount-input mono" style="padding:12px 14px; font-size:14px; margin-bottom:14px;">
-                <option value="spot">Spot</option>
-                <option value="futures">Vadeli İşlemler</option>
-              </select>
-              <div class="ticket-row-label">Açıklama</div>
-              <input type="text" id="crm-balance-note" placeholder="Opsiyonel açıklama" class="amount-input" style="padding:12px 14px; font-size:13px; margin-bottom:16px;">
+              <div class="crm-amt-row">
+                <input type="text" id="crm-balance-amount" placeholder="0,00" inputmode="decimal" class="mono amount-input crm-amt-input" aria-label="Tutar">
+                <div class="seg seg-cur" data-seg-target="crm-balance-currency">
+                  <button type="button" data-v="TRY" class="active" title="Türk Lirası">₺</button>
+                  <button type="button" data-v="USD" title="Amerikan Doları">$</button>
+                </div>
+                <input type="hidden" id="crm-balance-currency" value="TRY">
+              </div>
+              <div id="crm-balance-fx-hint" class="crm-fx-hint"></div>
+              <div class="crm-amt-quick" id="crm-amt-quick"></div>
+              <div class="crm-seg-grid">
+                <div>
+                  <div class="ticket-row-label">İşlem</div>
+                  <div class="seg seg-op" data-seg-target="crm-balance-op">
+                    <button type="button" data-v="add" class="active">Ekle</button>
+                    <button type="button" data-v="remove">Çıkar</button>
+                  </div>
+                  <input type="hidden" id="crm-balance-op" value="add">
+                </div>
+                <div>
+                  <div class="ticket-row-label">Cüzdan</div>
+                  <div class="seg" data-seg-target="crm-balance-wallet">
+                    <button type="button" data-v="spot" class="active">Spot</button>
+                    <button type="button" data-v="futures">Vadeli</button>
+                  </div>
+                  <input type="hidden" id="crm-balance-wallet" value="spot">
+                </div>
+              </div>
+              <input type="text" id="crm-balance-note" placeholder="Açıklama (opsiyonel)" class="amount-input" style="padding:12px 14px; font-size:13px; margin:14px 0 16px;">
               <button class="btn btn-primary" style="width:100%; justify-content:center;" id="crm-balance-add">Kaydet</button>
             </div>
-            <div class="card">
+            <div class="card crm-balance-card">
               <div class="card-title" style="margin-bottom:14px;">Bakiye</div>
               <div class="stat-grid" style="margin-bottom:20px;">
                 <div class="stat-box">
@@ -2263,7 +2309,7 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
                 </div>
               </div>
               <div class="crm-adj-title">İşlem Geçmişi</div>
-              <div id="crm-balance-adjustments" class="crm-adj-list"></div>
+              <div class="crm-adj-wrap"><div id="crm-balance-adjustments" class="crm-adj-list"></div></div>
             </div>
           </div>
 
@@ -4941,6 +4987,53 @@ document.querySelectorAll('#crm-tabs .tab-btn').forEach(btn=>{
 const mapCrmPos = (x)=>({ id:x.id, symDisplay:x.sym_display, side:x.side, qty:Number(x.qty), qtyLabel:x.qty_label, entry:Number(x.entry),
   exit:x.exit==null?null:Number(x.exit), pl:x.pl==null?null:Number(x.pl), cat:x.cat, tickerSym:x.ticker_sym, currency:x.currency, adminAdjusted:!!x.admin_adjusted });
 
+/* ===== CRM görüntüleme para birimi (yalnızca yöneticinin ekran tercihi; sunucuda TRY tutulur) ===== */
+let crmDispCur = 'TRY';
+function crmToDisp(tryVal){ return crmDispCur==='USD' ? tryVal / fxRate() : tryVal; }
+function crmMoney(tryVal){ return fmtMoney(crmToDisp(tryVal)) + ' ' + crmDispCur; }
+function crmPlMoney(pl, curr){                              // pozisyon K/Z'sini pozisyonun kendi biriminden seçili görüntüleme birimine çevirir
+  const tryVal = curr==='TRY' ? pl : pl * fxRate();
+  return fmtMoney(crmToDisp(tryVal)) + ' ' + crmDispCur;
+}
+document.getElementById('crm-cur-toggle').addEventListener('click', (e)=>{
+  const b = e.target.closest('[data-crm-cur]');
+  if(!b) return;
+  crmDispCur = b.dataset.crmCur;
+  document.querySelectorAll('#crm-cur-toggle button').forEach(x=>x.classList.toggle('active', x===b));
+  renderCrmDetail();
+});
+function updateCrmBalanceFxHint(){
+  const h = document.getElementById('crm-balance-fx-hint');
+  if(!h) return;
+  const usd = document.getElementById('crm-balance-currency').value === 'USD';
+  if(!usd){ h.textContent = ''; return; }
+  const v = parseAmount(document.getElementById('crm-balance-amount').value), fx = fxRate();
+  h.textContent = (isFinite(v) && v > 0 ? '≈ ' + fmtMoney(v * fx) + ' TRY · ' : '') + '1 USD = ' + fmtMoney(fx) + ' TRY';
+}
+document.addEventListener('click', (e)=>{
+  const b = e.target.closest('.seg[data-seg-target] button[data-v]');
+  if(!b) return;
+  const seg = b.closest('.seg');
+  seg.querySelectorAll('button').forEach(x=>x.classList.toggle('active', x===b));
+  const t = document.getElementById(seg.dataset.segTarget);
+  if(t){ t.value = b.dataset.v; t.dispatchEvent(new Event('change')); }
+});
+document.getElementById('crm-balance-currency').addEventListener('change', updateCrmBalanceFxHint);
+const CRM_QUICK = { TRY:['1.000','5.000','10.000','50.000'], USD:['100','500','1.000','5.000'] };
+function renderCrmQuick(){
+  const cur = document.getElementById('crm-balance-currency').value === 'USD' ? 'USD' : 'TRY';
+  document.getElementById('crm-amt-quick').innerHTML = CRM_QUICK[cur].map(v=>`<button type="button" data-q="${v}">${v}</button>`).join('');
+}
+document.getElementById('crm-amt-quick').addEventListener('click', (e)=>{
+  const b = e.target.closest('button[data-q]'); if(!b) return;
+  const inp = document.getElementById('crm-balance-amount');
+  inp.value = b.dataset.q; inp.dispatchEvent(new Event('input'));
+});
+document.getElementById('crm-balance-currency').addEventListener('change', renderCrmQuick);
+renderCrmQuick();
+
+document.getElementById('crm-balance-amount').addEventListener('input', updateCrmBalanceFxHint);
+
 function crmNoteHtml(note){
   if(!note) return '';
   const s = String(note);
@@ -4983,8 +5076,8 @@ function renderCrmDetail(){
     <div class="stat-box"><div class="stat-box-label">Telefon</div><div class="stat-box-val mono">${esc(p.phone||'—')}</div></div>
     <div class="stat-box"><div class="stat-box-label">TC Kimlik No</div><div class="stat-box-val mono">${crmTc.ok ? esc(crmTc.value || '—') : '—'}</div></div>
     <div class="stat-box"><div class="stat-box-label">Kayıt Tarihi</div><div class="stat-box-val" style="font-size:12.5px;">${esc(trDate(p.created_at))}</div></div>
-    <div class="stat-box"><div class="stat-box-label">Spot Bakiye</div><div class="stat-box-val mono">${fmtPrice(Number(p.balance))} TRY</div></div>
-    <div class="stat-box"><div class="stat-box-label">Vadeli Bakiye</div><div class="stat-box-val mono">${fmtPrice(Number(p.futures_balance))} TRY</div></div>
+    <div class="stat-box"><div class="stat-box-label">Spot Bakiye</div><div class="stat-box-val mono">${crmMoney(Number(p.balance))}</div></div>
+    <div class="stat-box"><div class="stat-box-label">Vadeli Bakiye</div><div class="stat-box-val mono">${crmMoney(Number(p.futures_balance))}</div></div>
     <div class="stat-box"><div class="stat-box-label">KYC Durumu (Demo)</div><div class="stat-box-val"><span class="crm-status-pill ${kycCls}">${esc(p.kyc_status)}</span></div></div>`;
 
   // açık pozisyonlar
@@ -5003,7 +5096,7 @@ function renderCrmDetail(){
       <td style="color:${x.side==='Long'?'var(--green)':'var(--red)'};font-weight:700;">${x.side}</td>
       <td class="num">${lotCell}</td><td class="num">${entryCell}</td>
       <td class="mono num">${fmtPrice(cur)}</td>
-      <td class="mono num ${up?'up':'down'}">${up?'+':''}${pl.toFixed(2)} ${x.currency}</td>
+      <td class="mono num ${up?'up':'down'}">${up?'+':''}${crmPlMoney(pl, x.currency)}</td>
       <td><div style="display:flex; gap:6px; justify-content:flex-end;">${actions}</div></td></tr>`;
   }).join('');
 
@@ -5015,7 +5108,7 @@ function renderCrmDetail(){
       <td><div class="badge-sym">${symBadge(c.tickerSym, c.cat)}${esc(c.symDisplay)}${adjBadge(c.adminAdjusted)}</div></td>
       <td style="color:${c.side==='Long'?'var(--green)':'var(--red)'};font-weight:700;">${c.side}</td>
       <td class="mono num">${esc(c.qtyLabel)}</td><td class="mono num">${fmtPrice(c.entry)}</td><td class="mono num">${fmtPrice(c.exit)}</td>
-      <td class="mono num ${up?'up':'down'}">${up?'+':''}${c.pl.toFixed(2)} ${c.currency}</td></tr>`;
+      <td class="mono num ${up?'up':'down'}">${up?'+':''}${crmPlMoney(c.pl, c.currency)}</td></tr>`;
   }).join('');
 
   // talepler
@@ -5026,8 +5119,8 @@ function renderCrmDetail(){
 
   // bakiye
   document.getElementById('crm-balance-form-card').style.display = canDo('balance') ? '' : 'none';
-  document.getElementById('crm-balance-spot').textContent = fmtMoney(Number(p.balance))+' TRY';
-  document.getElementById('crm-balance-futures').textContent = fmtMoney(Number(p.futures_balance))+' TRY';
+  document.getElementById('crm-balance-spot').textContent = crmMoney(Number(p.balance));
+  document.getElementById('crm-balance-futures').textContent = crmMoney(Number(p.futures_balance));
   document.getElementById('crm-account-card').style.display = canDo('users') ? '' : 'none';
   crmAccountSync();
   renderCrmKyc();
@@ -5041,7 +5134,7 @@ function renderCrmDetail(){
         <span>${esc(trDate(a.created_at))}</span>
       </div>
       <div class="crm-adj-amt">
-        <b class="mono ${amt>=0?'up':'down'}">${amt>=0?'+':''}${fmtMoney(amt)} TRY</b>
+        <b class="mono ${amt>=0?'up':'down'}">${amt>=0?'+':''}${crmMoney(amt)}</b>
         ${canDo('balance') ? `<span class="crm-adj-del" data-adj-id="${esc(a.id)}" title="Sil"><svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>` : ''}
       </div></div>`;
   }).join('');
@@ -5105,9 +5198,13 @@ document.getElementById('crm-balance-add').addEventListener('click', ()=>{
   const op = document.getElementById('crm-balance-op').value;
   const raw = parseAmount(input.value);
   if(isNaN(raw) || raw<=0){ showErrorModal('Geçersiz Tutar', 'Geçerli bir tutar girin.'); return; }
+  const isUsd = document.getElementById('crm-balance-currency').value === 'USD';
+  const amtTry = isUsd ? usdToTry(raw) : raw;               // sunucu TRY tutar bekler; dolar girildiyse güncel kurla çevrilir
+  const noteBase = noteInput.value.trim();
+  const note = isUsd ? ((noteBase ? noteBase + ' · ' : '') + fmtMoney(raw) + ' USD @ ' + fmtMoney(fxRate())) : noteBase;
   crmAction(async ()=>{
-    await rpcOrThrow('admin_adjust_balance', { p_uid: crmSelectedUid, p_amount: op==='remove' ? -raw : raw, p_note: noteInput.value.trim() || null, p_wallet: document.getElementById('crm-balance-wallet').value });
-    input.value = ''; noteInput.value = '';
+    await rpcOrThrow('admin_adjust_balance', { p_uid: crmSelectedUid, p_amount: op==='remove' ? -amtTry : amtTry, p_note: note || null, p_wallet: document.getElementById('crm-balance-wallet').value });
+    input.value = ''; noteInput.value = ''; updateCrmBalanceFxHint();
     await reloadCrmDetail();
   });
 });
