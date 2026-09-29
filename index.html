@@ -803,6 +803,92 @@ tbody tr:hover{background:rgba(255,255,255,0.02);}
 .destek-status{font-size:10px; font-weight:700; padding:3px 9px; border-radius:20px; flex-shrink:0; text-transform:uppercase; letter-spacing:.3px;}
 .destek-status.open{background:rgba(34,207,148,0.13); color:var(--green);}
 .destek-status.closed{background:var(--card-2); color:var(--text-dim);}
+
+/* ===== Destek sohbet penceresi (kullanıcı + CRM ortak) ===== */
+.chat-card{height:min(680px,88vh);}
+.chat-card .pgm-head{padding:14px 18px; background:linear-gradient(180deg,var(--card-2) 0%,var(--card) 100%);}
+.chat-card .pgm-title{gap:12px; flex:1;}
+.chat-avatar-lg{width:40px; height:40px; border-radius:12px; background:var(--accent-soft); color:var(--accent); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.chat-avatar-lg .icon{width:18px; height:18px; color:var(--accent);}
+.chat-head-txt{min-width:0; display:flex; flex-direction:column; gap:3px;}
+.chat-head-txt b{font-size:14.5px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.chat-head-txt span{font-size:11px; color:var(--text-dim); font-weight:500;}
+.chat-body{flex:1; min-height:0; overflow-y:auto; display:flex !important; flex-direction:column; gap:3px; padding:18px 18px 10px; background:var(--bg); scroll-behavior:smooth;}
+.chat-day{align-self:center; margin:12px 0 8px; font-size:10.5px; font-weight:600; color:var(--text-dim); background:var(--card-2); border:1px solid var(--border-soft); padding:4px 12px; border-radius:20px;}
+.chat-day:first-child{margin-top:0;}
+.chat-row{display:flex; align-items:flex-end; gap:8px; max-width:100%;}
+.chat-row.mine{flex-direction:row-reverse;}
+.chat-row.first{margin-top:10px;}
+.chat-av{width:28px; height:28px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; background:var(--card-2); color:var(--text-dim); border:1px solid var(--border);}
+.chat-row.mine .chat-av{background:var(--accent-soft); color:var(--accent); border-color:transparent;}
+.chat-av.ghost{visibility:hidden;}
+.chat-col{display:flex; flex-direction:column; max-width:78%; min-width:0;}
+.chat-row.mine .chat-col{align-items:flex-end;}
+.chat-name{font-size:10.5px; font-weight:700; color:var(--text-dim); margin:0 4px 4px;}
+.chat-bubble{padding:9px 13px 7px; border-radius:16px; font-size:13.5px; line-height:1.5; white-space:pre-wrap; word-break:break-word; overflow-wrap:anywhere;}
+.chat-row.theirs .chat-bubble{background:var(--card-2); border:1px solid var(--border); border-bottom-left-radius:5px;}
+.chat-row.mine .chat-bubble{background:linear-gradient(135deg,#f6c56f 0%,#f0a83c 100%); color:#1a1408; border-bottom-right-radius:5px; font-weight:500;}
+.chat-time{display:block; font-size:9.5px; margin-top:3px; text-align:right; opacity:.62; white-space:nowrap;}
+.chat-empty{margin:auto; text-align:center; color:var(--text-dim); font-size:12.5px; line-height:1.6; padding:30px 20px;}
+.chat-empty .icon{width:32px; height:32px; margin-bottom:8px; opacity:.5;}
+.chat-composer-wrap{padding:12px 16px 14px; border-top:1px solid var(--border-soft); background:var(--card); flex-shrink:0;}
+.chat-composer{display:flex; align-items:flex-end; gap:10px; background:var(--bg); border:1px solid var(--border-soft); border-radius:16px; padding:6px 6px 6px 14px; transition:border-color .15s, box-shadow .15s;}
+.chat-composer:focus-within{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft);}
+.chat-composer textarea{flex:1; min-width:0; resize:none; background:transparent; border:none; outline:none; color:var(--text); font-family:inherit; font-size:13.5px; line-height:1.5; padding:8px 0; max-height:140px; margin:0;}
+.chat-composer textarea::placeholder{color:var(--text-dim);}
+.chat-send{width:38px; height:38px; border-radius:12px; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#f6c56f 0%,#f0a83c 100%); color:#1a1408; transition:transform .12s, opacity .15s;}
+.chat-send:hover{transform:translateY(-1px);}
+.chat-send:disabled{opacity:.45; cursor:not-allowed; transform:none;}
+.chat-send .icon{width:17px; height:17px; color:#1a1408;}
+.chat-hint{font-size:10px; color:var(--text-dim); margin:7px 4px 0; text-align:right;}
+@media (max-width:679px){ .chat-card{height:88vh;} .chat-col{max-width:84%;} .chat-hint{display:none;} }
+
+/* ===== Destek sayfası: yeni talep formu + taleplerim ===== */
+.sup-card-head{display:flex; align-items:center; gap:12px; margin-bottom:18px;}
+.sup-ic{width:40px; height:40px; border-radius:12px; background:var(--accent-soft); color:var(--accent); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.sup-ic .icon{width:19px; height:19px; color:var(--accent);}
+.sup-card-head b{display:block; font-size:15px; font-weight:800; letter-spacing:-0.01em;}
+.sup-card-head span.sub{display:block; font-size:11.5px; color:var(--text-dim); margin-top:2px; font-weight:500;}
+.sup-count-pill{margin-left:auto; font-size:11px; font-weight:700; color:var(--text-dim); background:var(--card-2); border:1px solid var(--border-soft); padding:3px 10px; border-radius:20px;}
+.sup-field{margin-bottom:16px;}
+.sup-label{display:flex; align-items:center; justify-content:space-between; font-size:11.5px; font-weight:700; color:var(--text-dim); margin-bottom:8px; letter-spacing:.2px;}
+.sup-label .sup-counter{font-weight:500; font-size:10.5px; opacity:.75; font-variant-numeric:tabular-nums;}
+.sup-input{width:100%; background:var(--bg); border:1px solid var(--border-soft); border-radius:12px; padding:13px 15px; font-family:inherit; font-size:14px; font-weight:500; color:var(--text); outline:none; transition:border-color .15s, box-shadow .15s; margin:0; display:block;}
+.sup-input::placeholder{color:var(--text-dim); font-weight:400; opacity:.75;}
+.sup-input:hover{border-color:var(--border);}
+.sup-input:focus{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft);}
+textarea.sup-input{resize:vertical; min-height:130px; line-height:1.55;}
+.sup-cats{display:flex; flex-wrap:wrap; gap:8px;}
+.sup-cat{padding:7px 13px; border-radius:20px; font-size:12px; font-weight:600; color:var(--text-dim); background:var(--bg); border:1px solid var(--border-soft); transition:all .15s;}
+.sup-cat:hover{color:var(--text); border-color:var(--border);}
+.sup-cat.active{color:var(--accent); background:var(--accent-soft); border-color:var(--accent);}
+.sup-submit{width:100%; display:flex; align-items:center; justify-content:center; gap:9px; padding:14px; border-radius:12px; font-size:14px; font-weight:800; color:#1a1408; background:linear-gradient(135deg,#f6c56f 0%,#f0a83c 100%); transition:transform .12s, box-shadow .15s, opacity .15s;}
+.sup-submit:hover{transform:translateY(-1px); box-shadow:0 8px 20px -8px rgba(240,168,60,.55);}
+.sup-submit:disabled{opacity:.6; cursor:not-allowed; transform:none; box-shadow:none;}
+.sup-submit .icon{width:16px; height:16px; color:#1a1408;}
+.sup-msg{display:none; align-items:center; gap:9px; margin-top:12px; padding:10px 13px; border-radius:11px; font-size:12.5px; font-weight:600; line-height:1.4;}
+.sup-msg.show{display:flex;}
+.sup-msg .icon{width:16px; height:16px; flex-shrink:0;}
+.sup-msg.ok{background:rgba(34,207,148,0.1); color:var(--green); border:1px solid rgba(34,207,148,0.25);}
+.sup-msg.err{background:rgba(255,77,106,0.1); color:var(--red); border:1px solid rgba(255,77,106,0.25);}
+.sup-foot{font-size:10.5px; color:var(--text-dim); text-align:center; margin-top:10px;}
+.sup-list{display:flex; flex-direction:column; gap:8px; max-height:470px; overflow-y:auto; padding-right:2px;}
+.sup-ticket{position:relative; display:flex; align-items:center; gap:12px; padding:13px 14px; background:var(--bg); border:1px solid var(--border-soft); border-radius:14px; cursor:pointer; transition:border-color .15s, background .15s, transform .12s;}
+.sup-ticket:hover{border-color:var(--accent); background:var(--card-2); transform:translateY(-1px);}
+.sup-ticket.unread{border-color:rgba(240,168,60,.45);}
+.sup-ticket.unread::before{content:''; position:absolute; left:0; top:14px; bottom:14px; width:3px; border-radius:0 3px 3px 0; background:var(--accent);}
+.sup-ticket-ic{width:36px; height:36px; border-radius:10px; background:var(--card-2); color:var(--text-dim); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.sup-ticket-ic .icon{width:16px; height:16px;}
+.sup-ticket.unread .sup-ticket-ic{background:var(--accent-soft); color:var(--accent);}
+.sup-ticket-txt{flex:1; min-width:0;}
+.sup-ticket-txt b{display:flex; align-items:center; gap:7px; font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.sup-ticket-txt b .t{overflow:hidden; text-overflow:ellipsis;}
+.sup-ticket-txt b .new{font-size:9px; font-weight:800; letter-spacing:.4px; color:#1a1408; background:var(--accent); padding:2px 7px; border-radius:20px; flex-shrink:0;}
+.sup-ticket-txt span{display:block; font-size:11px; color:var(--text-dim); margin-top:3px;}
+.sup-chev{width:15px; height:15px; color:var(--text-dim); flex-shrink:0;}
+.sup-empty{text-align:center; padding:38px 18px; color:var(--text-dim); font-size:12.5px; line-height:1.6;}
+.sup-empty .icon{width:38px; height:38px; opacity:.45; margin-bottom:10px;}
+.sup-empty b{display:block; color:var(--text); font-size:13.5px; margin-bottom:4px;}
 .destek-msg{max-width:85%; padding:10px 13px; border-radius:14px; font-size:13px; line-height:1.5;}
 .destek-msg.from-user{align-self:flex-end; background:var(--accent-soft); color:var(--text); border-bottom-right-radius:4px;}
 .destek-msg.from-admin{align-self:flex-start; background:var(--card-2); color:var(--text); border-bottom-left-radius:4px;}
@@ -1651,7 +1737,7 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
             <thead><tr><th>İşlem</th><th class="num">Tutar</th><th class="num">Durum</th></tr></thead>
             <tbody id="recent-tx-body"></tbody>
           </table>
-          <div class="table-foot"><button class="btn btn-outline btn-sm">Tüm İşlemleri Gör</button></div>
+          <div class="table-foot"><button class="btn btn-outline btn-sm" id="btn-all-tx">Tüm İşlemleri Gör</button></div>
         </div>
 
         <div class="card section-gap">
@@ -2028,17 +2114,40 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
 
         <div class="grid-2 section-gap" style="align-items:start;">
           <div class="card">
-            <div class="card-title" style="margin-bottom:14px;">Yeni Destek Talebi</div>
-            <div class="ticket-row-label">Konu</div>
-            <input type="text" id="destek-new-subject" class="amount-input" placeholder="Kısaca konu başlığı" maxlength="120" style="padding:12px 14px; font-size:14px; margin-bottom:14px;">
-            <div class="ticket-row-label">Mesaj</div>
-            <textarea id="destek-new-body" class="amount-input" placeholder="Sorunuzu veya talebinizi yazın" maxlength="2000" rows="5" style="padding:12px 14px; font-size:13.5px; margin-bottom:16px; resize:vertical; font-family:inherit;"></textarea>
-            <button class="btn btn-primary" style="width:100%; justify-content:center;" id="destek-new-submit">Gönder</button>
-            <div class="pp-msg" id="destek-new-msg" role="status" style="text-align:center; font-size:12px; margin-top:10px;"></div>
+            <div class="sup-card-head">
+              <span class="sup-ic"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+              <div><b>Yeni Destek Talebi</b><span class="sub">Sorununuzu iletin, destek ekibimiz size dönüş yapsın.</span></div>
+            </div>
+            <div class="sup-field">
+              <div class="sup-label">Kategori</div>
+              <div class="sup-cats" id="destek-cats">
+                <button type="button" class="sup-cat active" data-cat="Genel">Genel</button>
+                <button type="button" class="sup-cat" data-cat="Hesap">Hesap</button>
+                <button type="button" class="sup-cat" data-cat="İşlem">İşlem</button>
+                <button type="button" class="sup-cat" data-cat="Para İşlemleri">Para İşlemleri</button>
+                <button type="button" class="sup-cat" data-cat="KYC">KYC</button>
+                <button type="button" class="sup-cat" data-cat="Teknik">Teknik</button>
+              </div>
+            </div>
+            <div class="sup-field">
+              <label class="sup-label" for="destek-new-subject">Konu <span class="sup-counter" id="destek-subject-count">0/120</span></label>
+              <input type="text" id="destek-new-subject" class="sup-input" placeholder="Kısaca konu başlığı" maxlength="120" autocomplete="off">
+            </div>
+            <div class="sup-field">
+              <label class="sup-label" for="destek-new-body">Mesaj <span class="sup-counter" id="destek-body-count">0/2000</span></label>
+              <textarea id="destek-new-body" class="sup-input" placeholder="Sorunuzu veya talebinizi ayrıntılı şekilde yazın" maxlength="2000" rows="5"></textarea>
+            </div>
+            <button class="sup-submit" id="destek-new-submit"><svg class="icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span id="destek-new-submit-label">Talebi Gönder</span></button>
+            <div class="sup-msg" id="destek-new-msg" role="status"></div>
+            <div class="sup-foot">Ctrl + Enter ile de gönderebilirsiniz</div>
           </div>
           <div class="card">
-            <div class="card-title" style="margin-bottom:10px;">Taleplerim</div>
-            <div id="destek-ticket-list" class="crm-adj-list" style="max-height:420px;"></div>
+            <div class="sup-card-head" style="margin-bottom:16px;">
+              <span class="sup-ic"><svg class="icon" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg></span>
+              <div><b>Taleplerim</b><span class="sub">Geçmiş ve açık taleplerinizi görüntüleyin</span></div>
+              <span class="sup-count-pill" id="destek-ticket-count">0</span>
+            </div>
+            <div id="destek-ticket-list" class="sup-list"></div>
           </div>
         </div>
       </section>
@@ -2331,6 +2440,7 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
                 <tbody id="crm-positions-body"></tbody>
               </table>
               </div>
+              <div class="table-foot"><button class="btn btn-outline btn-sm" id="crm-pos-toggle"></button></div>
             </div>
             <div class="section-subtitle">
               <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg>
@@ -2343,6 +2453,7 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
                 <tbody id="crm-closed-body"></tbody>
               </table>
               </div>
+              <div class="table-foot"><button class="btn btn-outline btn-sm" id="crm-closed-toggle"></button></div>
             </div>
           </div>
 
@@ -2408,33 +2519,41 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
 
 <!-- ================= DESTEK TALEBİ MODALI (kullanıcı tarafı — talep detayı/yanıt) ================= -->
 <div id="destek-modal" class="sheet-modal">
-  <div class="pgm-card">
+  <div class="pgm-card chat-card">
     <div class="pgm-head">
       <div class="pgm-title" id="destek-modal-title"></div>
-      <button class="pgm-close" id="destek-modal-close"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="pgm-close" id="destek-modal-close" aria-label="Kapat"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-    <div class="pgm-body" id="destek-modal-messages" style="display:flex; flex-direction:column; gap:10px;"></div>
-    <div id="destek-modal-replybox" style="padding:14px 20px 18px; border-top:1px solid var(--border-soft); flex-shrink:0;">
-      <textarea id="destek-modal-reply" class="amount-input" rows="2" maxlength="2000" placeholder="Yanıt yazın..." style="resize:vertical; font-family:inherit; margin-bottom:10px;"></textarea>
-      <button class="btn btn-primary" style="width:100%; justify-content:center;" id="destek-modal-send">Gönder</button>
+    <div class="pgm-body chat-body" id="destek-modal-messages"></div>
+    <div id="destek-modal-replybox">
+    <div class="chat-composer-wrap">
+      <div class="chat-composer">
+        <textarea id="destek-modal-reply" rows="1" maxlength="2000" placeholder="Mesajınızı yazın..."></textarea>
+        <button class="chat-send" id="destek-modal-send" aria-label="Gönder" title="Gönder"><svg class="icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+      </div>
+      <div class="chat-hint">Enter ile gönder · Shift + Enter ile yeni satır</div>
+    </div>
     </div>
   </div>
 </div>
 
 <!-- ================= DESTEK TALEBİ MODALI (CRM/admin tarafı) ================= -->
 <div id="crm-destek-modal" class="sheet-modal">
-  <div class="pgm-card">
+  <div class="pgm-card chat-card">
     <div class="pgm-head">
       <div class="pgm-title" id="crm-destek-modal-title"></div>
       <div style="display:flex; align-items:center; gap:8px;">
         <button class="btn btn-sm acct-ghost" id="crm-destek-modal-toggle"></button>
-        <button class="pgm-close" id="crm-destek-modal-close"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        <button class="pgm-close" id="crm-destek-modal-close" aria-label="Kapat"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
     </div>
-    <div class="pgm-body" id="crm-destek-modal-messages" style="display:flex; flex-direction:column; gap:10px;"></div>
-    <div style="padding:14px 20px 18px; border-top:1px solid var(--border-soft); flex-shrink:0;">
-      <textarea id="crm-destek-modal-reply" class="amount-input" rows="2" maxlength="2000" placeholder="Yanıt yazın..." style="resize:vertical; font-family:inherit; margin-bottom:10px;"></textarea>
-      <button class="btn btn-primary" style="width:100%; justify-content:center;" id="crm-destek-modal-send">Gönder</button>
+    <div class="pgm-body chat-body" id="crm-destek-modal-messages"></div>
+    <div class="chat-composer-wrap">
+      <div class="chat-composer">
+        <textarea id="crm-destek-modal-reply" rows="1" maxlength="2000" placeholder="Mesajınızı yazın..."></textarea>
+        <button class="chat-send" id="crm-destek-modal-send" aria-label="Gönder" title="Gönder"><svg class="icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+      </div>
+      <div class="chat-hint">Enter ile gönder · Shift + Enter ile yeni satır</div>
     </div>
   </div>
 </div>
@@ -2875,6 +2994,20 @@ function goPage(name){
 document.querySelectorAll('[data-page]').forEach(el=>{
   el.addEventListener('click', ()=>goPage(el.dataset.page));
 });
+
+/* Hesabım ekranı: Son İşlemler / Açık Pozisyonlarım en fazla DASH_LIMIT satır gösterir,
+   "Tüm ... Gör" butonu listeyi açıp kapatır. */
+const DASH_LIMIT = 7;
+let showAllTx = false;
+function updateDashFoot(btnId, total, expanded, label){
+  const btn = document.getElementById(btnId);
+  if(!btn) return;
+  const foot = btn.parentElement;
+  if(total <= DASH_LIMIT){ foot.style.display = 'none'; return; }
+  foot.style.display = '';
+  btn.textContent = expanded ? 'Daha Az Göster' : label + ' (' + total + ')';
+}
+document.getElementById('btn-all-tx').addEventListener('click', ()=>{ showAllTx = !showAllTx; renderAccountWidgets(); });
 
 /* ================= MARKET DATA ================= */
 const bistList = ["THYAO|Türk Hava Yolları","GARAN|Garanti BBVA","AKBNK|Akbank","ISCTR|İş Bankası C","SISE|Şişecam","EREGL|Ereğli Demir Çelik","KCHOL|Koç Holding","SAHOL|Sabancı Holding","TUPRS|Tüpraş","BIMAS|BİM Mağazalar","ASELS|Aselsan","PETKM|Petkim","PGSUS|Pegasus","TOASO|Tofaş","FROTO|Ford Otosan","ARCLK|Arçelik","VESTL|Vestel","KOZAL|Koza Altın","KOZAA|Koza Madencilik","TCELL|Turkcell","TTKOM|Türk Telekom","YKBNK|Yapı Kredi","VAKBN|VakıfBank","HALKB|Halkbank","SASA|Sasa Polyester","HEKTS|Hektaş","KRDMD|Kardemir D","ENKAI|Enka İnşaat","EKGYO|Emlak Konut GYO","MGROS|Migros","ULKER|Ülker","AEFES|Anadolu Efes","CCOLA|Coca-Cola İçecek","SOKM|Şok Marketler","BRSAN|Borusan Boru","ALARK|Alarko Holding","OTKAR|Otokar","OYAKC|Oyak Çimento","TSKB|TSKB","ISGYO|İş GYO","ISMEN|İş Yatırım","DOHOL|Doğan Holding","GUBRF|Gübre Fabrikaları","ENJSA|Enerjisa","ODAS|Odaş Elektrik","AGHOL|AG Anadolu Grubu","ZOREN|Zorlu Enerji","KONTR|Kontrolmatik","KARSN|Karsan Otomotiv","ASUZU|Anadolu Isuzu","CIMSA|Çimsa","BUCIM|Bursa Çimento","ADANA|Adana Çimento","AKSA|Aksa Akrilik","AKSEN|Aksa Enerji","ALKIM|Alkim Kimya","ANHYT|Anadolu Hayat Emeklilik","ANSGR|Anadolu Sigorta","BAGFS|Bagfaş","BASGZ|Başkent Doğalgaz","BERA|Bera Holding","BFREN|Bosch Fren","BIOEN|Biotrend Enerji","BRISA|Brisa","BTCIM|Batıçim","CANTE|Çan2 Termik","CEMTS|Çemtaş","CWENE|CW Enerji","DOAS|Doğuş Otomotiv","ECILC|Eczacıbaşı İlaç","EGEEN|Ege Endüstri","EUPWR|Europower Enerji","GESAN|Girişim Elektrik","GOLTS|Göltaş Çimento","GSDHO|GSD Holding","GWIND|Galata Wind","HUNER|Hüner Elektronik","INDES|İndeks Bilgisayar","IPEKE|İpek Doğal Enerji","IZMDC|İzmir Demir Çelik","KARTN|Kartonsan","KLSER|Kaleseramik","KMPUR|Kimpur","KONYA|Konya Çimento","KORDS|Kordsa","KTLEV|Katılımevim","LOGO|Logo Yazılım","MAVI|Mavi Giyim","MPARK|MLP Sağlık","NTHOL|Net Holding","NUGYO|Nurol GYO","ORGE|Orge Enerji","PENTA|Penta Teknoloji","PSGYO|Pasifik GYO","QUAGR|Qua Granite","SEKFK|Şeker Finansal Kiralama","SKBNK|Şekerbank","SMRTG|Smart Güneş","SNGYO|Sinpaş GYO","TABGD|Tab Gıda","TATGD|Tat Gıda","TKFEN|Tekfen Holding","TMSN|Tümosan","TRGYO|Torunlar GYO","TURSG|Türkiye Sigorta","VESBE|Vestel Beyaz Eşya","YEOTK|Yeo Teknoloji","ZRGYO|Ziraat GYO"].slice(0,100);
@@ -3548,12 +3681,13 @@ function renderAccountWidgets(){
   renderBalanceWidgets();
   const txBody = document.getElementById('recent-tx-body');
   if(txBody){
-    txBody.innerHTML = u.recentTx.map(t=>`<tr>
+    txBody.innerHTML = (showAllTx ? u.recentTx : u.recentTx.slice(0, DASH_LIMIT)).map(t=>`<tr>
       <td>${t.label}<div class="tx-date">${t.date}</div></td>
       <td class="mono num ${t.up?'up':'down'}">${esc(convertTxText(t.amount))}</td>
       <td class="num"><span class="pill pill-green">Tamamlandı</span></td>
     </tr>`).join('');
   }
+  updateDashFoot('btn-all-tx', u.recentTx.length, showAllTx, 'Tüm İşlemleri Gör');
   const rowsHtml = u.positions.map(p=>{
     const cur = getLivePrice(p);
     const pl = pnl(p, cur);
@@ -3564,7 +3698,7 @@ function renderAccountWidgets(){
 
   const accBody = document.getElementById('account-positions-body');
   if(accBody){
-    accBody.innerHTML = rowsHtml.map(r=>`<tr>
+    accBody.innerHTML = rowsHtml.slice(0, DASH_LIMIT).map(r=>`<tr>
       <td><div class="badge-sym">${symBadge(r.p.tickerSym, r.p.cat)}${r.p.symDisplay}${adjBadge(r.p.adminAdjusted)}</div></td>
       <td style="color:${r.p.side==='Long'?'var(--green)':'var(--red)'};font-weight:700; font-size:11.5px;">${r.p.side}</td>
       <td class="mono num">${unleveragedQtyLabel(r.p.qtyLabel)}</td>
@@ -4153,6 +4287,7 @@ document.getElementById('settings-goto-notifs').addEventListener('click', (e)=>{
 /* ================= TRADE SCREEN ================= */
 let currentTrade = null;
 let chartData = [];
+let chartIsReal = false;   // true: gerçek geçmiş veri, false: sentetik seri
 let currentTimeframe = '1G';
 /* Tüm zaman dilimleri TEK bir fiyat serisinin (2 dakikalık adımlarla son 30 gün) farklı pencereleridir.
    steps: pencerenin ana seri üzerindeki adım sayısı, points: çizilen nokta sayısı. */
@@ -4203,12 +4338,14 @@ function openTrade(cat, item){
   document.getElementById('lot-input').value = '1';
   currentTimeframe = '1G';
   document.querySelectorAll('#tf-tabs .tf-btn').forEach(b=>b.classList.toggle('active', b.dataset.tf==='1G'));
-  generateChartData(item);
+  chartData = [];                    // önceki sembolün grafiği bir an bile görünmesin
+  chartIsReal = false;
   fetchMyLeverage();
   renderTradeHeader();
   renderChart();
   updateOrderSummary();
   goPage('trade');
+  generateChartData(item);           // gerçek veri gelince kendi renderChart()'ını tetikler
 }
 
 /* Günlük değişim: önceki kapanışa göre CANLI değişim. Kapalı piyasada fiyat çapada sabit olduğundan item.change'e eşittir. */
@@ -4247,16 +4384,52 @@ function buildChartMaster(item){
   return prices;
 }
 
-function generateChartData(item){
+/* Gerçek geçmiş veri: yalnızca MARKET_API_BASE tanımlıysa ve market_api.py'nin /api/kriptox/history
+   uç noktası ayaktaysa denenir. Başarısız olursa (CORS, sunucu kapalı, sembol bulunamadı) sessizce
+   aşağıdaki sentetik (rastgele yürüyüş) seriye düşülür — grafik hiçbir zaman boş kalmaz. */
+async function fetchHistoryFrom(baseUrl, cat, sym, tf){
+  try{
+    const url = `${baseUrl}?cat=${encodeURIComponent(cat)}&sym=${encodeURIComponent(sym)}&tf=${encodeURIComponent(tf)}`;
+    const res = await fetch(url);
+    if(!res.ok) return null;
+    const json = await res.json();
+    const rows = json && json.data;
+    if(!Array.isArray(rows) || rows.length < 3) return null;
+    return rows.map(r=>r.price).filter(v=>typeof v==='number' && isFinite(v) && v>0);
+  }catch(e){ return null; }
+}
+/* Önce Supabase Edge Function'ın /history rotası denenir (canlıda ekstra kurulum gerektirmez),
+   sonra isteğe bağlı yerel market_api.py sunucusu. İkisi de başarısız olursa null döner ve
+   generateChartData eski sentetik seriye düşer. */
+async function fetchRealChartHistory(cat, sym, tf){
+  const fromEdge = await fetchHistoryFrom(MARKET_FUNCTION_URL + '/history', cat, sym, tf);
+  if(fromEdge) return fromEdge;
+  if(MARKET_API_BASE) return await fetchHistoryFrom(MARKET_API_BASE + '/api/kriptox/history', cat, sym, tf);
+  return null;
+}
+
+let chartReqId = 0;
+async function generateChartData(item){
   const cfg = TF_CONFIG[currentTimeframe] || TF_CONFIG['1G'];
-  chartData = [];
-  if(!item || !(item.anchor > 0)) return;
-  const prices = buildChartMaster(item);
-  const N = prices.length - 1;
-  const stride = cfg.steps / (cfg.points - 1);
-  for(let k=0;k<cfg.points;k++) chartData.push(prices[Math.round(N - cfg.steps + k*stride)]);
-  chartData[chartData.length-1] = item.price;             // son nokta canlı fiyat
+  if(!item || !(item.anchor > 0)){ chartData = []; return; }
+  const myReq = ++chartReqId;
+  const real = await fetchRealChartHistory(currentTrade.cat, currentTrade.tickerSym, currentTimeframe);
+  if(myReq !== chartReqId || !currentTrade) return;   // bu arada zaman dilimi/sembol değiştiyse sonucu at
+  if(real && real.length >= 3){
+    chartData = real;
+    chartData[chartData.length-1] = item.price;            // son nokta canlı fiyat
+    chartIsReal = true;
+  } else {
+    const prices = buildChartMaster(item);
+    const N = prices.length - 1;
+    const stride = cfg.steps / (cfg.points - 1);
+    chartData = [];
+    for(let k=0;k<cfg.points;k++) chartData.push(prices[Math.round(N - cfg.steps + k*stride)]);
+    chartData[chartData.length-1] = item.price;
+    chartIsReal = false;
+  }
   chartLastStep = Date.now();
+  renderChart();
 }
 
 document.querySelectorAll('#tf-tabs .tf-btn').forEach(btn=>{
@@ -4267,7 +4440,6 @@ document.querySelectorAll('#tf-tabs .tf-btn').forEach(btn=>{
     currentTimeframe = btn.dataset.tf;
     const item = marketData[currentTrade.cat].find(x=>x.sym===currentTrade.tickerSym);
     generateChartData(item);
-    renderChart();
   });
 });
 
@@ -4461,19 +4633,33 @@ async function loadDestekTickets(){
   document.getElementById('destek-entry-badge').hidden = !unread;
 }
 
+function destekRelTime(iso){
+  const d = new Date(iso), diff = (Date.now() - d.getTime())/1000;
+  if(isNaN(diff)) return '';
+  if(diff < 60) return 'Az önce';
+  if(diff < 3600) return Math.floor(diff/60) + ' dk önce';
+  if(diff < 86400) return Math.floor(diff/3600) + ' sa önce';
+  if(diff < 172800) return 'Dün';
+  return d.toLocaleDateString('tr-TR', {day:'numeric', month:'short', year:'numeric'});
+}
 function renderDestekTicketList(){
   const el = document.getElementById('destek-ticket-list');
+  const cnt = document.getElementById('destek-ticket-count');
+  if(cnt) cnt.textContent = destekTickets.length;
   if(!destekTickets.length){
-    el.innerHTML = '<div class="crm-adj-empty">Henüz destek talebiniz yok. Sağdaki/yukarıdaki formdan yeni bir talep oluşturabilirsiniz.</div>';
+    el.innerHTML = `<div class="sup-empty"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><b>Henüz destek talebiniz yok</b>Bir sorunuz olduğunda formu doldurarak bize ulaşabilirsiniz.</div>`;
     return;
   }
+  const chev = `<svg class="icon sup-chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>`;
   el.innerHTML = destekTickets.map(t=>`
-    <div class="destek-ticket-row" data-ticket-id="${esc(t.id)}">
-      <div class="destek-ticket-row-txt">
-        <b>${esc(t.subject)}${t.unread_by_user ? ' <span class="nav-badge" style="display:inline-block; vertical-align:middle;"></span>' : ''}</b>
-        <span>${esc(trDate(t.last_message_at))}</span>
+    <div class="sup-ticket ${t.unread_by_user ? 'unread' : ''}" data-ticket-id="${esc(t.id)}">
+      <span class="sup-ticket-ic">${folderIcon}</span>
+      <div class="sup-ticket-txt">
+        <b><span class="t">${esc(t.subject)}</span>${t.unread_by_user ? '<span class="new">YENİ YANIT</span>' : ''}</b>
+        <span>Son mesaj · ${esc(destekRelTime(t.last_message_at))}</span>
       </div>
       <span class="destek-status ${t.status}">${destekStatusLabel(t.status)}</span>
+      ${chev}
     </div>`).join('');
 }
 document.getElementById('destek-ticket-list').addEventListener('click', (e)=>{
@@ -4481,11 +4667,65 @@ document.getElementById('destek-ticket-list').addEventListener('click', (e)=>{
   if(row) openDestekTicket(row.dataset.ticketId);
 });
 
+
+/* ===== Destek sohbeti: ortak görünüm yardımcıları ===== */
+const chatSendIcon = `<svg class="icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`;
+function chatDayLabel(d){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const day = new Date(d); day.setHours(0,0,0,0);
+  const diff = Math.round((today - day) / 86400000);
+  if(diff===0) return 'Bugün';
+  if(diff===1) return 'Dün';
+  return d.toLocaleDateString('tr-TR', {day:'numeric', month:'long', year:'numeric'});
+}
+function chatHeaderHtml(t){
+  const idShort = String(t.id||'').replace(/-/g,'').slice(0,6).toUpperCase();
+  const created = t.created_at ? ' · ' + new Date(t.created_at).toLocaleDateString('tr-TR') : '';
+  return `<span class="chat-avatar-lg">${folderIcon}</span>
+    <div class="chat-head-txt"><b>${esc(t.subject)}</b><span>Talep #${esc(idShort)}${esc(created)}</span></div>
+    <span class="destek-status ${t.status}" style="margin-left:4px;">${destekStatusLabel(t.status)}</span>`;
+}
+/* mineSender: bu ekranı kullanan tarafın gönderen kodu ('user' = kullanıcı, 'admin' = CRM) */
+function chatMessagesHtml(messages, mineSender, labels){
+  if(!messages.length){
+    return `<div class="chat-empty">${folderIcon}<br>Henüz mesaj yok.</div>`;
+  }
+  let html = '', lastDay = '', lastSender = null;
+  messages.forEach(m=>{
+    const d = new Date(m.created_at);
+    const day = chatDayLabel(d);
+    if(day !== lastDay){ html += `<div class="chat-day">${esc(day)}</div>`; lastDay = day; lastSender = null; }
+    const mine = m.sender === mineSender;
+    const first = m.sender !== lastSender;
+    const name = m.sender==='admin' ? labels.admin : labels.user;
+    const initial = (m.sender==='admin' ? 'D' : String(labels.user||'K').charAt(0)).toUpperCase();
+    const time = d.toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
+    html += `<div class="chat-row ${mine?'mine':'theirs'} ${first?'first':''}">
+      <div class="chat-av ${first?'':'ghost'}">${esc(initial)}</div>
+      <div class="chat-col">
+        ${first ? `<span class="chat-name">${esc(name)}</span>` : ''}
+        <div class="chat-bubble">${esc(m.body)}<span class="chat-time">${time}</span></div>
+      </div>
+    </div>`;
+    lastSender = m.sender;
+  });
+  return html;
+}
+function setupChatComposer(taId, btnId){
+  const ta = document.getElementById(taId), btn = document.getElementById(btnId);
+  const fit = ()=>{ ta.style.height='auto'; ta.style.height = Math.min(ta.scrollHeight,140)+'px'; };
+  ta.addEventListener('input', fit);
+  ta.addEventListener('keydown', (e)=>{
+    if(e.key==='Enter' && !e.shiftKey && window.matchMedia('(pointer:fine)').matches){ e.preventDefault(); btn.click(); }
+  });
+}
+function chatResetComposer(taId){ const ta=document.getElementById(taId); ta.value=''; ta.style.height='auto'; ta.focus(); }
+
 async function openDestekTicket(id){
   const t = destekTickets.find(x=>x.id===id);
   if(!t) return;
   destekOpenTicketId = id;
-  document.getElementById('destek-modal-title').innerHTML = `${folderIcon}<span>${esc(t.subject)}</span><span class="destek-status ${t.status}" style="margin-left:8px;">${destekStatusLabel(t.status)}</span>`;
+  document.getElementById('destek-modal-title').innerHTML = chatHeaderHtml(t);
   document.getElementById('destek-modal-messages').innerHTML = '<div class="crm-adj-empty">Yükleniyor…</div>';
   document.getElementById('destek-modal').classList.add('open');
   try{
@@ -4505,15 +4745,12 @@ async function openDestekTicket(id){
 }
 function renderDestekModalMessages(messages){
   const el = document.getElementById('destek-modal-messages');
-  el.innerHTML = !messages.length ? '<div class="crm-adj-empty">Henüz mesaj yok.</div>' : messages.map(m=>`
-    <div class="destek-msg ${m.sender==='admin' ? 'from-admin' : 'from-user'}">
-      ${esc(m.body)}
-      <span class="destek-msg-meta">${m.sender==='admin' ? 'Destek Ekibi' : 'Siz'} · ${esc(trDate(m.created_at))}</span>
-    </div>`).join('');
+  el.innerHTML = chatMessagesHtml(messages, 'user', {admin:'Destek Ekibi', user:'Siz'});
   el.scrollTop = el.scrollHeight;
 }
 function closeDestekModal(){ destekOpenTicketId = null; document.getElementById('destek-modal').classList.remove('open'); }
 document.getElementById('destek-modal-close').addEventListener('click', closeDestekModal);
+setupChatComposer('destek-modal-reply','destek-modal-send');
 document.getElementById('destek-modal').addEventListener('click', (e)=>{ if(e.target.id==='destek-modal') closeDestekModal(); });
 document.getElementById('destek-modal-send').addEventListener('click', async ()=>{
   const ta = document.getElementById('destek-modal-reply');
@@ -4524,32 +4761,61 @@ document.getElementById('destek-modal-send').addEventListener('click', async ()=
   try{
     const { error } = await sb.rpc('add_support_message', { p_ticket_id: destekOpenTicketId, p_body: body });
     if(error) throw error;
-    ta.value = '';
+    chatResetComposer('destek-modal-reply');
     await loadDestekTickets();
     await openDestekTicket(destekOpenTicketId);
   }catch(e){ showToast(friendlyError(e), 'err'); }
   finally{ btn.disabled = false; }
 });
 
-document.getElementById('destek-new-submit').addEventListener('click', async ()=>{
+/* Yeni destek talebi formu */
+let destekCat = 'Genel';
+(function(){
   const subjectEl = document.getElementById('destek-new-subject');
   const bodyEl = document.getElementById('destek-new-body');
   const msgEl = document.getElementById('destek-new-msg');
-  const subject = subjectEl.value.trim(), body = bodyEl.value.trim();
-  msgEl.textContent = '';
-  if(!subject || !body){ msgEl.textContent = 'Konu ve mesaj alanlarını doldurun.'; msgEl.style.color = 'var(--red)'; return; }
   const btn = document.getElementById('destek-new-submit');
-  btn.disabled = true;
-  try{
-    const { error } = await sb.rpc('create_support_ticket', { p_subject: subject, p_body: body });
-    if(error) throw error;
-    subjectEl.value = ''; bodyEl.value = '';
-    msgEl.style.color = 'var(--green)';
-    msgEl.textContent = 'Talebiniz gönderildi.';
-    await loadDestekTickets();
-  }catch(e){ msgEl.style.color = 'var(--red)'; msgEl.textContent = friendlyError(e); }
-  finally{ btn.disabled = false; }
-});
+  const label = document.getElementById('destek-new-submit-label');
+  const okIcon = '<svg class="icon" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
+  const errIcon = '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+  let hideT = null;
+  const showMsg = (type, text, autoHide)=>{
+    clearTimeout(hideT);
+    msgEl.className = 'sup-msg show ' + type;
+    msgEl.innerHTML = (type==='ok' ? okIcon : errIcon) + '<span></span>';
+    msgEl.lastChild.textContent = text;
+    if(autoHide) hideT = setTimeout(()=>{ msgEl.className = 'sup-msg'; }, 5000);
+  };
+  const updCounts = ()=>{
+    document.getElementById('destek-subject-count').textContent = subjectEl.value.length + '/120';
+    document.getElementById('destek-body-count').textContent = bodyEl.value.length + '/2000';
+  };
+  subjectEl.addEventListener('input', updCounts);
+  bodyEl.addEventListener('input', updCounts);
+  document.getElementById('destek-cats').addEventListener('click', (e)=>{
+    const c = e.target.closest('[data-cat]'); if(!c) return;
+    destekCat = c.dataset.cat;
+    document.querySelectorAll('#destek-cats .sup-cat').forEach(x=>x.classList.toggle('active', x===c));
+  });
+  bodyEl.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && (e.ctrlKey||e.metaKey)){ e.preventDefault(); btn.click(); } });
+  btn.addEventListener('click', async ()=>{
+    const subject = subjectEl.value.trim(), body = bodyEl.value.trim();
+    msgEl.className = 'sup-msg';
+    if(!subject || !body){ showMsg('err', 'Lütfen konu ve mesaj alanlarını doldurun.', true); (subject ? bodyEl : subjectEl).focus(); return; }
+    const fullSubject = (destekCat==='Genel' ? subject : `[${destekCat}] ${subject}`).slice(0,120);
+    btn.disabled = true; label.textContent = 'Gönderiliyor…';
+    try{
+      const { error } = await sb.rpc('create_support_ticket', { p_subject: fullSubject, p_body: body });
+      if(error) throw error;
+      subjectEl.value = ''; bodyEl.value = ''; updCounts();
+      destekCat = 'Genel';
+      document.querySelectorAll('#destek-cats .sup-cat').forEach(x=>x.classList.toggle('active', x.dataset.cat==='Genel'));
+      showMsg('ok', 'Talebiniz gönderildi. Yanıt geldiğinde bildirim alacaksınız.', true);
+      await loadDestekTickets();
+    }catch(e){ showMsg('err', friendlyError(e), false); }
+    finally{ btn.disabled = false; label.textContent = 'Talebi Gönder'; }
+  });
+})();
 
 /* ================= CRM (YÖNETİCİ / EĞİTMEN PANELİ) ================= */
 const ALL_PERMISSIONS = [
@@ -4892,7 +5158,7 @@ async function openCrmSupportTicket(id){
   try{
     const res = await rpcOrThrow('admin_get_support_ticket', { p_id: id });
     const t = res.ticket, messages = res.messages || [];
-    document.getElementById('crm-destek-modal-title').innerHTML = `${folderIcon}<span>${esc(t.subject)}</span><span class="destek-status ${t.status}" style="margin-left:8px;">${destekStatusLabel(t.status)}</span>`;
+    document.getElementById('crm-destek-modal-title').innerHTML = chatHeaderHtml(t);
     const toggleBtn = document.getElementById('crm-destek-modal-toggle');
     toggleBtn.textContent = t.status==='closed' ? 'Yeniden Aç' : 'Kapat';
     toggleBtn.onclick = ()=>crmAction(async ()=>{
@@ -4900,11 +5166,7 @@ async function openCrmSupportTicket(id){
       await openCrmSupportTicket(id);
       await loadCrmSupportView();
     });
-    document.getElementById('crm-destek-modal-messages').innerHTML = !messages.length ? '<div class="crm-adj-empty">Henüz mesaj yok.</div>' : messages.map(m=>`
-      <div class="destek-msg ${m.sender==='admin' ? 'from-admin' : 'from-user'}">
-        ${esc(m.body)}
-        <span class="destek-msg-meta">${m.sender==='admin' ? 'Siz (Destek)' : esc(t.full_name || t.email || 'Kullanıcı')} · ${esc(trDate(m.created_at))}</span>
-      </div>`).join('');
+    document.getElementById('crm-destek-modal-messages').innerHTML = chatMessagesHtml(messages, 'admin', {admin:'Siz (Destek)', user:(t.full_name || t.email || 'Kullanıcı')});
     const box = document.getElementById('crm-destek-modal-messages');
     box.scrollTop = box.scrollHeight;
     const idx = crmSupportTickets.findIndex(x=>x.id===id);
@@ -4916,6 +5178,7 @@ async function openCrmSupportTicket(id){
 }
 function closeCrmSupportModal(){ crmOpenSupportId = null; document.getElementById('crm-destek-modal').classList.remove('open'); }
 document.getElementById('crm-destek-modal-close').addEventListener('click', closeCrmSupportModal);
+setupChatComposer('crm-destek-modal-reply','crm-destek-modal-send');
 document.getElementById('crm-destek-modal').addEventListener('click', (e)=>{ if(e.target.id==='crm-destek-modal') closeCrmSupportModal(); });
 document.getElementById('crm-destek-modal-send').addEventListener('click', async ()=>{
   const ta = document.getElementById('crm-destek-modal-reply');
@@ -4925,7 +5188,7 @@ document.getElementById('crm-destek-modal-send').addEventListener('click', async
   btn.disabled = true;
   try{
     await rpcOrThrow('admin_reply_support_ticket', { p_id: crmOpenSupportId, p_body: body });
-    ta.value = '';
+    chatResetComposer('crm-destek-modal-reply');
     await openCrmSupportTicket(crmOpenSupportId);
     await loadCrmSupportView();
   }catch(e){ showToast(friendlyError(e), 'err'); }
@@ -4986,6 +5249,29 @@ document.querySelectorAll('#crm-tabs .tab-btn').forEach(btn=>{
 /* ----- Kullanıcı detayı ----- */
 const mapCrmPos = (x)=>({ id:x.id, symDisplay:x.sym_display, side:x.side, qty:Number(x.qty), qtyLabel:x.qty_label, entry:Number(x.entry),
   exit:x.exit==null?null:Number(x.exit), pl:x.pl==null?null:Number(x.pl), cat:x.cat, tickerSym:x.ticker_sym, currency:x.currency, adminAdjusted:!!x.admin_adjusted });
+
+/* Açık pozisyonlardaki GÜNCEL FİYAT / K-Z hücrelerini saniyede bir tazeler — satırı (dolayısıyla lot/giriş
+   giriş kutularını) yeniden çizmez, sadece iki hücrenin metnini günceller. Böylece admin bir satırda
+   düzenleme yaparken kutudaki yazdığı değer silinmez. */
+function tickCrmLivePl(){
+  if(!crmDetail || document.getElementById('crm-detail-view').hidden) return;
+  const panel = document.getElementById('crm-panel-positions');
+  if(!panel || !panel.classList.contains('active')) return;
+  const positions = (crmDetail.positions||[]).map(mapCrmPos);
+  positions.forEach(x=>{
+    const row = document.querySelector(`#crm-positions-body tr[data-pos-id="${CSS.escape(String(x.id))}"]`);
+    if(!row) return;                                   // "Tüm Pozisyonları Gör" kapalıyken satır listede olmayabilir
+    const cur = getLivePrice(x); const pl = pnl(x, cur); const up = pl>=0;
+    const priceCell = row.querySelector('[data-live="price"]');
+    const plCell = row.querySelector('[data-live="pl"]');
+    if(priceCell) priceCell.textContent = fmtPrice(cur);
+    if(plCell){
+      plCell.textContent = (up?'+':'') + crmPlMoney(pl, x.currency);
+      plCell.className = 'mono num ' + (up?'up':'down');
+    }
+  });
+}
+setInterval(tickCrmLivePl, 1000);
 
 /* ===== CRM görüntüleme para birimi (yalnızca yöneticinin ekran tercihi; sunucuda TRY tutulur) ===== */
 let crmDispCur = 'TRY';
@@ -5063,6 +5349,24 @@ function crmRequestCard(f, canAct){
   </div>`;
 }
 
+/* CRM: Açık Pozisyonlar / Kapatılmış İşlemler en fazla CRM_LIMIT satır gösterir; buton tümünü açıp kapatır.
+   Açık/kapalı durumu seçili kullanıcıya bağlıdır (kullanıcı değişince tekrar kısaltılır). */
+const CRM_LIMIT = 10;
+let crmShowAllPosFor = null, crmShowAllClosedFor = null;
+function crmFoot(btnId, total, expanded, label){
+  const btn = document.getElementById(btnId);
+  const foot = btn.parentElement;
+  if(total <= CRM_LIMIT){ foot.style.display = 'none'; return; }
+  foot.style.display = '';
+  btn.textContent = expanded ? 'Daha Az Göster' : label + ' (' + total + ')';
+}
+document.getElementById('crm-pos-toggle').addEventListener('click', ()=>{
+  crmShowAllPosFor = (crmShowAllPosFor===crmSelectedUid) ? null : crmSelectedUid; renderCrmDetail();
+});
+document.getElementById('crm-closed-toggle').addEventListener('click', ()=>{
+  crmShowAllClosedFor = (crmShowAllClosedFor===crmSelectedUid) ? null : crmSelectedUid; renderCrmDetail();
+});
+
 function renderCrmDetail(){
   if(!crmDetail) return;
   const p = crmDetail.profile;
@@ -5082,7 +5386,10 @@ function renderCrmDetail(){
 
   // açık pozisyonlar
   const canPos = canDo('positions');
-  const positions = (crmDetail.positions||[]).map(mapCrmPos);
+  const positionsAll = (crmDetail.positions||[]).map(mapCrmPos);
+  const posExpanded = crmShowAllPosFor === crmSelectedUid;
+  const positions = posExpanded ? positionsAll : positionsAll.slice(0, CRM_LIMIT);
+  crmFoot('crm-pos-toggle', positionsAll.length, posExpanded, 'Tüm Pozisyonları Gör');
   const posBody = document.getElementById('crm-positions-body');
   posBody.innerHTML = !positions.length ? `<tr><td colspan="7" class="crm-empty">Açık pozisyon yok.</td></tr>` : positions.map(x=>{
     const cur = getLivePrice(x); const pl = pnl(x, cur); const up = pl>=0;
@@ -5095,13 +5402,16 @@ function renderCrmDetail(){
       <td><div class="badge-sym">${symBadge(x.tickerSym, x.cat)}${esc(x.symDisplay)}${adjBadge(x.adminAdjusted)}</div></td>
       <td style="color:${x.side==='Long'?'var(--green)':'var(--red)'};font-weight:700;">${x.side}</td>
       <td class="num">${lotCell}</td><td class="num">${entryCell}</td>
-      <td class="mono num">${fmtPrice(cur)}</td>
-      <td class="mono num ${up?'up':'down'}">${up?'+':''}${crmPlMoney(pl, x.currency)}</td>
+      <td class="mono num" data-live="price">${fmtPrice(cur)}</td>
+      <td class="mono num ${up?'up':'down'}" data-live="pl">${up?'+':''}${crmPlMoney(pl, x.currency)}</td>
       <td><div style="display:flex; gap:6px; justify-content:flex-end;">${actions}</div></td></tr>`;
   }).join('');
 
   // kapatılmış
-  const closed = (crmDetail.closed_positions||[]).map(mapCrmPos);
+  const closedAll = (crmDetail.closed_positions||[]).map(mapCrmPos);
+  const closedExpanded = crmShowAllClosedFor === crmSelectedUid;
+  const closed = closedExpanded ? closedAll : closedAll.slice(0, CRM_LIMIT);
+  crmFoot('crm-closed-toggle', closedAll.length, closedExpanded, 'Tüm İşlemleri Gör');
   document.getElementById('crm-closed-body').innerHTML = !closed.length ? `<tr><td colspan="6" class="crm-empty">Kapatılmış işlem yok.</td></tr>` : closed.map(c=>{
     const up = c.pl>=0;
     return `<tr>
