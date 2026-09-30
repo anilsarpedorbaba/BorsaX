@@ -702,6 +702,11 @@ tbody tr:hover{background:rgba(255,255,255,0.02);}
   background-image:linear-gradient(160deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 60%);
   box-shadow:0 1px 0 rgba(255,255,255,0.08) inset;
 }
+.sym-ic{overflow:hidden;}
+.sym-ic-img{position:absolute; inset:0; width:100%; height:100%; object-fit:contain; background:#fff; padding:3px; box-sizing:border-box;}
+.sym-ic-letters{position:relative; z-index:1;}
+.sym-ic.sym-ic-hasicon .sym-ic-letters{display:none;}
+.sym-ic.sym-ic-hasicon .sym-ic-badge{display:none;}
 .sym-ic-badge{
   position:absolute; bottom:-3px; right:-3px; width:13px; height:13px; border-radius:50%;
   background:var(--card-2); border:1.5px solid var(--bg); display:flex; align-items:center; justify-content:center;
@@ -1885,7 +1890,10 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
               <div class="order-row"><span>Kaldıraç</span><span class="mono lev-badge" id="order-lev">×1</span></div>
               <div class="order-row"><span>Pozisyon Büyüklüğü</span><span class="mono" id="order-size">--</span></div>
               <div class="order-row"><span>Pozisyon Değeri (Nominal)</span><span class="mono" id="order-value">--</span></div>
-              <div class="order-note" id="order-lev-note" hidden>Bu tutar hesabınızdan çekilmez — yalnızca kâr/zararın hesaplanacağı büyüklüğü gösterir. Kaldıraç sayesinde <b id="order-lev-note-lot">1 Lot</b>'luk bir işlem, <b id="order-lev-note-eff">100 Lot</b> büyüklüğünde kâr/zarar üretir.</div>
+              <div class="order-row"><span>Gereken Marj</span><span class="mono" id="order-margin">--</span></div>
+              <div class="order-row"><span>Alım Gücünüz</span><span class="mono" id="order-buying-power">--</span></div>
+              <div class="order-note" id="order-lev-note" hidden>Kaldıraç sayesinde <b id="order-lev-note-lot">1 Lot</b>'luk bir işlem, <b id="order-lev-note-eff">100 Lot</b> büyüklüğünde kâr/zarar üretir. Hesabınızdan yalnızca gereken marj kadar tutar kilitlenir; bu tutar pozisyonu kapattığınızda kâr/zararla birlikte geri döner.</div>
+              <div class="order-note" id="order-insufficient-note" hidden style="color:var(--red); font-weight:600;">Bu miktar alım gücünüzü aşıyor.</div>
             </div>
 
             <div class="trade-actions">
@@ -2624,6 +2632,8 @@ async function refreshUserData(){
 const ERR_MAP = {
   insufficient_spot: 'Yetersiz Spot bakiye.',
   insufficient_futures: 'Yetersiz Vadeli İşlemler bakiyesi.',
+  insufficient_balance: 'Bakiyeniz bu işlem için yetersiz. Toplam alım gücünüzü (Spot + Vadeli) aşan bir miktar giremezsiniz.',
+  fx_unavailable: 'Güncel döviz kuru alınamadı, bu yüzden işlem güvenlik amacıyla reddedildi. Birkaç saniye sonra tekrar deneyin.',
   invalid_amount: 'Geçerli bir tutar girin.',
   max_positions: 'En fazla 100 açık pozisyon tutabilirsiniz.',
   position_not_found: 'Kayıt bulunamadı (zaten işlem görmüş olabilir).',
@@ -3147,13 +3157,63 @@ const CATEGORY_GLYPH = {
   commodity:'<path d="M12 2 2 9l10 13L22 9z"/>',
   crypto:'<circle cx="9" cy="9" r="6"/><circle cx="15" cy="15" r="6"/>'
 };
+function iconFor(cat, sym){
+  const list = marketData[cat];
+  const found = list && list.find(x=>x.sym===sym);
+  return (found && found.icon) || null;
+}
 function symBadge(sym, cat, size){
   size = size || 26;
   const glyph = CATEGORY_GLYPH[cat] || CATEGORY_GLYPH.crypto;
+  const iconUrl = iconFor(cat, sym);
+  const img = iconUrl
+    ? `<img class="sym-ic-img" src="${iconUrl}" alt="" loading="lazy" referrerpolicy="no-referrer"
+         onload="this.parentElement.classList.add('sym-ic-hasicon')" onerror="this.remove()">`
+    : '';
   return `<div class="sym-ic" style="background:${colorFor(sym)}; width:${size}px; height:${size}px;">
-    <span>${sym.slice(0,2)}</span>
+    ${img}<span class="sym-ic-letters">${sym.slice(0,2)}</span>
     <span class="sym-ic-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">${glyph}</svg></span>
   </div>`;
+}
+
+
+/* Bilinen ABD hisseleri için resmi alan adları — Clearbit'in ücretsiz logo servisinde kullanılır.
+   Haritada olmayan semboller otomatik olarak harf rozetine düşer. */
+const US_DOMAIN = {
+  AAPL:'apple.com', MSFT:'microsoft.com', GOOGL:'google.com', GOOG:'google.com', AMZN:'amazon.com',
+  NVDA:'nvidia.com', META:'meta.com', TSLA:'tesla.com', 'BRK.B':'berkshirehathaway.com', JPM:'jpmorganchase.com',
+  V:'visa.com', UNH:'unitedhealthgroup.com', MA:'mastercard.com', HD:'homedepot.com', PG:'pg.com',
+  XOM:'exxonmobil.com', CVX:'chevron.com', ABBV:'abbvie.com', MRK:'merck.com', LLY:'lilly.com',
+  PEP:'pepsico.com', KO:'coca-cola.com', COST:'costco.com', AVGO:'broadcom.com', WMT:'walmart.com',
+  MCD:'mcdonalds.com', CSCO:'cisco.com', ADBE:'adobe.com', CRM:'salesforce.com', NFLX:'netflix.com',
+  INTC:'intel.com', AMD:'amd.com', QCOM:'qualcomm.com', TXN:'ti.com', IBM:'ibm.com',
+  ORCL:'oracle.com', NKE:'nike.com', DIS:'disney.com', BA:'boeing.com', CAT:'caterpillar.com',
+  GE:'ge.com', GS:'goldmansachs.com', MS:'morganstanley.com', WFC:'wellsfargo.com', BAC:'bankofamerica.com',
+  C:'citigroup.com', AXP:'americanexpress.com', SBUX:'starbucks.com', PYPL:'paypal.com', INTU:'intuit.com',
+  AMGN:'amgen.com', GILD:'gilead.com', BMY:'bms.com', PFE:'pfizer.com', T:'att.com',
+  VZ:'verizon.com', CMCSA:'comcast.com', HON:'honeywell.com', UPS:'ups.com', RTX:'rtx.com',
+  LMT:'lockheedmartin.com', DE:'deere.com', MMM:'3m.com', UNP:'unionpacific.com', PM:'pmi.com',
+  MO:'altria.com', TMO:'thermofisher.com', ABT:'abbott.com', DHR:'danaher.com', MDT:'medtronic.com',
+  SPGI:'spglobal.com', BLK:'blackrock.com', NOW:'servicenow.com',
+};
+/* Bilinen BIST şirketleri için alan adları — çoğunlukla ".com.tr". Emin olmadığım (küçük/az
+   bilinen) semboller haritada yok, onlar harf rozetinde kalır. */
+const BIST_DOMAIN = {
+  THYAO:'turkishairlines.com', GARAN:'garantibbva.com.tr', AKBNK:'akbank.com', ISCTR:'isbank.com.tr',
+  SISE:'sisecam.com.tr', EREGL:'erdemir.com.tr', KCHOL:'koc.com.tr', SAHOL:'sabanci.com',
+  TUPRS:'tupras.com.tr', BIMAS:'bim.com.tr', ASELS:'aselsan.com.tr', PETKM:'petkim.com.tr',
+  PGSUS:'flypgs.com', TOASO:'tofas.com.tr', FROTO:'ford.com.tr', ARCLK:'arcelikglobal.com',
+  VESTL:'vestel.com.tr', TCELL:'turkcell.com.tr', TTKOM:'turktelekom.com.tr', YKBNK:'yapikredi.com.tr',
+  VAKBN:'vakifbank.com.tr', HALKB:'halkbank.com.tr', SASA:'sasa.com.tr', HEKTS:'hektas.com.tr',
+  KRDMD:'kardemir.com', ENKAI:'enka.com', EKGYO:'emlakkonut.com.tr', MGROS:'migros.com.tr',
+  ULKER:'ulker.com.tr', AEFES:'anadoluefes.com', CCOLA:'cci.com.tr', SOKM:'sokmarket.com.tr',
+  ALARK:'alarko.com.tr', OTKAR:'otokar.com.tr', TSKB:'tskb.com.tr', DOHOL:'dogusholding.com.tr',
+  ENJSA:'enerjisa.com.tr', TATGD:'tatkonserve.com.tr', MAVI:'mavi.com', KORDS:'kordsa.com',
+  LOGO:'logo.com.tr', MPARK:'medicalpark.com.tr', TKFEN:'tekfen.com.tr',
+};
+function clearbitIcon(sym, domainMap){
+  const d = domainMap[sym];
+  return d ? `https://logo.clearbit.com/${d}?size=64` : null;
 }
 
 let marketData = {bist:[], us:[], commodity:[], index:[], crypto:[]};
@@ -3181,8 +3241,8 @@ async function fetchMarketJson(){
 
 function initMarketData(){
   if(marketData.bist.length) return;
-  bistList.forEach(s=>{ const [sym,name]=s.split('|'); const p=srand(sym+':p',8,850); marketData.bist.push({sym,name,price:p,anchor:p,change:srand(sym+':c',-4,4),real:false}); });
-  usList.forEach(s=>{ const [sym,name]=s.split('|'); const p=srand(sym+':p',15,920); marketData.us.push({sym,name,price:p,anchor:p,change:srand(sym+':c',-3,3),real:false}); });
+  bistList.forEach(s=>{ const [sym,name]=s.split('|'); const p=srand(sym+':p',8,850); marketData.bist.push({sym,name,price:p,anchor:p,change:srand(sym+':c',-4,4),real:false,icon:clearbitIcon(sym,BIST_DOMAIN)}); });
+  usList.forEach(s=>{ const [sym,name]=s.split('|'); const p=srand(sym+':p',15,920); marketData.us.push({sym,name,price:p,anchor:p,change:srand(sym+':c',-3,3),real:false,icon:clearbitIcon(sym,US_DOMAIN)}); });
   commodityGroups.forEach(g=>{ g.items.forEach(it=>{ marketData.commodity.push({sym:it[0],name:it[1],price:it[2],anchor:it[2],change:srand(it[0]+':c',-2.5,2.5),group:g.group,real:false}); }); });
   indexList.forEach(it=>{ marketData.index.push({sym:it[0],name:it[1],price:it[2],anchor:it[2],change:srand(it[0]+':c',-2,2),real:false}); });
   cryptoList.forEach(it=>{ marketData.crypto.push({sym:it[0],name:it[1],price:it[2],anchor:it[2],change:srand(it[0]+':c',-5,5),real:false}); });
@@ -3205,6 +3265,7 @@ function applyRealRows(cat, rows){
       item.price = row.price;
       item.change = row.change_pct;
       item.real = true;
+      if(row.icon) item.icon = row.icon;   // kripto: CoinGecko'nun sağladığı gerçek logo
     }
   });
 }
@@ -3245,6 +3306,11 @@ function tickMarket(){
   });
   renderMarket();
   renderAccountWidgets();
+  /* "Hesabım" sayfasının üst başlığındaki Toplam Varlık / Açık K/Z kutusu (topbar-left)
+     sadece sayfaya geçilen anda hesaplanıyordu; bu yüzden ekranda kalırken donuk görünüyordu.
+     Sayfa hâlâ açıksa her tick'te yeniden çiziyoruz — bu küçük bir etiket bloğu, içinde
+     düzenlenebilir bir girdi olmadığından tam yeniden çizim güvenli. */
+  if(document.getElementById('page-hesabim')?.classList.contains('active')) renderTopbarLeft('hesabim');
   if(currentTrade && document.getElementById('page-trade').classList.contains('active')){
     const item = marketData[currentTrade.cat].find(x=>x.sym===currentTrade.tickerSym);
     if(item){
@@ -3504,7 +3570,10 @@ function flashOnChange(el, val){            // değer arttıysa yeşil, azaldıy
   el.classList.add(val > prev ? 'flash-up' : 'flash-down');
 }
 function openPlTotal(u){
-  return u.positions.reduce((sum,p)=> sum + pnl(p, getLivePrice(p)), 0);
+  // Her pozisyonun K/Z'si kendi para biriminde (USD/USDT/TRY) — TL'ye çevirmeden toplamak
+  // dolar kârıyla TL kârını ham sayı olarak birbirine eklemek anlamına gelir. balance/futuresBalance
+  // TL olduğundan bu fonksiyon da TL cinsinden döner; ekranda toDisp() ile gösterim birimine çevrilir.
+  return u.positions.reduce((sum,p)=> sum + plToTry(pnl(p, getLivePrice(p)), p.currency), 0);
 }
 function renderAllocation(u){
   const total = u.balance + u.futuresBalance;
@@ -3750,15 +3819,16 @@ function renderAccountWidgets(){
     if(!rowsHtml.length){
       posTotal.innerHTML = `<span class="pt-empty">Henüz açık pozisyonunuz yok</span>`;
     } else {
-      const total = rowsHtml.reduce((a,r)=>a+r.pl,0);
-      const currencies = [...new Set(rowsHtml.map(r=>r.p.currency))];
-      const currLabel = currencies.length===1 ? currencies[0] : '';
+      /* r.pl her pozisyonun KENDİ para biriminde (USD/USDT/TRY) — doğrudan toplamak yanlış
+         (XAU'nun 40 doları ile MGROS'un 1678 TL'si ham sayı olarak toplanamaz). Her birini
+         önce görüntüleme para birimine çevirip öyle topluyoruz, tıpkı satırlardaki K/Z gibi. */
+      const total = rowsHtml.reduce((a,r)=>a + plInDispCur(r.pl, r.p.currency), 0);
       const up = total>=0;
       posTotal.innerHTML = `
         <span class="pt-label">Toplam Kar/Zarar (${rowsHtml.length} pozisyon)</span>
         <span class="pt-value mono ${up?'up':'down'}">
           <svg class="icon" viewBox="0 0 24 24">${up?'<polyline points="18 15 12 9 6 15"/>':'<polyline points="6 9 12 15 18 9"/>'}</svg>
-          ${up?'+':''}${total.toFixed(2)} ${currLabel}
+          ${plText(total)} ${curMark()}
         </span>`;
     }
   }
@@ -4316,9 +4386,9 @@ function unleveragedQtyLabel(qtyLabel){                       // gösterimde kal
   const num = Number.isInteger(base) ? String(base) : String(Math.round(base * 1e8) / 1e8);
   return num + ' ' + m[2];
 }
+function plToTry(pl, curr){ return curr==='TRY' ? pl : pl * fxRate(); }   // pozisyonun kendi para biriminden TL'ye
 function plInDispCur(pl, curr){                                // pozisyonun kendi para biriminden görüntüleme para birimine çevirir
-  const tryVal = curr==='TRY' ? pl : pl * fxRate();
-  return toDisp(tryVal);
+  return toDisp(plToTry(pl, curr));
 }
 function currencyFor(cat){
   if(cat==='crypto') return 'USDT';
@@ -4526,6 +4596,30 @@ function updateOrderSummary(){
     }
   }
   document.getElementById('order-value').textContent = fmtPrice(price * eff)+' '+currentTrade.currency;
+
+  /* Gereken marj = fiyat × girilen (kaldıraçsız) lot — sunucudaki open_position ile aynı hesap.
+     Alım gücü = Spot + Vadeli toplamı (marj zaten açık pozisyonlarda kilitli olduğundan,
+     güncel bakiye zaten "kullanılabilir" tutardır, ayrıca çıkarma yapmaya gerek yok). */
+  /* Gereken marj = fiyat × girilen (kaldıraçsız) lot — pozisyonun KENDİ para biriminde (USD/USDT/TRY).
+     Bakiye (Spot+Vadeli) her zaman TL olarak tutulur, bu yüzden USD/USDT işlemlerinde marjı
+     karşılaştırmadan önce güncel kurla TL'ye çevirmek ZORUNLU — yoksa "4200" ile "49000" ham sayı
+     olarak kıyaslanır ve kur farkı yüzünden yanlış sonuç çıkar. */
+  const u = currentUid ? cu() : null;
+  const buyingPowerTry = u ? (u.balance + u.futuresBalance) : 0;
+  const marginNative = price * lot;
+  const marginTry = currentTrade.currency === 'TRY' ? marginNative : marginNative * fxRate();
+  const marginEl = document.getElementById('order-margin');
+  const bpEl = document.getElementById('order-buying-power');
+  if(marginEl) marginEl.textContent = fmtPrice(marginNative) + ' ' + currentTrade.currency
+    + (currentTrade.currency !== 'TRY' ? ' (≈' + fmtPrice(marginTry) + ' TRY)' : '');
+  if(bpEl) bpEl.textContent = fmtPrice(buyingPowerTry) + ' TRY';
+  const insufficient = lot > 0 && marginTry > buyingPowerTry + 0.5;
+  const insufNote = document.getElementById('order-insufficient-note');
+  if(insufNote) insufNote.hidden = !insufficient;
+  ['btn-buy','btn-sell'].forEach(id=>{
+    const b = document.getElementById(id);
+    if(b) b.disabled = insufficient;
+  });
 }
 
 /* Hesabın kaldıracı CRM'den ayarlanır (1–100). Kullanıcı bunu işlem ekranında görür; pozisyonun miktarı bu çarpanla büyür,
