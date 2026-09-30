@@ -624,7 +624,11 @@ svg{display:block;}
 /* Success modal */
 #success-modal{
   display:none; position:fixed; inset:0; background:rgba(4,5,9,0.85); backdrop-filter:blur(6px);
-  z-index:210; align-items:center; justify-content:center; padding:24px;
+  z-index:250; align-items:center; justify-content:center; padding:24px;
+  /* Not: bu z-index, sayfadaki her modal/sheet (pos-group-modal, destek-modal, crm modalları,
+     img-lightbox dahil) katmanından yüksek tutulmalı — "Piyasa Kapalı" gibi uyarılar açık bir
+     modalın arkasında kalıp görünmez olmasın diye. Yeni bir modal eklerken buradan daha yüksek
+     bir z-index vermeyin. */
 }
 #success-modal.open{display:flex;}
 .success-modal-card{
@@ -2424,6 +2428,10 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
                   <div class="stat-box-label">Vadeli Bakiye</div>
                   <div class="stat-box-val mono" id="crm-balance-futures">—</div>
                 </div>
+                <div class="stat-box">
+                  <div class="stat-box-label">Toplam Varlık <span style="font-weight:400; opacity:.7;">(açık K/Z dahil)</span></div>
+                  <div class="stat-box-val mono" id="crm-balance-total" data-live="total">—</div>
+                </div>
               </div>
               <div class="crm-adj-title">İşlem Geçmişi</div>
               <div class="crm-adj-wrap"><div id="crm-balance-adjustments" class="crm-adj-list"></div></div>
@@ -3504,13 +3512,16 @@ function parseLooseNumber(n){
   if(d>=0) return (n.length - d - 1 === 3) ? parseFloat(n.replace(/\./g,'')) : parseFloat(n);
   return parseFloat(n);
 }
-function convertTxText(txt){                                   // sunucudan gelen "+1.000,00 TRY" gibi metinleri çevir; tanınmazsa olduğu gibi bırak
+function convertTxText(txt){                                   // sunucudan gelen "+1.000,00 TRY" ya da "-17.00 USD" gibi metinleri çevir; tanınmazsa olduğu gibi bırak
   const s = String(txt == null ? '' : txt);
-  if(dispCur()==='TRY') return s;
-  const m = s.match(/^\s*([+\-−])?\s*([0-9][0-9.,]*)\s*(?:TRY|₺)?\s*$/i);
+  const m = s.match(/^\s*([+\-−])?\s*([0-9][0-9.,]*)\s*(TRY|₺|USDT|USD)?\s*$/i);
   if(!m) return s;
   const v = parseLooseNumber(m[2]);
-  return isFinite(v) ? (m[1] || '') + fmtMoney(toDisp(v)) + ' ' + dispCur() : s;
+  if(!isFinite(v)) return s;
+  const srcCur = (m[3]||'').toUpperCase();
+  const isNativeUsd = srcCur==='USD' || srcCur==='USDT';     // TRY/₺/etiketsiz => zaten TL
+  const vTry = isNativeUsd ? v * fxRate() : v;                // USD/USDT ise önce TL'ye çevir, sonra hedef birime
+  return (m[1] || '') + fmtMoney(toDisp(vTry)) + ' ' + dispCur();
 }
 
 /* Tutar formlarındaki birim etiketi, hızlı tutar düğmeleri ve varsayılan tutarlar para birimine göre değişir. */
@@ -5347,8 +5358,24 @@ const mapCrmPos = (x)=>({ id:x.id, symDisplay:x.sym_display, side:x.side, qty:Nu
 /* Açık pozisyonlardaki GÜNCEL FİYAT / K-Z hücrelerini saniyede bir tazeler — satırı (dolayısıyla lot/giriş
    giriş kutularını) yeniden çizmez, sadece iki hücrenin metnini günceller. Böylece admin bir satırda
    düzenleme yaparken kutudaki yazdığı değer silinmez. */
+function crmOpenPlTotalTry(){
+  // Açık pozisyonların canlı K/Z'sini TL'ye çevirip toplar — kullanıcı tarafındaki openPlTotal() ile
+  // birebir aynı mantık, CRM'deki Bakiye kutuları da aynı şeyi göstersin diye.
+  if(!crmDetail) return 0;
+  return (crmDetail.positions||[]).map(mapCrmPos).reduce((sum,x)=>{
+    return sum + plToTry(pnl(x, getLivePrice(x)), x.currency);
+  }, 0);
+}
+function crmRenderTotal(){
+  const el = document.getElementById('crm-balance-total');
+  if(!el || !crmDetail) return;
+  const p = crmDetail.profile;
+  const total = Number(p.balance) + Number(p.futures_balance) + crmOpenPlTotalTry();
+  el.textContent = crmMoney(total);
+}
 function tickCrmLivePl(){
   if(!crmDetail || document.getElementById('crm-detail-view').hidden) return;
+  crmRenderTotal();   // Bakiye kartı (Toplam Varlık) her sekmede görünür, o yüzden sekme şartından önce güncellenir
   const panel = document.getElementById('crm-panel-positions');
   if(!panel || !panel.classList.contains('active')) return;
   const positions = (crmDetail.positions||[]).map(mapCrmPos);
@@ -5366,6 +5393,25 @@ function tickCrmLivePl(){
   });
 }
 setInterval(tickCrmLivePl, 1000);
+
+/* Kullanıcı kendi cihazından bir pozisyon açar/kapatır, para yatırma talebi oluşturur vb. yaparsa,
+   CRM'i açık tutan yöneticinin ekranı bundan hiç haberdar olmaz — bakiye/pozisyon listesi ancak
+   yönetici kendisi bir işlem yapıp reloadCrmDetail() tetiklenince ya da sayfa yenilenince güncellenir.
+   Bu yüzden detay ekranı açıkken arka planda periyodik olarak tüm kullanıcı verisini yeniden çekip
+   çiziyoruz. Saniyede bir yerine ~2.5 sn seçildi (tickMarket'in 2.2 sn'lik döngüsüyle aynı mertebede) —
+   Supabase'e gereksiz yükü artırmadan "neredeyse anlık" hissettirir. Admin o an bir pozisyonun
+   lot/giriş kutusunda yazı yazıyorsa (odak o kutudaysa) bu turu tamamen atlıyoruz; aksi halde
+   yazdığı değer her birkaç saniyede bir silinirdi. */
+async function crmAutoRefresh(){
+  if(!crmSelectedUid || document.getElementById('crm-detail-view').hidden) return;
+  const active = document.activeElement;
+  if(active && document.getElementById('crm-positions-body')?.contains(active)) return;
+  try{
+    crmDetail = await rpcOrThrow('admin_get_user', { p_uid: crmSelectedUid });
+    renderCrmDetail();
+  }catch(e){ /* sessizce geç — bir sonraki turda tekrar denenir */ }
+}
+setInterval(crmAutoRefresh, 2500);
 
 /* ===== CRM görüntüleme para birimi (yalnızca yöneticinin ekran tercihi; sunucuda TRY tutulur) ===== */
 let crmDispCur = 'TRY';
@@ -5525,6 +5571,7 @@ function renderCrmDetail(){
   document.getElementById('crm-balance-form-card').style.display = canDo('balance') ? '' : 'none';
   document.getElementById('crm-balance-spot').textContent = crmMoney(Number(p.balance));
   document.getElementById('crm-balance-futures').textContent = crmMoney(Number(p.futures_balance));
+  crmRenderTotal();
   document.getElementById('crm-account-card').style.display = canDo('users') ? '' : 'none';
   crmAccountSync();
   renderCrmKyc();
