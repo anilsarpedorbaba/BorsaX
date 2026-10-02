@@ -1301,27 +1301,27 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
     <div class="lp-market-grid">
       <div class="lp-market-card">
         <div class="lp-market-head"><div class="lp-market-ic"><svg class="icon" viewBox="0 0 24 24"><line x1="4" y1="20" x2="4" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="20" y1="20" x2="20" y2="14"/></svg></div><b>BIST 100</b></div>
-        <div class="lp-market-row"><span>THYAO</span><span class="mono">262,40</span><span class="up">+1,20%</span></div>
-        <div class="lp-market-row"><span>GARAN</span><span class="mono">118,90</span><span class="down">-0,40%</span></div>
-        <div class="lp-market-row"><span>ASELS</span><span class="mono">88,15</span><span class="up">+2,10%</span></div>
+        <div class="lp-market-row"><span>THYAO</span><span class="mono" data-lp-price="bist:THYAO">—</span><span data-lp-chg="bist:THYAO">—</span></div>
+        <div class="lp-market-row"><span>GARAN</span><span class="mono" data-lp-price="bist:GARAN">—</span><span data-lp-chg="bist:GARAN">—</span></div>
+        <div class="lp-market-row"><span>ASELS</span><span class="mono" data-lp-price="bist:ASELS">—</span><span data-lp-chg="bist:ASELS">—</span></div>
       </div>
       <div class="lp-market-card">
         <div class="lp-market-head"><div class="lp-market-ic"><svg class="icon" viewBox="0 0 24 24"><line x1="4" y1="20" x2="4" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="20" y1="20" x2="20" y2="14"/></svg></div><b>ABD Borsası</b></div>
-        <div class="lp-market-row"><span>AAPL</span><span class="mono">227,40</span><span class="up">+0,80%</span></div>
-        <div class="lp-market-row"><span>NVDA</span><span class="mono">138,20</span><span class="up">+3,40%</span></div>
-        <div class="lp-market-row"><span>TSLA</span><span class="mono">248,90</span><span class="down">-1,10%</span></div>
+        <div class="lp-market-row"><span>AAPL</span><span class="mono" data-lp-price="us:AAPL">—</span><span data-lp-chg="us:AAPL">—</span></div>
+        <div class="lp-market-row"><span>NVDA</span><span class="mono" data-lp-price="us:NVDA">—</span><span data-lp-chg="us:NVDA">—</span></div>
+        <div class="lp-market-row"><span>TSLA</span><span class="mono" data-lp-price="us:TSLA">—</span><span data-lp-chg="us:TSLA">—</span></div>
       </div>
       <div class="lp-market-card">
         <div class="lp-market-head"><div class="lp-market-ic"><svg class="icon" viewBox="0 0 24 24"><circle cx="9" cy="9" r="6"/><circle cx="15" cy="15" r="6"/></svg></div><b>Kripto</b></div>
-        <div class="lp-market-row"><span>BTC/USDT</span><span class="mono">65.134,38</span><span class="up">+1,38%</span></div>
-        <div class="lp-market-row"><span>ETH/USDT</span><span class="mono">2.845,60</span><span class="down">-0,60%</span></div>
-        <div class="lp-market-row"><span>SOL/USDT</span><span class="mono">149,35</span><span class="up">+2,90%</span></div>
+        <div class="lp-market-row"><span>BTC/USDT</span><span class="mono" data-lp-price="crypto:BTC">—</span><span data-lp-chg="crypto:BTC">—</span></div>
+        <div class="lp-market-row"><span>ETH/USDT</span><span class="mono" data-lp-price="crypto:ETH">—</span><span data-lp-chg="crypto:ETH">—</span></div>
+        <div class="lp-market-row"><span>SOL/USDT</span><span class="mono" data-lp-price="crypto:SOL">—</span><span data-lp-chg="crypto:SOL">—</span></div>
       </div>
       <div class="lp-market-card">
         <div class="lp-market-head"><div class="lp-market-ic"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2 2 9l10 13L22 9z"/></svg></div><b>Emtia & Endeks</b></div>
-        <div class="lp-market-row"><span>Altın (Ons)</span><span class="mono">2.415,00</span><span class="up">+0,30%</span></div>
-        <div class="lp-market-row"><span>BIST 100 End.</span><span class="mono">9.482</span><span class="up">+2,40%</span></div>
-        <div class="lp-market-row"><span>S&P 500</span><span class="mono">5.602</span><span class="up">+0,50%</span></div>
+        <div class="lp-market-row"><span>Altın (Ons)</span><span class="mono" data-lp-price="commodity:XAU">—</span><span data-lp-chg="commodity:XAU">—</span></div>
+        <div class="lp-market-row"><span>BIST 100 End.</span><span class="mono" data-lp-price="index:XU100">—</span><span data-lp-chg="index:XU100">—</span></div>
+        <div class="lp-market-row"><span>S&P 500</span><span class="mono" data-lp-price="index:SPX">—</span><span data-lp-chg="index:SPX">—</span></div>
       </div>
     </div>
   </section>
@@ -1463,7 +1463,7 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
         <p>BIST 100, ABD borsaları, kripto, emtia ve küresel endeksler — hepsi tek hesapta. Sanal bakiyeyle risksiz işlem deneyimi ve canlı fiyat takibiyle.</p>
 
         <div class="auth-mock">
-          <div class="auth-mock-head"><b>BTC/USDT</b><span>65.134,38</span></div>
+          <div class="auth-mock-head"><b>BTC/USDT</b><span data-lp-price="crypto:BTC">—</span></div>
           <svg class="auth-chart-svg" viewBox="0 0 400 110" preserveAspectRatio="none">
             <defs>
               <linearGradient id="authChartFill" x1="0" y1="0" x2="0" y2="1">
@@ -1474,8 +1474,8 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
             <polygon points="0,90 20,78 45,84 70,60 95,68 120,50 145,58 170,40 195,46 220,30 245,38 270,22 295,32 320,18 345,26 370,12 400,20 400,110 0,110" fill="url(#authChartFill)"/>
             <polyline points="0,90 20,78 45,84 70,60 95,68 120,50 145,58 170,40 195,46 220,30 245,38 270,22 295,32 320,18 345,26 370,12 400,20" fill="none" stroke="#22cf94" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <div class="auth-float-card fc1"><span>BIST 100</span><b class="up">+2,45%</b></div>
-          <div class="auth-float-card fc2"><span>THYAO</span><b class="down">-0,62%</b></div>
+          <div class="auth-float-card fc1"><span>BIST 100</span><b data-lp-chg="index:XU100">—</b></div>
+          <div class="auth-float-card fc2"><span>THYAO</span><b data-lp-chg="bist:THYAO">—</b></div>
         </div>
 
         <div class="auth-visual-stats">
@@ -2314,8 +2314,8 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
           <div class="card">
             <div class="card-title" style="margin-bottom:14px;"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Kullanıcı Bilgileri
               <div class="crm-cur-toggle" id="crm-cur-toggle" title="Bakiye ve kâr/zarar para birimi (görüntüleme)">
-                <button type="button" data-crm-cur="TRY" class="active">₺</button>
-                <button type="button" data-crm-cur="USD">$</button>
+                <button type="button" data-crm-cur="TRY">₺</button>
+                <button type="button" data-crm-cur="USD" class="active">$</button>
               </div>
             </div>
             <div class="stat-grid crm-info-grid" id="crm-user-info"></div>
@@ -2389,10 +2389,10 @@ button.quick-tile:focus-visible{outline:2px solid var(--accent); outline-offset:
               <div class="crm-amt-row">
                 <input type="text" id="crm-balance-amount" placeholder="0,00" inputmode="decimal" class="mono amount-input crm-amt-input" aria-label="Tutar">
                 <div class="seg seg-cur" data-seg-target="crm-balance-currency">
-                  <button type="button" data-v="TRY" class="active" title="Türk Lirası">₺</button>
-                  <button type="button" data-v="USD" title="Amerikan Doları">$</button>
+                  <button type="button" data-v="TRY" title="Türk Lirası">₺</button>
+                  <button type="button" data-v="USD" class="active" title="Amerikan Doları">$</button>
                 </div>
-                <input type="hidden" id="crm-balance-currency" value="TRY">
+                <input type="hidden" id="crm-balance-currency" value="USD">
               </div>
               <div id="crm-balance-fx-hint" class="crm-fx-hint"></div>
               <div class="crm-amt-quick" id="crm-amt-quick"></div>
@@ -2768,27 +2768,63 @@ document.getElementById('lp-cta-register').addEventListener('click', ()=>{ showS
 document.getElementById('lp-footer-login').addEventListener('click', ()=>{ showScreen('auth'); setAuthTab('login'); });
 document.getElementById('lp-footer-register').addEventListener('click', ()=>{ showScreen('auth'); setAuthTab('register'); });
 
-/* Landing: ticker marquee */
+/* Landing: ticker marquee + piyasa kartları — GERÇEK (≈15 dk gecikmeli) veri.
+   Kaynak, giriş yapılmış uygulamayla aynı "market" Edge Function'ı; ulaşılamazsa tarayıcıda saklanan son gerçek veri
+   kullanılır, o da yoksa fiyatlar "—" kalır (uydurma değer gösterilmez). */
 const LP_TICKER_ITEMS = [
-  {sym:'THYAO', price:'262,40', up:true, chg:'+1,20%'},
-  {sym:'BTC/USDT', price:'65.134,38', up:true, chg:'+1,38%'},
-  {sym:'AAPL', price:'227,40', up:true, chg:'+0,80%'},
-  {sym:'Altın (Ons)', price:'2.415,00', up:true, chg:'+0,30%'},
-  {sym:'BIST 100', price:'9.482', up:true, chg:'+2,40%'},
-  {sym:'ETH/USDT', price:'2.845,60', up:false, chg:'-0,60%'},
-  {sym:'GARAN', price:'118,90', up:false, chg:'-0,40%'},
-  {sym:'S&P 500', price:'5.602', up:true, chg:'+0,50%'},
-  {sym:'TSLA', price:'248,90', up:false, chg:'-1,10%'},
-  {sym:'NVDA', price:'138,20', up:true, chg:'+3,40%'},
-  {sym:'SOL/USDT', price:'149,35', up:true, chg:'+2,90%'},
-  {sym:'ASELS', price:'88,15', up:true, chg:'+2,10%'}
+  ['THYAO','bist:THYAO'], ['BTC/USDT','crypto:BTC'], ['AAPL','us:AAPL'], ['Altın (Ons)','commodity:XAU'],
+  ['BIST 100','index:XU100'], ['ETH/USDT','crypto:ETH'], ['GARAN','bist:GARAN'], ['S&P 500','index:SPX'],
+  ['TSLA','us:TSLA'], ['NVDA','us:NVDA'], ['SOL/USDT','crypto:SOL'], ['ASELS','bist:ASELS']
 ];
-(function renderLpTicker(){
+let lpTickerBuilt = false;
+function lpBuildTicker(){
   const el = document.getElementById('lp-ticker');
-  if(!el) return;
-  const rowHtml = LP_TICKER_ITEMS.map(t=>`<div class="lp-ticker-item"><b>${t.sym}</b><span class="mono">${t.price}</span><span class="${t.up?'up':'down'} mono">${t.chg}</span></div>`).join('');
+  if(!el || lpTickerBuilt) return;
+  const rowHtml = LP_TICKER_ITEMS.map(([label,k])=>`<div class="lp-ticker-item"><b>${label}</b><span class="mono" data-lp-price="${k}">—</span><span class="mono" data-lp-chg="${k}">—</span></div>`).join('');
   el.innerHTML = rowHtml + rowHtml;
-})();
+  lpTickerBuilt = true;
+}
+function lpApply(map){                                   // map: { 'bist:THYAO': [fiyat, değişim%] }
+  document.querySelectorAll('[data-lp-price]').forEach(el=>{
+    const v = map[el.dataset.lpPrice];
+    if(v && isFinite(v[0]) && v[0] > 0) el.textContent = fmtPrice(Number(v[0]));
+  });
+  document.querySelectorAll('[data-lp-chg]').forEach(el=>{
+    const v = map[el.dataset.lpChg];
+    if(!v) return;
+    const c = Number(v[1]) || 0;
+    el.textContent = (c>=0 ? '+' : '-') + Math.abs(c).toFixed(2).replace('.',',') + '%';
+    el.classList.remove('up','down'); el.classList.add(c>=0 ? 'up' : 'down');
+  });
+}
+function lpMapFromApi(data){
+  const map = {};
+  const add = (cat, rows)=>{ (rows||[]).forEach(r=>{ if(r && r.id != null) map[cat+':'+r.id] = [r.price, r.change_pct]; }); };
+  add('bist', data.bist); add('us', data.us); add('index', data.indices);
+  add('commodity', data.commodities); add('crypto', data.crypto);
+  return map;
+}
+function lpMapFromCache(){
+  try{
+    const d = (JSON.parse(localStorage.getItem('kx_last_market_v1') || 'null') || {}).d || {};
+    const map = {};
+    Object.keys(d).forEach(cat=>Object.keys(d[cat]).forEach(sym=>{ map[cat+':'+sym] = d[cat][sym]; }));
+    return map;
+  }catch(_){ return {}; }
+}
+async function lpLoadMarket(){
+  try{
+    const data = await fetchMarketJson();
+    lpApply(lpMapFromApi(data));
+  }catch(e){
+    console.warn('Landing piyasa verisi alınamadı, saklanan son veriyle devam ediliyor:', e);
+    lpApply(lpMapFromCache());
+  }
+}
+lpBuildTicker();
+lpApply(lpMapFromCache());                               // varsa önce son bilinen gerçek veriyi hemen göster
+setTimeout(lpLoadMarket, 0);                             // sayfa betiği tamamen yüklendikten sonra (SUPABASE_URL vb. tanımlanınca) çek
+setInterval(()=>{ if(document.getElementById('landing-screen').style.display !== 'none' || document.getElementById('auth-screen').style.display === 'block') lpLoadMarket(); }, 5*60*1000);
 
 /* Landing: FAQ accordion */
 document.querySelectorAll('.lp-faq-q').forEach(q=>{
@@ -3173,11 +3209,7 @@ function iconFor(cat, sym){
 function symBadge(sym, cat, size){
   size = size || 26;
   const glyph = CATEGORY_GLYPH[cat] || CATEGORY_GLYPH.crypto;
-  const iconUrl = iconFor(cat, sym);
-  const img = iconUrl
-    ? `<img class="sym-ic-img" src="${iconUrl}" alt="" loading="lazy" referrerpolicy="no-referrer"
-         onload="this.parentElement.classList.add('sym-ic-hasicon')" onerror="this.remove()">`
-    : '';
+  const img = '';   // logo özelliği kaldırıldı: liste her tazelendiğinde <img> yeniden oluşup beyaz yanıp sönüyordu
   return `<div class="sym-ic" style="background:${colorFor(sym)}; width:${size}px; height:${size}px;">
     ${img}<span class="sym-ic-letters">${sym.slice(0,2)}</span>
     <span class="sym-ic-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">${glyph}</svg></span>
@@ -3249,8 +3281,8 @@ async function fetchMarketJson(){
 
 function initMarketData(){
   if(marketData.bist.length) return;
-  bistList.forEach(s=>{ const [sym,name]=s.split('|'); const p=srand(sym+':p',8,850); marketData.bist.push({sym,name,price:p,anchor:p,change:srand(sym+':c',-4,4),real:false,icon:clearbitIcon(sym,BIST_DOMAIN)}); });
-  usList.forEach(s=>{ const [sym,name]=s.split('|'); const p=srand(sym+':p',15,920); marketData.us.push({sym,name,price:p,anchor:p,change:srand(sym+':c',-3,3),real:false,icon:clearbitIcon(sym,US_DOMAIN)}); });
+  bistList.forEach(s=>{ const [sym,name]=s.split('|'); const p=srand(sym+':p',8,850); marketData.bist.push({sym,name,price:p,anchor:p,change:srand(sym+':c',-4,4),real:false}); });
+  usList.forEach(s=>{ const [sym,name]=s.split('|'); const p=srand(sym+':p',15,920); marketData.us.push({sym,name,price:p,anchor:p,change:srand(sym+':c',-3,3),real:false}); });
   commodityGroups.forEach(g=>{ g.items.forEach(it=>{ marketData.commodity.push({sym:it[0],name:it[1],price:it[2],anchor:it[2],change:srand(it[0]+':c',-2.5,2.5),group:g.group,real:false}); }); });
   indexList.forEach(it=>{ marketData.index.push({sym:it[0],name:it[1],price:it[2],anchor:it[2],change:srand(it[0]+':c',-2,2),real:false}); });
   cryptoList.forEach(it=>{ marketData.crypto.push({sym:it[0],name:it[1],price:it[2],anchor:it[2],change:srand(it[0]+':c',-5,5),real:false}); });
@@ -3273,7 +3305,6 @@ function applyRealRows(cat, rows){
       item.price = row.price;
       item.change = row.change_pct;
       item.real = true;
-      if(row.icon) item.icon = row.icon;   // kripto: CoinGecko'nun sağladığı gerçek logo
     }
   });
 }
@@ -5056,6 +5087,18 @@ document.getElementById('crm-nav-admins').addEventListener('click', ()=>{ if(can
 
 /* ----- Kaldıraç (CRM) ----- */
 let crmLev = { ok:false, value:1 };
+/* CRM'de lot gösterimi: veritabanında lot × kaldıraç saklanır; yöneticiye kullanıcının yazdığı lot gösterilir */
+function crmLevVal(){ return (crmLev && crmLev.ok && crmLev.value > 1) ? crmLev.value : 1; }
+function crmDispQty(qty){                                      // ham pozisyon miktarı -> kullanıcının girdiği lot
+  const base = Number(qty) / crmLevVal();
+  return Math.round(base * 1e8) / 1e8;
+}
+function crmRawQty(lot){ return Math.round(Number(lot) * crmLevVal() * 1e8) / 1e8; }   // girilen lot -> saklanan miktar
+function crmUnleveragedLabel(qtyLabel){                        // "100 Lot" -> "1 Lot"
+  const m = String(qtyLabel||'').match(/^([0-9.]+)\s+(.+)$/);
+  if(!m) return qtyLabel;
+  return crmDispQty(Number(m[1])) + ' ' + m[2];
+}
 async function loadCrmLeverage(){
   crmLev = { ok:false, value:1 };
   if(!canDo('positions')) return;
@@ -5414,7 +5457,7 @@ async function crmAutoRefresh(){
 setInterval(crmAutoRefresh, 2500);
 
 /* ===== CRM görüntüleme para birimi (yalnızca yöneticinin ekran tercihi; sunucuda TRY tutulur) ===== */
-let crmDispCur = 'TRY';
+let crmDispCur = 'USD';
 function crmToDisp(tryVal){ return crmDispCur==='USD' ? tryVal / fxRate() : tryVal; }
 function crmMoney(tryVal){ return fmtMoney(crmToDisp(tryVal)) + ' ' + crmDispCur; }
 function crmPlMoney(pl, curr){                              // pozisyon K/Z'sini pozisyonun kendi biriminden seçili görüntüleme birimine çevirir
@@ -5533,7 +5576,7 @@ function renderCrmDetail(){
   const posBody = document.getElementById('crm-positions-body');
   posBody.innerHTML = !positions.length ? `<tr><td colspan="7" class="crm-empty">Açık pozisyon yok.</td></tr>` : positions.map(x=>{
     const cur = getLivePrice(x); const pl = pnl(x, cur); const up = pl>=0;
-    const lotCell = canPos ? `<input class="crm-input" data-field="lot" type="text" value="${x.qty}">` : `<span class="mono">${x.qty}</span>`;
+    const lotCell = canPos ? `<input class="crm-input" data-field="lot" type="text" value="${crmDispQty(x.qty)}">` : `<span class="mono">${crmDispQty(x.qty)}</span>`;
     const entryCell = canPos ? `<input class="crm-input" data-field="entry" type="text" value="${x.entry}">` : `<span class="mono">${fmtPrice(x.entry)}</span>`;
     const actions = canPos
       ? `<button class="crm-save-btn" data-action="update-pos">Güncelle</button><button class="btn btn-sm btn-close" data-action="close-pos">Kapat</button>`
@@ -5557,7 +5600,7 @@ function renderCrmDetail(){
     return `<tr>
       <td><div class="badge-sym">${symBadge(c.tickerSym, c.cat)}${esc(c.symDisplay)}${adjBadge(c.adminAdjusted)}</div></td>
       <td style="color:${c.side==='Long'?'var(--green)':'var(--red)'};font-weight:700;">${c.side}</td>
-      <td class="mono num">${esc(c.qtyLabel)}</td><td class="mono num">${fmtPrice(c.entry)}</td><td class="mono num">${fmtPrice(c.exit)}</td>
+      <td class="mono num">${esc(crmUnleveragedLabel(c.qtyLabel))}</td><td class="mono num">${fmtPrice(c.entry)}</td><td class="mono num">${fmtPrice(c.exit)}</td>
       <td class="mono num ${up?'up':'down'}">${up?'+':''}${crmPlMoney(c.pl, c.currency)}</td></tr>`;
   }).join('');
 
@@ -5617,7 +5660,7 @@ document.getElementById('crm-positions-body').addEventListener('click', (e)=>{
     const qty = parseFloat(tr.querySelector('[data-field="lot"]').value);
     const entry = parseFloat(tr.querySelector('[data-field="entry"]').value);
     if(!(qty>0) || !(entry>0)){ showErrorModal('Geçersiz Değer', 'Lot ve giriş fiyatı sıfırdan büyük olmalı.'); return; }
-    crmAction(async ()=>{ await rpcOrThrow('admin_update_position', { p_id:id, p_qty:qty, p_entry:entry }); await reloadCrmDetail(); });
+    crmAction(async ()=>{ await rpcOrThrow('admin_update_position', { p_id:id, p_qty:crmRawQty(qty), p_entry:entry }); await reloadCrmDetail(); });
   } else if(btn.dataset.action==='close-pos'){
     const p = (crmDetail.positions||[]).map(mapCrmPos).find(x=>x.id===id);
     if(!p) return;
